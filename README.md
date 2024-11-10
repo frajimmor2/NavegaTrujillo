@@ -14,4 +14,5 @@ Finalmente ejecuta:
 
 > [!CAUTION]
 > Cada vez que instales dependencias añadelas a requirements.txt con:
+> 
 > pip freeze > requirements.txt
