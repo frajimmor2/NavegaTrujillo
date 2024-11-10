@@ -1,7 +1,7 @@
 # NavegaTrujillo
 
 > [!IMPORTANT]
-> Antes de ponerte a trabajar descarga el entorno virtual
+> Antes de ponerte a trabajar crea el entorno virtual de python
 
 Dentro de la carpeta NavegaTrujilloWeb, la primera que contiene todo, ejecuta:
 > python -m venv venv
