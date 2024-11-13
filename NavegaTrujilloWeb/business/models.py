@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator, MaxLengthValidator, MinLengthValidator
-
+#Todo ok
 # Create your models here.
 
 class Port(models.Model):
