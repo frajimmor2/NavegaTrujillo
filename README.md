@@ -16,3 +16,8 @@ Finalmente ejecuta:
 > Cada vez que instales dependencias añadelas a requirements.txt con:
 > 
 > pip freeze > requirements.txt
+
+> [!IMPORTANT]
+> Tutorial para descargar sqlite3 para ver la bd:
+> 
+> https://www.youtube.com/watch?v=tBQRVWiklwA
