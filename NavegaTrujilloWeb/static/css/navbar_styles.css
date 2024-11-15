@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    min-height: 100vh;
+}
+
+.section {
+    background-color: cadetblue;
+    color: white;
+    padding: 4px;
+    border: 0px;
+    width: 97.85vw;
+}
