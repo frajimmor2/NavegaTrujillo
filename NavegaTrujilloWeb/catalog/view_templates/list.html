@@ -6,7 +6,10 @@
 
 <h1 class="h3 mb-3">Barcos</h1>
 
+
+
 {% if ships %}
+
 <div class=" col-12">
 	<div class="card">
 
@@ -22,17 +25,16 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for dataset in datasets %}
+					{% for ship in ships %}
 					<tr>
 						<td>
-							<a href="{{""}}">
-								{{ "Título" }}
+							<a href="ship/{{ship.id}}">
+								{{ ship.name }}
 							</a>
 						</td>
-						<td>{{ "Metadata" }}</td>
-						<td>{{ "Tipo de publicación lol"}}</td>
-						<td><a href="{{"DOI"}}"
-						       target="_blank">{{"Esto es un DOI guapísimo" }}</a></td>
+						<td>{{ ship.rent_per_day }}</td>
+						<td>{{ ship.capacity }}</td>
+						<td>{{ ship.need_license }}</td>
 						<td>
 							<a href="{{""}}">
 								<i data-feather="eye"></i>
