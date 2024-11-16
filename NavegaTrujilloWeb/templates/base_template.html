@@ -3,19 +3,22 @@
 <head>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/navbar_styles.css' %}" type="text/css">
+    <div class="section_top">
+	    <h1>Aquí irían los botones</h1>
+    </div>
+
+
 </head>
 <body>
+    <div class="title_css">
     {% block title %}
     {% endblock %}
+    </div>
     <div class="container">
-        <div class="section">
-            <h1>Aquí irían los botones</h1>
-        </div>
-
         {% block main %}
         {% endblock %}
 
-        <div class="section">
+        <div class="section_bottom">
             <h2>BarcosTrujillo©️      ¡Hasta los pícaros de playa pueden alquilar!</h2>
         </div>
     </div>
