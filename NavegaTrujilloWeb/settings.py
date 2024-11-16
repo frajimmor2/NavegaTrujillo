@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'business.apps.BusinessConfig',
+    'login'
 ]
 
 MIDDLEWARE = [
@@ -128,6 +129,6 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-PROFILES_USER_MODEL = 'profiles.CustomUser'
+PROFILES_USER_MODEL = 'login.CustomUser'
 
 
