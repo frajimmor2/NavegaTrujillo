@@ -1,12 +1,12 @@
 {% extends "base_template.html" %}
 
-{% block title %}My datasets{% endblock %}
+{% block title %}Barcos{% endblock %}
 
 {% block main %}
 
-<h1 class="h3 mb-3">My datasets</h1>
+<h1 class="h3 mb-3">Barcos</h1>
 
-{% if datasets %}
+{% if ships %}
 <div class=" col-12">
 	<div class="card">
 
@@ -14,11 +14,11 @@
 			<table class="table">
 				<thead>
 					<tr>
-						<th>Title</th>
-						<th>Description</th>
-						<th>Publication type</th>
-						<th>Dataset DOI</th>
-						<th>Options</th>
+						<th>Título</th>
+						<th>Descripción</th>
+						<th>Placeholder</th>
+						<th>Placeholder</th>
+						<th>Opciones</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -54,11 +54,11 @@
 <div class="col-12 col-md-6">
 	<div class="card">
 		<div class="card-header">
-			<h5 class="card-title mb-0">No ships found</h5>
+			<h5 class="card-title mb-0">No se han encontrado barcos</h5>
 		</div>
 		<div class="card-body">
 			<p class="card-text">
-			There's no lists right now lmao
+			La lista no existe ahora mismo lolazo
 			</p>
 			<a href="{{"../home"}}" class="btn btn-primary">
 				Sweet home Alabama</a>
