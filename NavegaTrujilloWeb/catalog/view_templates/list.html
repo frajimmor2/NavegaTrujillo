@@ -22,7 +22,7 @@
 						<th>Descripción</th>
 						<th>Placeholder</th>
 						<th>Placeholder</th>
-						<th>Opciones</th>
+						<th>Puerto</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -36,14 +36,7 @@
 						<td>{{ ship.rent_per_day }}</td>
 						<td>{{ ship.capacity }}</td>
 						<td>{{ ship.need_license }}</td>
-						<td>
-							<a href="{{""}}">
-								<i data-feather="eye"></i>
-							</a>
-							<a href="{{""}}">
-								<i data-feather="download"></i>
-							</a>
-						</td>
+						<td>{{ ship.port.ubication }}</td>
 					</tr>
 					{% endfor %}
 				</tbody>
