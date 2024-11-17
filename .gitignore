@@ -1,4 +1,5 @@
 db.sqlite3
 pgpi
 venv
+env
 __pycache__/
