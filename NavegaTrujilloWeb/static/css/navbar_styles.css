@@ -2,13 +2,29 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between; 
-    min-height: 100vh;
+    min-height: 100px;
 }
 
-.section {
+.title_css {
+
+    color: cadetblue;
+    display: flex;
+    padding-top: 8%;
+}
+.section_bottom {
+    position: fixed;
     background-color: cadetblue;
     color: white;
-    padding: 4px;
-    border: 0px;
-    width: 97.85vw;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+.section_top {
+    position: fixed;
+    background-color: cadetblue;
+    color: white;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
