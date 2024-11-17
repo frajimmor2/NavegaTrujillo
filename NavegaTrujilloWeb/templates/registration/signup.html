@@ -1,9 +1,17 @@
 {% extends "base_template.html" %}
 
 {% block title %}Registro{% endblock %}
-
 {% block main %}
+
 <h2>Registrarse</h2>
+
+<script>
+	window.onload = function() { 
+		document.getElementById("id_name").labels[0].innerHTML = "Nombre";
+
+		document.getElementById("id_surname").labels[0].innerHTML = "Apellidos";
+	}
+</script>
 <form method="post">
   {% csrf_token %}
   {{ form }}
