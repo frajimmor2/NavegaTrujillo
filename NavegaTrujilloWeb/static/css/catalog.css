@@ -1,5 +1,5 @@
 /* Estilos Generales */
-body {
+.body_list {
     font-family: 'Arial', sans-serif;
     background-color: #f8f9fa;
     color: #333;
@@ -7,7 +7,7 @@ body {
     padding: 0;
 }
 
-h1 {
+.h1_list {
     color: #007bff;
     text-align: center;
     margin-bottom: 2rem;
