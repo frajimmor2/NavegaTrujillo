@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
+from django.contrib.auth.models import User, BaseUserManager, PermissionsMixin, Group, Permission
 from django.db import models
 
 class CustomUserManager(BaseUserManager):
@@ -22,32 +22,32 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=30, blank=True)
-    last_name = models.CharField(max_length=30, blank=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+# class CustomUser(User, PermissionsMixin):
+#     email = models.EmailField(unique=True)
+#     first_name = models.CharField(max_length=30, blank=True)
+#     last_name = models.CharField(max_length=30, blank=True)
+#     is_active = models.BooleanField(default=True)
+#     is_staff = models.BooleanField(default=False)
 
-    groups = models.ManyToManyField(
-        Group,
-        related_name="customuser_groups",  # Cambiamos el related_name
-        blank=True,
-        help_text="Los grupos a los que pertenece este usuario.",
-        verbose_name="grupos",
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name="customuser_permissions",  # Cambiamos el related_name
-        blank=True,
-        help_text="Permisos específicos asignados a este usuario.",
-        verbose_name="permisos de usuario",
-    )
+#     groups = models.ManyToManyField(
+#         Group,
+#         related_name="customuser_groups",  # Cambiamos el related_name
+#         blank=True,
+#         help_text="Los grupos a los que pertenece este usuario.",
+#         verbose_name="grupos",
+#     )
+#     user_permissions = models.ManyToManyField(
+#         Permission,
+#         related_name="customuser_permissions",  # Cambiamos el related_name
+#         blank=True,
+#         help_text="Permisos específicos asignados a este usuario.",
+#         verbose_name="permisos de usuario",
+#     )
 
-    objects = CustomUserManager()
+#     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+#     USERNAME_FIELD = 'email'
+#     REQUIRED_FIELDS = []
 
-    def __str__(self):
-        return self.email
+#     def __str__(self):
+#         return self.email
