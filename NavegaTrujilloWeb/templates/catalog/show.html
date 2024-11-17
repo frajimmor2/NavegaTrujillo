@@ -1,0 +1,51 @@
+{% extends 'base_template.html' %}
+
+{% block title %} <h1>{{ship.name}}</h1> {% endblock %}
+
+{% block main %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/show.css' %}" type="text/css">
+
+
+
+<div class=" col-12">
+
+	{% if request.user.is_staff and form %}
+		<form action="" method="post">
+
+			{% csrf_token %}
+			{{ form }}
+			<input type="submit" value="Actualizar">
+	{% else %}
+	<div class="card">
+
+		<div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th class= "data_column">Disponibilidad</th>
+						<th class= "data_column">Precio por día</th>
+						<th class= "data_column">Capacidad máxima</th>
+						<th class= "data_column">Necesitas licencia o capitán?</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>	
+						<td class= "data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
+						<td class= "data_column">{{ ship.rent_per_day }}</td>
+						<td class= "data_column">{{ ship.capacity }}</td>
+						<td class= "data_column">{% if ship.needs_license %} Sí {% else %} No {% endif %}<td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div> Placeholder imagen </div>
+	{% endif %}
+			
+</div>
+
+{% endblock %}
+
+

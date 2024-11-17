@@ -1,0 +1,122 @@
+.datacolumn {
+	color = cadetblue;
+}
+.body_list {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.h1_list {
+    color: #000000;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.card {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: #007bff;
+    color: white;
+    padding: 1rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.btn-primary {
+    background-color: #03bb85 ;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos de la Tabla */
+.table_catalogo {
+    width: 70%;
+    margin-bottom: 1rem;
+    background-color: transparent;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Links dentro de la tabla */
+.table a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.table a:hover {
+    color: #0056b3;
+}
+
+/* Iconos */
+i[data-feather] {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+i[data-feather]:hover {
+    color: #0056b3;
+}
+
+
+
+/* Mensaje cuando no hay barcos */
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.card-text {
+    color: #000000;
+}
+
+/* Estilo del enlace "te devuelve al /home" */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
