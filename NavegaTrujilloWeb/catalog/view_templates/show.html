@@ -1,1 +1,45 @@
 {% extends 'base_template.html' %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/show.css' %}" type="text/css">
+
+{% block title %} <h1>{{ship.name}}</h1> {% endblock %}
+{% block main %}
+
+
+<div class=" col-12">
+	<div class="card">
+
+		<div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Disponibilidad</th>
+						<th>Precio por día</th>
+						<th>Capacidad máxima</th>
+						<th>Necesitas licencia o capitán?</th>
+						<th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>	
+						<td class= "data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
+						<td class= "data_column">{{ ship.rent_per_day }}</td>
+						<td class= "data_column">{{ ship.capacity }}</td>
+						<td class= "data_column">{{ ship.need_license }}</td>
+						
+				
+					</tr>
+				</tbody>
+			</table>
+			<div> Placeholder imagen </div>
+		</div>
+
+	</div>
+
+</div>
+
+{% endblock %}
+
+

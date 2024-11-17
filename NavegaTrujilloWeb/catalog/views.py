@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.template import Template, Context
 from django.http import HttpResponse
-from business.models import Ship
+from business.models import Ship,Port
 
 # Create your views here.
 
@@ -19,8 +19,10 @@ def list(request):
 def show(request, ship_id):
     try: 
         ship = Ship.objects.get(id=ship_id)
+        port = Port.objects.get(id=ship.port_id)
     except:
         ship = False
+        port = False
 
     if ship:
         with open("./catalog/view_templates/show.html") as content:
@@ -29,7 +31,7 @@ def show(request, ship_id):
         with open("./business/view_templates/home_view.html") as content:
             tplt = Template(content.read())
     
-    ctx = Context()
+    ctx = Context({'ship':ship,'port':port.ubication})
     view = tplt.render(ctx)
 
     return HttpResponse(view)
