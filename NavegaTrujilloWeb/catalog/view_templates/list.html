@@ -1,26 +1,28 @@
 {% extends "base_template.html" %}
-
+{% load static %}
 {% block title %}Barcos{% endblock %}
 
 {% block main %}
 
+<link rel="stylesheet" href="{% static 'css/catalog.css' %}" type="text/css">
+<h1 class="h1_list">Barcos</h1>
 
 
 
 {% if ships %}
 
-<div class=" col-12">
+<div class="body_list">
 	<div class="card">
 
 		<div class="card-body">
-			<table class="table">
+			<table class="table_catalogo">
 				<thead>
 					<tr>
 						<th>Título</th>
 						<th>Descripción</th>
 						<th>Placeholder</th>
 						<th>Placeholder</th>
-						<th>Opciones</th>
+						<th>Puerto</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -34,14 +36,7 @@
 						<td>{{ ship.rent_per_day }}</td>
 						<td>{{ ship.capacity }}</td>
 						<td>{{ ship.need_license }}</td>
-						<td>
-							<a href="{{""}}">
-								<i data-feather="eye"></i>
-							</a>
-							<a href="{{""}}">
-								<i data-feather="download"></i>
-							</a>
-						</td>
+						<td>{{ ship.port.ubication }}</td>
 					</tr>
 					{% endfor %}
 				</tbody>
@@ -52,14 +47,14 @@
 
 </div>
 {% else %}
-<div class="col-12 col-md-6">
+<div class="body_list">
 	<div class="card">
 		<div class="card-header">
-			<h5 class="card-title mb-0">No se han encontrado barcos</h5>
+			<h5 class="card-title">No se han encontrado barcos</h5>
 		</div>
 		<div class="card-body">
 			<p class="card-text">
-			La lista no existe ahora mismo lolazo
+			La lista no existe ahora mismo. Por favor, intentelo mas tarde.
 			</p>
 			<a href="{{"../home"}}" class="btn btn-primary">
 				Sweet home Alabama</a>
