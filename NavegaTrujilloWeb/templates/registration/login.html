@@ -1,6 +1,11 @@
-<h2>Log In</h2>
+{% extends 'base_template.html' %}
+
+{% block title %} Iniciar sesión {% endblock %}
+{% block main %}
 <form method="post">
   {% csrf_token %}
   {{ form }}
-  <button type="submit">Log In</button>
+  <button type="submit">Inicia sesión</button>
 </form>
+
+{% endblock %}
