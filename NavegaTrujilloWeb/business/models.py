@@ -2,7 +2,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator, MaxLengthValidator, MinLengthValidator
-from django.contrib.auth.models import User
+from accounts.models import CustomUser
 #Todo ok
 # Create your models here.
 
@@ -25,18 +25,7 @@ class Ship(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.capacity} {self.rent_per_day} {self.available} {self.need_license} {self.description}"
-
-class Shopping_basket(models.Model):
-    ships = models.ManyToManyField(Ship)
-
-    rental_start_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
-    rental_end_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
-    captain_amount = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-
-    def __str__(self):
-        return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount}"
-
-
+    
 class Reservation_state(models.TextChoices):
     RESERVED = 'R', 'RESERVED'
     RESERVED_AND_PAID = 'P', 'RESERVED_AND_PAID'
@@ -68,3 +57,14 @@ class Client(models.Model):
 
     def __str__(self):
         return f"{self.license_number} {self.license_validated}"
+    
+class Shopping_basket(models.Model):
+    ships = models.ManyToManyField(Ship)
+    Client = models.OneToOneField(Client, on_delete=models.CASCADE)
+
+    rental_start_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
+    rental_end_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
+    captain_amount = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+
+    def __str__(self):
+        return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount}"

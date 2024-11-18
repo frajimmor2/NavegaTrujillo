@@ -1,0 +1,17 @@
+{% extends 'base_template.html' %}
+
+
+{% block main %}
+
+{% if has_ships %}
+    <p>Tienes barcos en tu carrito de compras.</p>
+    <ul>
+        {% for ship in shopping_basket.ships.all %}
+            <li>{{ ship.name }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Tu carrito de compras está vacío.</p>
+{% endif %}
+
+{% endblock %}
