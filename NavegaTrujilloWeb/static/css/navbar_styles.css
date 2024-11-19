@@ -32,4 +32,22 @@
     justify-content: space-between;
     padding-top: 1%;
     padding-bottom: 1%;
+    height: 35px;
+    overflow: hidden;
+}
+
+.btn {
+    font-size: 22px; 
+    font-family: 'Times New Roman', sans-serif;
+    padding: 10px 20px;  
+    border-radius: 5px; 
+    background-color: cadetblue; 
+    color: white;
+    text-decoration: none; 
+    transition: font-size 0.3s ease, background-color 0.3s ease;
+}
+
+.btn:hover {
+    font-size: 24px;
+    background-color: cadetblue;
 }
