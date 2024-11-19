@@ -48,19 +48,10 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount} {self.total_cost} {self.reservation_state}"
-
-class Client(models.Model):
-    #user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
-
-    license_number = models.CharField(blank=True, max_length=50)
-    license_validated = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.license_number} {self.license_validated}"
     
 class Shopping_basket(models.Model):
     ships = models.ManyToManyField(Ship)
-    Client = models.OneToOneField(Client, on_delete=models.CASCADE)
+    #client = models.OneToOneField(Client, on_delete=models.CASCADE)
 
     rental_start_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
     rental_end_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
@@ -68,3 +59,13 @@ class Shopping_basket(models.Model):
 
     def __str__(self):
         return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount}"
+    
+class Client(models.Model):
+    #user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
+    shopping_basket = models.OneToOneField(Shopping_basket, on_delete=models.CASCADE)
+
+    license_number = models.CharField(blank=True, max_length=50)
+    license_validated = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.license_number} {self.license_validated}"
