@@ -50,7 +50,7 @@ class Reservation(models.Model):
         return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount} {self.total_cost} {self.reservation_state}"
 
 class Client(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
+    #user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
 
     license_number = models.CharField(blank=True, max_length=50)
     license_validated = models.BooleanField(default=False)
