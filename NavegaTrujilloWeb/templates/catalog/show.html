@@ -39,6 +39,13 @@
 					</tr>
 				</tbody>
 			</table>
+			<h3> Nota: La tarifa de un capitán es de 120 euros/día</h3>
+			<div>
+				<form action="" method="post">
+					{% csrf_token %}
+					{{ form_shopping_basket }}
+					<input type="submit" value="Añadir a la cesta">
+			</div>
 		</div>
 	</div>
 	<div> Placeholder imagen </div>

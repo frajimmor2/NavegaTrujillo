@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.template import Template, Context
 from django.http import HttpResponse
 from django.template import RequestContext
-from business.models import Ship,Port
-from .forms import ShipForm
+from business.models import Ship,Port, Shopping_basket
+from .forms import ShipForm, shopping_basket_form
 
 # Create your views here.
 
@@ -24,7 +24,9 @@ def show(request, ship_id):
             return  render(request,"./business/home_view.html")
 
         form = ShipForm()
-
+        form_shopping_basket = shopping_basket_form()
+        #esta
+        #print(request.user.client.shopping_basket.id)
         return render(request,"./catalog/show.html", {"ship":ship,"form":form})
 
     form = ShipForm(request.POST)
@@ -42,6 +44,25 @@ def show(request, ship_id):
         ship = False
     if not ship:
         return  render(request,"./business/home_view.html")
+    
+    #form_shopping_basket = shopping_basket_form()
 
+    form_shopping_basket = shopping_basket_form(request.POST)
+    
+    if form_shopping_basket.is_valid():
+        print("Se esta ejecutando el codigo del form")
+        shopping_basket, create = Shopping_basket.objects.get_or_create(client=request.user.client)
+        ship = Ship.objects.get(id=ship_id)
+        shopping_basket.ships.add(ship)
+        shopping_basket.captain_amount = shopping_basket.captain_amount() + 1 if form_shopping_basket.captain else 0
+        shopping_basket.save()
+    try: 
+        ship = Ship.objects.get(id=ship_id)
+    except:
+        ship = False
+    if not ship:
+        return  render(request,"./business/home_view.html")
+
+   
 
     return render(request,"./catalog/show.html",{"ship":ship})

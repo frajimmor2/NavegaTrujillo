@@ -7,3 +7,6 @@ class ShipForm(forms.Form):
     capacity = forms.IntegerField(required = True)
     needs_license = forms.BooleanField(required = True)
     description = forms.CharField(required = True)
+
+class shopping_basket_form(forms.Form):
+    captain = forms.BooleanField()
