@@ -10,7 +10,7 @@
 
 
 <div class=" col-12">
-
+	<!-- En caso de que se sea admin, devuelve el formulario para cambiar los datos -->
 	{% if request.user.is_staff and form %}
 		<form action="" method="post">
 
@@ -22,6 +22,7 @@
 	<div class="card">
 
 		<div class="card-body">
+			<!-- Que esto sea una tabla es una barbaridad, pero funciona, chaito (por favor cambiar eventualmente a un display decente -->
 			<table class="table">
 				<thead>
 					<tr>
@@ -43,16 +44,26 @@
 				</tbody>
 			</table>
 		</div>
-		<form action="reserva" method="post">
+		<!-- formulario de reserva, dirige directamente a la plataforma de reserva si se está logueado, a la de datos en caso contrario -->
+		<form action={% if request.user.is_authenticated %} "../../../reserva/{{ship.id}}" {% else %} "reserva" {% endif %} method="post">
 			{% csrf_token %}
 			{{ reservation_form }}
 			<input type="Submit" value="Reservar">
 		</form>
 	</div>
+	<!-- Sigue sin hacer -->
 	<div> Placeholder imagen </div>
 	{% endif %}
 			
 </div>
+
+<!-- Esto es para cambiar lo que pone en el texto mostrado en el formulario de reserva (inglés por defecto de Django) -->
+<script>
+	window.onload = function() { 
+		document.getElementById("id_captain").labels[0].innerHTML = "Capitán";
+
+	}
+</script>
 
 {% endblock %}
 

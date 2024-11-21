@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.template import Template, Context
 from django.http import HttpResponse
 from django.template import RequestContext
@@ -8,20 +8,24 @@ from .forms import ShipForm,ReservationForm
 # Create your views here.
 
 def list(request):
-
+    ''' Lista, básico de entender, hay que mover esta función para que aplique también al escaparate en home'''
 
     ships = Ship.objects.all()
 
     return render(request,"./catalog/list.html",{"ships":ships})
 
 def show(request, ship_id):
+
+    ''' En caso de ser un get, toma el barco (si no existe redirige a home), añade los formularios pertinentes (reserva y cambio de datos)
+        y lo manda al frontend; Recibe el POST de cambio de datos también, el cuál aplica al barco (siempre vendrá de un administrador)'''
+
     if request.method=="GET":
         try: 
             ship = Ship.objects.get(id=ship_id)
         except:
             ship = False
         if not ship:
-            return  render(request,"./business/home_view.html")
+            return redirect("/",permanent=True)
 
         form = ShipForm()
         form2 = ReservationForm()
@@ -42,12 +46,17 @@ def show(request, ship_id):
     except:
         ship = False
     if not ship:
-        return  render(request,"./business/home_view.html")
+        return redirect("/",permanent=True)
 
 
     return render(request,"./catalog/show.html",{"ship":ship})
 
+
 def reservation(request, ship_id):
+
+    ''' Esta función toma el formulario enviado desde la vista singular (o el home cuando se añada la opción),
+    cambia el precio del barco si es necesario, y comienza el proceso de alquiler rápido (para usuario no logueado) '''
+
     if request.method=="POST":
         form = ReservationForm(request.POST)
         if form.is_valid():

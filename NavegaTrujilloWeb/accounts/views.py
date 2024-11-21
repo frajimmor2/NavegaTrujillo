@@ -12,6 +12,9 @@ from .forms import CustomUserCreationForm
 
 
 class SignUpView(CreateView):
+    
+    ''' Registro, crea el usuario (si los datos son correctos, de eso se encarga Django) y les asigna un cliente y una cesta de la compra'''
+
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
