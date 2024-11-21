@@ -12,31 +12,33 @@ def home(request):
 def cookieCart(request):
     try:
         cart = json.loads(request.COOKIES['cart'])
-        #print("sisi")
+        if not cart:
+            print("El carrito está vacío, inicializando...")
+            ships = Ship.objects.all()
+            cart = {ship.id: {"quantity": 0} for ship in ships}
+        
         
     except:
         cart = {}
-        #print("adios")
-
-
-    print('Cart bro:', cart)
-
-
-    json.dumps({            # AQUI SE AÑADE EL VALOR MANUALMENTE DE LA COOKIE
-            1: 5,
-    })
-
-
+    
+    
+    '''ships_dict = {}
+    for ship in Ship.objects.all():
+        print(ship.id)
+        ships_dict[ship.id] = {"quantity": 1}
+    
+        
+    cart = ships_dict'''
+        
     items = []
     order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
     cartItems = order['get_cart_items']
-
+    
     for i in cart:
         
         try:
             cartItems += cart[i]["quantity"]
             ship = Ship.objects.get(id=i)
-            print(ship)
             total = (ship.rent_per_day * cart[i]["quantity"])
             order['get_cart_total'] += total
             order['get_cart_items'] += cart[i]["quantity"]
@@ -45,12 +47,10 @@ def cookieCart(request):
 
         except:
             pass
-
-        print(items)
-    return {"items": items, "order": order, "cartItems": cartItems}
+            
+    return {"items": items, "order": order, "cartItems": cartItems, "ships": Ship.objects.all()}
 
 def cart(request):
-    #print(dir(request.session))
     '''
     if request.user.is_authenticated:      
         shopping_basket, created = Shopping_basket.objects.get_or_create(customuser=request.user)
@@ -64,12 +64,11 @@ def cart(request):
     else:
     '''
     cookieData = cookieCart(request)
-    #print(cookieCart(request))
     cartItems = cookieData['cartItems']
     order = cookieData['order']
     items = cookieData['items']
     return render(request, './business/cart.html', {
-    'cartItems':cartItems ,'order':order, 'items':items#, 'shopping_basket': shopping_basket, 'has_ships': has_ships
+    'cartItems':cartItems ,'order':order, 'items':items  #, 'shopping_basket': shopping_basket, 'has_ships': has_ships
     })
 
 
