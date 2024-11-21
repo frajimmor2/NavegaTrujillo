@@ -62,7 +62,7 @@ class Shopping_basket(models.Model):
     
 class Client(models.Model):
     #user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
-    shopping_basket = models.OneToOneField(Shopping_basket, on_delete=models.CASCADE)
+    #shopping_basket = models.OneToOneField(Shopping_basket, on_delete=models.CASCADE)
 
     license_number = models.CharField(blank=True, max_length=50)
     license_validated = models.BooleanField(default=False)

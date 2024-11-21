@@ -2,16 +2,79 @@
 
 
 {% block main %}
+<script>
+function addCookieItem(shipId, action){
+	console.log('User is not authenticated')
 
-{% if has_ships %}
-    <p>Tienes barcos en tu carrito de compras.</p>
-    <ul>
-        {% for ship in shopping_basket.ships.all %}
-            <li>{{ ship.name }}</li>
-        {% endfor %}
-    </ul>
+	if (action == 'add'){
+		if (cart[shipId] == undefined){
+		cart[shipId] = {'quantity':1}
+
+		}else{
+			cart[shipId]['quantity'] += 1
+		}
+	}
+
+	if (action == 'remove'){
+		cart[shipId]['quantity'] -= 1
+
+		if (cart[shipId]['quantity'] <= 0){
+			console.log('Item should be deleted')
+			delete cart[shipId];
+		}
+	}
+	console.log('CART:', cart)
+	document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+	location.reload()
+}
+
+</script>
+
+{% if items %}
+    {% for item in items %}
+        <button onclick="addCookieItem('{{ item.ship.id }}', 'add')">Agregar al carrito</button>
+        <button onclick="addCookieItem('{{ item.ship.id }}', 'remove')">Quitar del carrito</button>
+    {% endfor %}
 {% else %}
-    <p>Tu carrito de compras está vacío.</p>
+    <p>No hay productos disponibles.</p>
 {% endif %}
+
+
+
+    <h2>Tu carrito</h2>
+
+    {% if cartItems > 0 %}
+        <p>Tienes {{ cartItems }} artículo(s) en tu carrito.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre del Barco</th>
+                    <th>Puerto</th>
+                    <th>Capacidad</th>
+                    <th>Precio por Día</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.ship.name }}</td>
+                    <td>{{ item.ship.port.ubication }}</td>
+                    <td>{{ item.ship.capacity }}</td>
+                    <td>${{ item.ship.rent_per_day }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.get_total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p>Total del carrito: ${{ order.get_cart_total }}</p>
+    {% else %}
+        <p>No tienes barcos en tu carrito.</p>
+    {% endif %}
+
 
 {% endblock %}
