@@ -3,7 +3,7 @@ from django.template import Template, Context
 from django.http import HttpResponse
 from django.template import RequestContext
 from business.models import Ship,Port
-from .forms import ShipForm
+from .forms import ShipForm,ReservationForm
 
 # Create your views here.
 
@@ -24,8 +24,9 @@ def show(request, ship_id):
             return  render(request,"./business/home_view.html")
 
         form = ShipForm()
+        form2 = ReservationForm()
 
-        return render(request,"./catalog/show.html", {"ship":ship,"form":form})
+        return render(request,"./catalog/show.html", {"ship":ship,"ship_form":form,"reservation_form":form2})
 
     form = ShipForm(request.POST)
     if form.is_valid():
@@ -45,3 +46,15 @@ def show(request, ship_id):
 
 
     return render(request,"./catalog/show.html",{"ship":ship})
+
+def reservation(request, ship_id):
+    if request.method=="POST":
+        form = ReservationForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data["captain"]:
+                print("Sí")
+            else:
+                print("No")
+        return render(request,"./catalog/reservation.html")
+    else:
+        pass

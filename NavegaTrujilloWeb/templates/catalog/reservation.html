@@ -1,0 +1,12 @@
+{% extends 'base_template.html' %}
+
+
+{% block main %}
+
+{% if user.is_authenticated %}
+    <p>Estás logueado</p>
+{% else %}
+    <p>No estás logueado</p>
+{% endif %}
+
+{% endblock %}

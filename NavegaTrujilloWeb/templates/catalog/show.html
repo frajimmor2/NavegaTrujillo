@@ -15,8 +15,9 @@
 		<form action="" method="post">
 
 			{% csrf_token %}
-			{{ form }}
+			{{ ship_form }}
 			<input type="submit" value="Actualizar">
+		</form>
 	{% else %}
 	<div class="card">
 
@@ -28,6 +29,7 @@
 						<th class= "data_column">Precio por día</th>
 						<th class= "data_column">Capacidad máxima</th>
 						<th class= "data_column">Necesitas licencia o capitán?</th>
+						<th class= "data_column">Descripción</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -35,11 +37,17 @@
 						<td class= "data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
 						<td class= "data_column">{{ ship.rent_per_day }}</td>
 						<td class= "data_column">{{ ship.capacity }}</td>
-						<td class= "data_column">{% if ship.needs_license %} Sí {% else %} No {% endif %}<td>
+						<td class= "data_column">{% if ship.need_license %} Sí {% else %} No {% endif %}</td>
+						<td class= "data_column">{{ ship.description }}</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
+		<form action="reserva" method="post">
+			{% csrf_token %}
+			{{ reservation_form }}
+			<input type="Submit" value="Reservar">
+		</form>
 	</div>
 	<div> Placeholder imagen </div>
 	{% endif %}
