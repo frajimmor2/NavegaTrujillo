@@ -19,23 +19,23 @@
 				<thead>
 					<tr>
 						<th>Título</th>
-						<th>Descripción</th>
-						<th>Placeholder</th>
-						<th>Placeholder</th>
+						<th>Coste de alquiler por día</th>
+						<th>Capacidad</th>
+						<th>Disponibilidad</th>
 						<th>Puerto</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for ship in ships %}
 					<tr>
-						<td>
+						<td style="display: flex; justify-content: center; align-items: center;">
 							<a href="ship/{{ship.id}}">
 								{{ ship.name }}
 							</a>
 						</td>
 						<td>{{ ship.rent_per_day }}</td>
 						<td>{{ ship.capacity }}</td>
-						<td>{{ ship.need_license }}</td>
+						<td class= "data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
 						<td>{{ ship.port.ubication }}</td>
 					</tr>
 					{% endfor %}
@@ -57,7 +57,7 @@
 			La lista no existe ahora mismo. Por favor, intentelo mas tarde.
 			</p>
 			<a href="{{"../home"}}" class="btn btn-primary">
-				Sweet home Alabama</a>
+				Volver al inicio</a>
 		</div>
 	</div>
 </div>

@@ -7,6 +7,12 @@
     padding: 0;
 }
 
+.show{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .h1_list {
     color: #000000;
     text-align: center;
@@ -118,3 +124,5 @@ i[data-feather]:hover {
 .btn-primary:hover {
     background-color: #0056b3;
 }
+
+

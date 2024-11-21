@@ -1,12 +1,16 @@
 import json
 from django.http import HttpResponse
 from django.shortcuts import render
-from .models import Ship, Shopping_basket, Client
+from .models import Ship, Port, Shopping_basket, Client
 from django.utils import timezone
 
 
 def home(request):
-    return render(request,"./business/home_view.html")
+
+    ships = Ship.objects.all()[:8]
+    ports = Port.objects.all()
+    context = {"ships": ships, "ports": ports}
+    return render(request,"./business/home_view.html", context)
 
 
 def cookieCart(request):

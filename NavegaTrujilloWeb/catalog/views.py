@@ -10,7 +10,7 @@ from .forms import ShipForm, shopping_basket_form
 def list(request):
 
 
-    ships = Ship.objects.all()
+    ships = Ship.objects.all().order_by('capacity')
 
     return render(request,"./catalog/list.html",{"ships":ships})
 
