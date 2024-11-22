@@ -28,7 +28,29 @@ function addCookieItem(shipId, action){
 	location.reload()
 }
 
+function updateCaptainAmount(action){
+    let captainAmount = parseInt(document.getElementById("captain-amount").innerText);
+    
+    if (action == 'increase'){
+        captainAmount += 1;
+    } else if (action == 'decrease' && captainAmount > 0){
+        captainAmount -= 1;
+    }
+    
+    // Update the cookie with the new captain amount
+    cart['captain_amount'] = captainAmount;
+    document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+    document.getElementById("captain-amount").innerText = captainAmount;
+    location.reload();
+}
 </script>
+
+{% if cartItems > 0 %}
+    <p>Capitanes: <span id="captain-amount">{{ order.captain_amount }}</span></p>
+    <button onclick="updateCaptainAmount('increase')">Aumentar Capitan</button>
+    <button onclick="updateCaptainAmount('decrease')">Disminuir Capitan</button>
+    <p>Coste de Capitanes: ${{ order.captain_cost }}</p>
+{% endif %}
 
 {% if items %}
     {% for item in items %}
@@ -75,7 +97,7 @@ function addCookieItem(shipId, action){
             </tbody>
         </table>
 
-        <p>Total del carrito: ${{ order.get_cart_total }}</p>
+        <p>Total del carrito (incluyendo capitanes): ${{ order.total_with_captain }}</p>
     {% else %}
         <p>No tienes barcos en tu carrito.</p>
     {% endif %}
