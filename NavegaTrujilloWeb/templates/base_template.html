@@ -8,16 +8,20 @@
     <h4>
         <div class="section_top">
             <div style="padding-left: 1%;">
-                <a href="/catalog">Catálogo de barcos</a>
+                <a href="/catalog" class="btn">Catálogo de barcos</a>
             </div>
             <div style="padding-right: 1%;">
                 {% if user.is_authenticated %}
                     <a href="/home/cart">
                         <i class="fas fa-shopping-cart"></i>
                     </a>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Cerrar sesión</button>
+                    </form>
                 {% else %}
-                    <a href="/auth/login">Iniciar sesión</a>
-                    <a href="/auth/signup">Registrarse</a>
+                    <a href="/auth/login" class="btn">Iniciar sesión</a>
+                    <a href="/auth/signup" class="btn">Registrarse</a>
                 {% endif %}
             </div>
         </div>
