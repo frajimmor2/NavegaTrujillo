@@ -64,6 +64,22 @@ def reservation(request, ship_id):
                 print("Sí")
             else:
                 print("No")
-        return render(request,"./catalog/reservation.html")
+        try:
+            ship = Ship.objects.get(id=ship_id)
+        except:
+            ship = False
+
+        if not ship:
+            ''' Esto nunca debería pasar, requiere usar herramientas externas y ser tonto a la vez '''
+            return HttpResponse("¿Cómo has llegado aquí?",404)
+
+        form = "formulario" # TODO añadir el formulario
+
+        return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form})
+
     else:
-        pass
+        ''' Solo pasa si se entra poniendo la url en el buscador directamente '''
+        return HttpResponse("Por favor, accede desde el escaparate o la página del barco que quieras reservar",405)
+
+
+

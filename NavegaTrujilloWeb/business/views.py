@@ -25,12 +25,15 @@ def cart(request):
         else:
             has_ships = False
     else:
-        return HttpResponse("Usuario no autenticado", status=401)
+        return HttpResponse("Usuario no autentificado", status=401)
     
     return render(request, './business/cart.html', {'shopping_basket': shopping_basket, 'has_ships': has_ships})
 
 def reservation(request,ship_id):
     ''' Punto de toma de los datos de la reserva (plazo en el que se va a reservar, y método de pago (contrareembolso por ahora)'''
+
+    if request.method=="POST":
+        return HttpResponse("En construcción, vuelve más tarde", status=501)
     try:
         ship = Ship.objects.get(id=ship_id)
     except:

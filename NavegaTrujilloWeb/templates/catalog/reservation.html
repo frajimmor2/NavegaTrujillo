@@ -1,12 +1,26 @@
 {% extends 'base_template.html' %}
 
-
+{% block title %} {{ship_name}} {% endblock %}
 {% block main %}
 
 {% if user.is_authenticated %}
-    <p>Estás logueado</p>
+<!-- redirigimos inmediatamente a la selección de fechas -->
+<script> window.location.href = "/reserva/"{{ship_id}} </script>
 {% else %}
-    <p>No estás logueado</p>
+<!-- Toca pedir datos y/o proponer que se loguee el usuario -->
+<p>No estás autentificado, por favor, rellena tus datos para la reserva</p>
+
+<form action="/reserva/{{ship_id}}" method="post">
+  {% csrf_token %}
+  {{ form }}
+  <button type="submit">Continuar con la reserva</button>
+</form>
+
+<a href="/auth/fast_login/{{ship_id}}"> O, si tienes cuenta, puedes iniciar sesión </a>
+
+
+
+
 {% endif %}
 
 {% endblock %}
