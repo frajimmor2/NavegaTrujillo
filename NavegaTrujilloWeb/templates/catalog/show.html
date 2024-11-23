@@ -3,10 +3,37 @@
 {% block title %} <h1>{{ship.name}}</h1> {% endblock %}
 
 {% block main %}
+
+<script>
+	function addCookieItem(shipId, action){
+		console.log('User is not authenticated')
+	
+		if (action == 'add'){
+			if (cart[shipId] == undefined){
+			cart[shipId] = {'quantity':1}
+	
+			}else{
+				cart[shipId]['quantity'] = 1
+			}
+		}
+	
+		if (action == 'remove'){
+			cart[shipId]['quantity'] = 0
+	
+			if (cart[shipId]['quantity'] <= 0){
+				console.log('Item should be deleted')
+				delete cart[shipId];
+			}
+		}
+		console.log('CART:', cart)
+		document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+		location.reload()
+	}
+</script>	
+
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/show.css' %}" type="text/css">
-
 
 
 <div class=" col-12">
@@ -45,10 +72,11 @@
 			</table>
 			<h3> Nota: La tarifa de un capitán es de 120 euros/día</h3>
 			<div>
-				<form action="" method="post">
-					{% csrf_token %}
-					{{ form_shopping_basket }}
-					<input type="submit" value="Añadir a la cesta">
+				{% if shipInCart %}
+					<button onclick="addCookieItem('{{ ship.id }}', 'remove')">Quitar del carrito</button>
+				{% else %}
+					<button onclick="addCookieItem('{{ ship.id }}', 'add')">Agregar al carrito</button>
+				{% endif %}
 			</div>
 		</div>
 	</div>
