@@ -17,10 +17,11 @@ def home(request):
 def cookieCart(request):
     try:
         cart = json.loads(request.COOKIES['cart'])
-        if not cart:
-            print("El carrito está vacío, inicializando...")
-            ships = Ship.objects.all()
-            cart = {ship.id: {"quantity": 0} for ship in ships}
+        ships = Ship.objects.all()
+        for ship in ships:
+            if str(ship.id) not in cart.keys():
+                print("El carrito está vacío, inicializando...")
+                cart[str(ship.id)] = {"quantity": 0}
         
         
     except:
@@ -35,6 +36,7 @@ def cookieCart(request):
         
     cart = ships_dict'''
         
+    print(cart)
     items = []
     order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False, 'captain_amount': 0, 'captain_cost': 0, 'total_with_captain': 0}
     cartItems = order['get_cart_items']
