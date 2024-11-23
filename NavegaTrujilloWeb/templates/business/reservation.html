@@ -2,16 +2,18 @@
 
 
 {% block main %}
+<script>
+	window.onload = function() {
 
-{% if has_ships %}
-    <p>Tienes barcos en tu carrito de compras.</p>
-    <ul>
-        {% for ship in shopping_basket.ships.all %}
-            <li>{{ ship.name }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Tu carrito de compras está vacío.</p>
-{% endif %}
+		document.getElementById("id_start_date").labels[0].innerHTML = "Día de inicio: "
+		document.getElementById("id_end_date").labels[0].innerHTML = "Día de fin: "
+	}
+</script>
+<form action="/reserva/{{ship.id}}/confirmacion" method="post">
+
+	{% csrf_token %}
+	{{ form }}
+	<input type="submit" value="Reservar">
+</form>
 
 {% endblock %}

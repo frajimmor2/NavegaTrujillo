@@ -10,8 +10,23 @@ class ShipForm(forms.Form):
     needs_license = forms.BooleanField(required = False)
     description = forms.CharField(required = True)
 
+
 class ReservationForm(forms.Form):
-    ''' Formulario para reserva rápida, solo interesa si tiene capitán o no 
-        (falta forzar en caso de que se necesite licencia y o no se tenga o no se esté logueado)'''
+    ''' Formulario de reserva (capitán o no) '''
 
     captain = forms.BooleanField(required = False)
+
+
+class ReservationFormNotLogged(forms.Form):
+    ''' Formulario de reserva obligado '''
+
+    captain = forms.BooleanField(required = True)
+    captain.initial = True
+    captain.disabled = True
+
+class ReservationDataForm(forms.Form):
+    ''' Formulario de toma de datos (usuario no autentificado) '''
+
+    Email = forms.EmailField(required = True)
+    name = forms.CharField(required = True)
+    surname = forms.CharField(required = True)

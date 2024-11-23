@@ -3,7 +3,7 @@ from django.template import Template, Context
 from django.http import HttpResponse
 from django.template import RequestContext
 from business.models import Ship,Port
-from .forms import ShipForm,ReservationForm
+from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm
 
 # Create your views here.
 
@@ -28,9 +28,12 @@ def show(request, ship_id):
             return redirect("/",permanent=True)
 
         form = ShipForm()
-        form2 = ReservationForm()
+        if (request.user.is_authenticated and request.user.client.license_validated) or not ship.need_license:
+            reservation_form = ReservationForm()
+        else:
+            reservation_form = ReservationFormNotLogged()
 
-        return render(request,"./catalog/show.html", {"ship":ship,"ship_form":form,"reservation_form":form2})
+        return render(request,"./catalog/show.html", {"ship":ship,"ship_form":form,"reservation_form":reservation_form})
 
     form = ShipForm(request.POST)
     if form.is_valid():
@@ -45,41 +48,28 @@ def show(request, ship_id):
         ship = Ship.objects.get(id=ship_id)
     except:
         ship = False
+
     if not ship:
         return redirect("/",permanent=True)
-
 
     return render(request,"./catalog/show.html",{"ship":ship})
 
 
 def reservation(request, ship_id):
 
-    ''' Esta función toma el formulario enviado desde la vista singular (o el home cuando se añada la opción),
-    cambia el precio del barco si es necesario, y comienza el proceso de alquiler rápido (para usuario no logueado) '''
+    ''' Esta función se accede desde la vista singular (o el home cuando se añada la opción),
+        y comienza el proceso de alquiler rápido (para usuario no logueado) '''
+    try:
+        ship = Ship.objects.get(id=ship_id)
+    except:
+        ship = False
 
-    if request.method=="POST":
-        form = ReservationForm(request.POST)
-        if form.is_valid():
-            if form.cleaned_data["captain"]:
-                print("Sí")
-            else:
-                print("No")
-        try:
-            ship = Ship.objects.get(id=ship_id)
-        except:
-            ship = False
+    if not ship:
+        ''' Esto solo pasa si se accede escribiendo una url incorrecta directamente '''
+        return HttpResponse("Ese barco no existe",404)
 
-        if not ship:
-            ''' Esto nunca debería pasar, requiere usar herramientas externas y ser tonto a la vez '''
-            return HttpResponse("¿Cómo has llegado aquí?",404)
+    form = ReservationDataForm() 
 
-        form = "formulario" # TODO añadir el formulario
-
-        return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form})
-
-    else:
-        ''' Solo pasa si se entra poniendo la url en el buscador directamente '''
-        return HttpResponse("Por favor, accede desde el escaparate o la página del barco que quieras reservar",405)
-
+    return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form})
 
 

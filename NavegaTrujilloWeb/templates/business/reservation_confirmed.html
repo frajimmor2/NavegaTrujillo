@@ -1,0 +1,13 @@
+{% extends 'base_template.html' %}
+
+{% block title %} {% endblock %}
+{% block main %} 
+{% if not user.is_authenticated %}
+<a> Enhorabuena, tu reserva se ha realizado correctamente; tu id de seguimiento es </a>
+<p> {{lookup_id}} </p>
+<a> ¡Procura guardarla bien! </a>
+{% else %}
+<a> La reserva está realizada con éxito, podrá revisarla próximamente </a>
+{% endif %}
+
+{% endblock %}

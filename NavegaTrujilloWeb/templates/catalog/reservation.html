@@ -2,11 +2,20 @@
 
 {% block title %} {{ship_name}} {% endblock %}
 {% block main %}
+<script> window.onload = function() {
+	document.getElementById("id_name").labels[0].innerHTML = "Nombre: ";
+	document.getElementById("id_surname").labels[0].innerHTML = "Appellidos: ";
+}
+</script>
+
 
 {% if user.is_authenticated %}
 <!-- redirigimos inmediatamente a la selección de fechas -->
 <script> window.location.href = "/reserva/"{{ship_id}} </script>
 {% else %}
+
+<!-- Hora de traducir labels jiji -->
+
 <!-- Toca pedir datos y/o proponer que se loguee el usuario -->
 <p>No estás autentificado, por favor, rellena tus datos para la reserva</p>
 

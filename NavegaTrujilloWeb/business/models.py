@@ -34,7 +34,7 @@ class Reservation_state(models.TextChoices):
 
 class Reservation(models.Model):
     ships = models.ManyToManyField(Ship)
-    port = models.OneToOneField(Port, on_delete=models.CASCADE)
+    port = models.ForeignKey(Port, on_delete=models.CASCADE)
 
     rental_start_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
     rental_end_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
