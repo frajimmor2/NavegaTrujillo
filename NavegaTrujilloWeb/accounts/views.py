@@ -4,9 +4,10 @@ from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView as LoginView_Django
 from django.shortcuts import render,redirect
 from business.models import Shopping_basket
-from .models import Client 
-from django.contrib.auth import login, authenticate 
 from .forms import CustomUserCreationForm,LoginForm
+from django.contrib.auth import login, authenticate
+from .models import Client, Shopping_basket 
+from .forms import CustomUserCreationForm
 
 
 class SignUpView(CreateView):
@@ -18,7 +19,7 @@ class SignUpView(CreateView):
     template_name = "registration/signup.html"
 
     def form_valid(self, form):
-        user = form.save()
+        user = form.save(commit=False)
 
         shopping_basket = Shopping_basket.objects.create(
             rental_start_date=timezone.now().date(),
@@ -26,9 +27,9 @@ class SignUpView(CreateView):
             captain_amount=0
         )
 
-        client = Client.objects.create(
-            shopping_basket=shopping_basket
-        )
+        client = Client.objects.create()
+
+        user.shopping_basket = shopping_basket
 
         user.client = client
         user.save()

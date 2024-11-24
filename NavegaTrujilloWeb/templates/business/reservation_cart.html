@@ -1,0 +1,27 @@
+{% extends 'base_template.html' %}
+
+
+{% block main %}
+<script>
+	window.onload = function() {
+
+		document.getElementById("id_start_date").labels[0].innerHTML = "Día de inicio: "
+		document.getElementById("id_end_date").labels[0].innerHTML = "Día de fin: "
+	}
+</script>
+{% if form %}
+<form action="/cart/reserva/confirmacion" method="post">
+
+	{% csrf_token %}
+	{{ form }}
+	<input type="submit" value="Reservar">
+</form>
+{% else %}
+<form action="" method="post">
+
+	{% csrf_token %}
+	{{ form2 }}
+	<input type="submit" value="Reservar">
+</form>
+{% endif %}
+{% endblock %}

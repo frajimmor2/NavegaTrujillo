@@ -7,10 +7,72 @@
                 </h1>
                 <h1></h1>
                 <h2>
-                        Hay alguna fuerza cosmica, llamalo Dios, llamalo energia pero algo hay.
-
-                        Y me ha dicho que invierta en software que sale mejor que el negocio de los pedalos, asi que aqui estoy.
+                        Esta es nuestra selección de barcos
                 </h2>
         </body>
+
+        
+{% if ships %}
+
+<div class="body_list">
+	<div class="card">
+
+		<div class="card-body">
+			<table class="table_catalogo">
+				<thead>
+					<tr>
+						<th>Título</th>
+						<th>Coste de alquiler por día</th>
+						<th>Capacidad</th>
+						<th>Disponibilidad</th>
+						<th>Puerto</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for ship in ships %}
+					<tr>
+						<td>
+							<a href="/catalog/ship/{{ship.id}}">
+								{{ ship.name }}
+							</a>
+						</td>
+						<td>{{ ship.rent_per_day }}</td>
+						<td>{{ ship.capacity }}</td>
+						<td class= "data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
+						<td>{{ ship.port.ubication }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+	</div>
+
+</div>
+{% else %}
+<div class="body_list">
+	<div class="card">
+		<div class="card-header">
+			<h5 class="card-title">No se han encontrado barcos</h5>
+		</div>
+		<div class="card-body">
+			<p class="card-text">
+			El escaparate no está disponible ahora mismo. Por favor, intentelo mas tarde.
+			</p>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+<div>
+        <h4>En la empresa NavegaTrujillo promovemos el mayor disfrute del mar mediante el alquiler de barcos desde 2007</h4>
+        <h4>Puedes encontrarnos en los siguientes puertos:</h4>
+        <div style="display: flex; flex-direction: row;">
+                {% for port in ports %}
+                <h4 style="margin-right: 5px;">{{ port.ubication }}</h4>
+                {% endfor %}
+        </div>
+</div>
+
 
 {% endblock %}

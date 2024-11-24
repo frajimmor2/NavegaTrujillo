@@ -2,16 +2,107 @@
 
 
 {% block main %}
+<script>
+function addCookieItem(shipId, action){
+	console.log('User is not authenticated')
 
-{% if has_ships %}
-    <p>Tienes barcos en tu carrito de compras.</p>
-    <ul>
-        {% for ship in shopping_basket.ships.all %}
-            <li>{{ ship.name }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Tu carrito de compras está vacío.</p>
+	if (action == 'add'){
+		if (cart[shipId] == undefined){
+		cart[shipId] = {'quantity':1}
+
+		}else{
+			cart[shipId]['quantity'] += 1
+		}
+	}
+
+	if (action == 'remove'){
+		cart[shipId]['quantity'] -= 1
+
+		if (cart[shipId]['quantity'] <= 0){
+			console.log('Item should be deleted')
+			delete cart[shipId];
+		}
+	}
+	console.log('CART:', cart)
+	document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+	location.reload()
+}
+
+function updateCaptainAmount(action){
+    let captainAmount = parseInt(document.getElementById("captain-amount").innerText);
+    
+    if (action == 'increase'){
+        captainAmount += 1;
+    } else if (action == 'decrease' && captainAmount > 0){
+        captainAmount -= 1;
+    }
+    
+    // Update the cookie with the new captain amount
+    cart['captain_amount'] = captainAmount;
+    document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+    document.getElementById("captain-amount").innerText = captainAmount;
+    location.reload();
+}
+
+function redirect_reservation(){
+	window.location.href="reserva";
+}
+</script>
+
+<h2>Tu carrito</h2>
+
+{% if cartItems > 0 %}
+    <p>Capitanes: <span id="captain-amount">{{ order.captain_amount }}</span></p>
+    <button onclick="updateCaptainAmount('increase')">Aumentar Capitan</button>
+    <button onclick="updateCaptainAmount('decrease')">Disminuir Capitan</button>
+    <p>Coste de Capitanes: ${{ order.captain_cost }}</p>
+
 {% endif %}
+
+
+    {% if cartItems > 0 %}
+        <p>Tienes {{ cartItems }} artículo(s) en tu carrito.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre del Barco</th>
+                    <th>Puerto</th>
+                    <th>Capacidad</th>
+                    <th>Precio por Día</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                    <th>Ajustar cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                {% if item.quantity > 0 %}
+                <tr>
+                    <td>{{ item.ship.name }}</td>
+                    <td>{{ item.ship.port.ubication }}</td>
+                    <td>{{ item.ship.capacity }}</td>
+                    <td>${{ item.ship.rent_per_day }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.get_total }}</td>
+                    <td> 
+                        {% if item.quantity > 0 %}
+                            <button onclick="addCookieItem('{{ item.ship.id }}', 'add')">+</button>
+                            <button onclick="addCookieItem('{{ item.ship.id }}', 'remove')">-</button>
+                        {% endif %}
+                    </td>
+
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p>Total del carrito (incluyendo capitanes): ${{ order.total_with_captain }}</p>
+	<button onclick="redirect_reservation()"> Reservar </button>
+    {% else %}
+        <p>No tienes barcos en tu carrito.</p>
+    {% endif %}
+
 
 {% endblock %}

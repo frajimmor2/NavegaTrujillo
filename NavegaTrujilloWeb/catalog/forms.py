@@ -30,3 +30,7 @@ class ReservationDataForm(forms.Form):
     Email = forms.EmailField(required = True)
     name = forms.CharField(required = True)
     surname = forms.CharField(required = True)
+
+
+class shopping_basket_form(forms.Form):
+    captain = forms.BooleanField()

@@ -3,10 +3,37 @@
 {% block title %} <h1>{{ship.name}}</h1> {% endblock %}
 
 {% block main %}
+
+<script>
+	function addCookieItem(shipId, action){
+		console.log('User is not authenticated')
+	
+		if (action == 'add'){
+			if (cart[shipId] == undefined){
+			cart[shipId] = {'quantity':1}
+	
+			}else{
+				cart[shipId]['quantity'] = 1
+			}
+		}
+	
+		if (action == 'remove'){
+			cart[shipId]['quantity'] = 0
+	
+			if (cart[shipId]['quantity'] <= 0){
+				console.log('Item should be deleted')
+				delete cart[shipId];
+			}
+		}
+		console.log('CART:', cart)
+		document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+		location.reload()
+	}
+</script>	
+
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/show.css' %}" type="text/css">
-
 
 
 <div class=" col-12">
@@ -30,6 +57,7 @@
 						<th class= "data_column">Precio por día</th>
 						<th class= "data_column">Capacidad máxima</th>
 						<th class= "data_column">Necesitas licencia o capitán?</th>
+						<th class= "data_column">Puerto</th>
 						<th class= "data_column">Descripción</th>
 					</tr>
 				</thead>
@@ -38,11 +66,20 @@
 						<td class= "data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
 						<td class= "data_column">{{ ship.rent_per_day }}</td>
 						<td class= "data_column">{{ ship.capacity }}</td>
-						<td class= "data_column">{% if ship.need_license %} Sí {% else %} No {% endif %}</td>
+						<td class= "data_column">{% if ship.needs_license %} Sí {% else %} No {% endif %}<td>
+						<td class= "data_column">{{ ship.port.ubication}}</td>
 						<td class= "data_column">{{ ship.description }}</td>
 					</tr>
 				</tbody>
 			</table>
+			<h3> Nota: La tarifa de un capitán es de 120 euros/día</h3>
+			<div>
+				{% if shipInCart %}
+					<button onclick="addCookieItem('{{ ship.id }}', 'remove')">Quitar del carrito</button>
+				{% else %}
+					<button onclick="addCookieItem('{{ ship.id }}', 'add')">Agregar al carrito</button>
+				{% endif %}
+			</div>
 		</div>
 		<!-- formulario de reserva, dirige directamente a la plataforma de reserva si se está logueado, a la de datos en caso contrario -->
 		<form action={% if request.user.is_authenticated %} "../../../reserva/{{ship.id}}" {% else %} "reserva" {% endif %} method="post">

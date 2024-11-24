@@ -1,35 +1,81 @@
+import json
 from django.http import HttpResponse
 from django.shortcuts import render
-from .models import Shopping_basket, Client, Ship, Reservation
+from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
 from django.utils import timezone
 from .forms import ReservationTimeForm,ReservationTimeUnloggedForm
 from catalog.forms import ReservationDataForm
-
+from datetime import datetime
 
 
 def home(request):
-    return render(request,"./business/home_view.html")
 
-def cart(request):
-    print(request.user)
-    print(dir(request))
-    if request.user.is_authenticated:
-        print(Shopping_basket.client)
-        print("user ahora")
-        print(request.user.client)
+    ships = Ship.objects.all()[:8]
+    ports = Port.objects.all()
+    context = {"ships": ships, "ports": ports}
+    return render(request,"./business/home_view.html", context)
+
+
+def cookieCart(request):
+    try:
+        cart = json.loads(request.COOKIES['cart'])
+        ships = Ship.objects.all()
+        for ship in ships:
+            if str(ship.id) not in cart.keys():
+                cart[str(ship.id)] = {"quantity": 0}
         
-        shopping_basket, created = Shopping_basket.objects.get_or_create(client=request.user.client)
-        print(shopping_basket)
-        if shopping_basket.ships.exists():
-            has_ships = shopping_basket.ships.exists() 
-            print(has_ships)
-        else:
-            has_ships = False
-    else:
-        return HttpResponse("Usuario no autentificado", status=401)
+        
+    except:
+        cart = {}
     
-    return render(request, './business/cart.html', {'shopping_basket': shopping_basket, 'has_ships': has_ships})
+    
+    '''ships_dict = {}
+    for ship in Ship.objects.all():
+        print(ship.id)
+        ships_dict[ship.id] = {"quantity": 1}
+    
+        
+    cart = ships_dict'''
+        
+    items = []
+    order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False, 'captain_amount': 0, 'captain_cost': 0, 'total_with_captain': 0}
+    cartItems = order['get_cart_items']
+
+    rental_start_date = request.GET.get('rental_start_date', None)
+    rental_end_date = request.GET.get('rental_end_date', None)
+    rental_days = 0
+
+    # Este if calcula los dias alquilados y si no esta especificado el rango de fechas, se pone por default 1 dia
+    if rental_start_date and rental_end_date:
+            rental_days = (datetime.strptime(rental_end_date, "%Y-%m-%d") - datetime.strptime(rental_start_date, "%Y-%m-%d")).days
+            rental_days = max(1, rental_days)  # Hace que el mínimo de días sea 1
+    else:
+        rental_days = 1
+    
+    for i in cart:
+        
+        try:
+            cartItems += cart[i]["quantity"]
+            ship = Ship.objects.get(id=i)
+            total = (ship.rent_per_day * cart[i]["quantity"])
+            order['get_cart_total'] += total
+            order['get_cart_items'] += cart[i]["quantity"]
+            
+            items.append({'ship': ship, 'quantity':cart[i]["quantity"],'get_total':total})
+
+        except:
+            pass
+
+    captain_amount = cart.get('captain_amount', 0)
+    if captain_amount > cartItems:  # Este if es el que limita la cantidad de capitanes a la cantidad de barcos
+        captain_amount = cartItems  
+
+    order['captain_amount'] = captain_amount
+    order['captain_cost'] = captain_amount * 120 * rental_days # Aqui guarda el precio de los capitanes para invocarlo usando order['coste_capitan']
+    order['total_with_captain'] = order['get_cart_total'] + order['captain_cost']
+
+    return {"items": items, "order": order, "cartItems": cartItems, "ships": Ship.objects.all()}
 
 def reservation(request,ship_id):
     ''' Punto de toma de los datos de la reserva (plazo en el que se va a reservar, y método de pago (contrareembolso por ahora)
@@ -76,6 +122,7 @@ def reservation(request,ship_id):
             shopping_basket.save()
             client.shopping_basket = shopping_basket
             client.save()
+            user.shopping_basket = shopping_basket
             user.client = client
             user.save()
             
@@ -98,6 +145,115 @@ def reservation(request,ship_id):
 
             ''' ¿Que? '''
             return HttpResponse("Rellene el formulario correctamente por favor",status=405)
+
+
+def cart_reservation(request):
+    ''' Punto de toma de los datos de la reserva (plazo en el que se va a reservar, y método de pago (contrareembolso por ahora)
+        Se llega desde la toma de datos inicial si el usuario no está logueado, o directamente si sí '''
+
+    cookieData = cookieCart(request)
+    cartItems = cookieData['cartItems']
+    order = cookieData['order']
+    items = cookieData['items']
+    if request.method=="POST":
+        
+        form = ReservationDataForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['Email']
+            name = form.cleaned_data['name']
+            surname = form.cleaned_data['surname']
+            try:
+                user = CustomUser.objects.get(Email=email)
+                user = True
+            except:
+                user = False
+
+            if user:
+                ''' Ese email está en uso, nanai '''
+                return HttpResponse("Ese email ya existe, si tienes cuenta inicia sesión por favor",status=401)
+            
+            user = CustomUser()
+            user.username = hash(" ".join([name,email]))
+            user.email = email
+            user.name = name
+            user.surname = surname
+            client = Client()
+            client.license_number=""
+            client.license_validated=False
+            shopping_basket = Shopping_basket()
+            shopping_basket.rental_start_date = timezone.now()
+            shopping_basket.rental_end_date = timezone.now()
+            shopping_basket.captain_amount = 0 # TODO arreglar esto
+            shopping_basket.save()
+            client.shopping_basket = shopping_basket
+            client.save()
+            user.shopping_basket = shopping_basket
+            user.client = client
+            user.save()
+            
+
+            form = ReservationTimeUnloggedForm()
+            form.initial['user'] = user.username
+            # TODO crear lista con los intervalos en los que el barco no está disponible
+            taken_days = []
+
+            return render(request,'./business/reservation_cart.html', {'form':form,'taken_days':taken_days})
+
+        else:
+            return HttpResponse("Algo ha ido mal",status=500)
+
+    else:
+        form = False
+        form2 = False
+        if request.user.is_authenticated:
+            form = ReservationTimeUnloggedForm()
+            form.initial['user'] = request.user.username
+        else:
+            form2 = ReservationDataForm()
+        
+        # TODO crear lista con los intervalos en los que el barco no está disponible
+        taken_days = []
+        return render(request,'./business/reservation_cart.html', {'form':form,'form2':form2,'taken_days':taken_days})
+
+
+def confirm_reservation_cart(request):
+    
+    if request.method=="GET":
+        ''' No debería pasar, aquí solo se entra desde la vista anterior '''
+        return HttpResponse("Para realizar reservas, accede desde el escaparate", status=405)
+    cookieData = cookieCart(request)
+    cartItems = cookieData['cartItems']
+    order = cookieData['order']
+    items = cookieData['items']
+
+    form = ReservationTimeUnloggedForm(request.POST)
+    if form.is_valid():
+        start_date = form.cleaned_data['start_date']
+        end_date = form.cleaned_data['end_date']
+        username = form.cleaned_data['user']
+
+        user = CustomUser.objects.get(username=username)
+        reservation = Reservation()
+        reservation.rental_start_date = start_date
+        reservation.rental_end_date = end_date
+        reservation.reservation_state = 'R'
+        reservation.captain_amount = order['captain_amount']
+        reservation.total_cost = order['total_with_captain']
+        ships = []
+        for i in items:
+            ship = i['ship']
+            ship = Ship.objects.get(id = ship.id)
+            for o in range(i['quantity']):
+                ships.append(ship)
+        if not ships:
+            return HttpResponse("Algo ha ido mal",status = 500)
+        reservation.port = ships[0].port
+        reservation.save()
+        reservation.ships.set(ships)
+        reservation.save()
+        user.client.reservation = reservation
+        user.save()
+        return render(request, './business/reservation_cart_confirmed.html', {'lookup_id':user.username})
 
 
 
@@ -135,9 +291,9 @@ def confirm_reservation(request,ship_id):
         reservation.captain_amount = 0 # TODO fix this
         reservation.total_cost = 0 # TODO calcular coste
         reservation.client = user.client
-        reservation.port = ship.port 
+        reservation.port = user.shopping_basket.ships.all()[0].port
         reservation.save()
-        reservation.ships.add(ship)
+        reservation.ships.set(user.shopping_basket.ships.all())
         reservation.save()
         user.save()         
         return render(request, './business/reservation_confirmed.html')
@@ -159,12 +315,34 @@ def confirm_reservation(request,ship_id):
         reservation.captain_amount = 0 # TODO fix this
         reservation.total_cost = 0 # TODO calcular coste
         reservation.client = user.client
-        reservation.port = user.client.shopping_basket.ships.all()[0].port
+        reservation.port = user.shopping_basket.ships.all()[0].port
         reservation.save()
-        reservation.ships.set(user.client.shopping_basket.ships.all())
+        reservation.ships.set(user.shopping_basket.ships.all())
         reservation.save()
         user.save()
 
         return render(request, './business/reservation_confirmed.html', {'lookup_id':user.username})
+
+def cart(request):
+    '''
+    if request.user.is_authenticated:      
+        shopping_basket, created = Shopping_basket.objects.get_or_create(customuser=request.user)
+        has_ships = shopping_basket.ships.exists()
+
+        return render(request, './business/cart.html', {
+        'shopping_basket': shopping_basket,
+        'has_ships': has_ships
+    })
+    
+    else:
+    '''
+    cookieData = cookieCart(request)
+    cartItems = cookieData['cartItems']
+    order = cookieData['order']
+    items = cookieData['items']
+    return render(request, './business/cart.html', {
+    'cartItems':cartItems ,'order':order, 'items':items  #, 'shopping_basket': shopping_basket, 'has_ships': has_ships
+    })
+
 
 

@@ -2,15 +2,16 @@ from django.shortcuts import render,redirect
 from django.template import Template, Context
 from django.http import HttpResponse
 from django.template import RequestContext
-from business.models import Ship,Port
-from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm
+from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm,shopping_basket_form
+from business.models import Ship,Port, Shopping_basket
+from .forms import ShipForm, shopping_basket_form
 
 # Create your views here.
 
 def list(request):
     ''' Lista, básico de entender, hay que mover esta función para que aplique también al escaparate en home'''
 
-    ships = Ship.objects.all()
+    ships = Ship.objects.all().order_by('capacity')
 
     return render(request,"./catalog/list.html",{"ships":ships})
 
@@ -34,6 +35,8 @@ def show(request, ship_id):
             reservation_form = ReservationFormNotLogged()
 
         return render(request,"./catalog/show.html", {"ship":ship,"ship_form":form,"reservation_form":reservation_form})
+        form_shopping_basket = shopping_basket_form()
+        return render(request,"./catalog/show.html", {"ship":ship,"form":form,"form_shopping_basket":form_shopping_basket,"reservation_form":reservation_form})
 
     form = ShipForm(request.POST)
     if form.is_valid():
@@ -51,8 +54,23 @@ def show(request, ship_id):
 
     if not ship:
         return redirect("/",permanent=True)
+    
 
-    return render(request,"./catalog/show.html",{"ship":ship})
+    form_shopping_basket = shopping_basket_form(request.POST)
+    
+    if form_shopping_basket.is_valid():
+        print("Se esta ejecutando el codigo del form")
+        shopping_basket, create = Shopping_basket.objects.get_or_create(client=request.user.client)
+        ship = Ship.objects.get(id=ship_id)
+        shopping_basket.ships.add(ship)
+        shopping_basket.captain_amount = shopping_basket.captain_amount() + 1 if form_shopping_basket.captain else 0
+        shopping_basket.save()
+
+    form = ShipForm()
+    reservation_form = ReservationFormNotLogged()
+    form_shopping_basket = form_shopping_basket()
+
+    return render(request,"./catalog/show.html",{"ship":ship,"form_shopping_basket":form_shopping_basket,"reservation_form":reservation_form,"form":form})
 
 
 def reservation(request, ship_id):
