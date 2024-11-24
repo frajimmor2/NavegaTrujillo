@@ -16,14 +16,9 @@ def home(request):
 
 def cookieCart(request):
     try:
+        cart = {}
         cart = json.loads(request.COOKIES['cart'])
-        ships = Ship.objects.all()
-        for ship in ships:
-            if str(ship.id) not in cart.keys():
-                print("El carrito está vacío, inicializando...")
-                cart[str(ship.id)] = {"quantity": 0}
-        
-        
+  
     except:
         cart = {}
     
