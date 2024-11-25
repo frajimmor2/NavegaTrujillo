@@ -1,5 +1,5 @@
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseForbidden
 from django.shortcuts import render
 from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
@@ -7,6 +7,8 @@ from django.utils import timezone
 from .forms import ReservationTimeForm,ReservationTimeUnloggedForm
 from catalog.forms import ReservationDataForm
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
+
 
 
 def home(request):
@@ -346,3 +348,18 @@ def cart(request):
 
 
 
+
+
+@login_required
+def add_port(request):
+    # Verifica si el usuario tiene permiso de staff
+    if not request.user.is_staff:
+        return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
+
+    if request.method == "POST":
+        ubication = request.POST.get("ubication")
+        if ubication:
+            Port.objects.create(ubication=ubication)
+            return redirect("home")  # Redirige al usuario al inicio después de añadir el puerto
+
+    return render(request, "./business/add_port.html")

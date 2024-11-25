@@ -10,4 +10,5 @@ urlpatterns = [
     path('cart/', views.cart, name="cart"),
     path('cart/reserva', views.cart_reservation, name = "cart_reservation"),
     path('cart/reserva/confirmacion', views.confirm_reservation_cart, name = "cart_reservation_confirm"),
+    path('add-port/', views.add_port, name="add_port"),
 ]
