@@ -1,20 +1,48 @@
 {% extends "base_template.html" %}
+{% load static %}
 
-{% block title %}Registro{% endblock %}
 {% block main %}
-
-<h2>Registrarse</h2>
-
-<script>
-	window.onload = function() { 
-		document.getElementById("id_name").labels[0].innerHTML = "Nombre";
-
-		document.getElementById("id_surname").labels[0].innerHTML = "Apellidos";
-	}
-</script>
-<form method="post">
-  {% csrf_token %}
-  {{ form }}
-  <button type="submit">Registrar</button>
-</form>
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+<body class="signup-page">
+    <div class="signup-container-custom">
+        <h1-signup-custom>Registrarse</h1-signup-custom>
+        <form method="post" class="form-signup-custom">
+            {% csrf_token %}
+            <div class="form-signup-row">
+                <label for="{{ form.username.id_for_label }}">Nombre de usuario:</label>
+                {{ form.username }}
+                <small class="error-message">{{ form.username.errors }}</small>
+            </div>
+            <div class="form-signup-row">
+                <label for="{{ form.name.id_for_label }}">Nombre:</label>
+                {{ form.name }}
+                <small class="error-message">{{ form.name.errors }}</small>
+            </div>
+            <div class="form-signup-row">
+                <label for="{{ form.surname.id_for_label }}">Apellidos:</label>
+                {{ form.surname }}
+                <small class="error-message">{{ form.surname.errors }}</small>
+            </div>
+            <div class="form-signup-row">
+                <label for="{{ form.email.id_for_label }}">Email:</label>
+                {{ form.email }}
+                <small class="error-message">{{ form.email.errors }}</small>
+            </div>
+            <div class="form-signup-row">
+                <label for="{{ form.password1.id_for_label }}">Contraseña:</label>
+                {{ form.password1 }}
+                <small class="error-message">{{ form.password1.errors }}</small>
+            </div>
+            <div class="form-signup-row">
+                <label for="{{ form.password2.id_for_label }}">Contraseña (confirmación):</label>
+                {{ form.password2 }}
+                <small class="error-message">{{ form.password2.errors }}</small>
+            </div>
+            <button type="submit" class="button-signup-custom">Registrarse</button>
+        </form>
+        <div class="footer-signup-custom">
+            <p>¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión</a></p>
+        </div>
+    </div>
+</body>
 {% endblock %}

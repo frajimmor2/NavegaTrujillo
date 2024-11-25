@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body.signup-page {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    overflow-y: auto;
+    color: #333;
+}
+
+.signup-container-custom {
+    background: #ffffff;
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    margin: 30px auto;
+    text-align: left;
+    overflow: hidden;
+}
+
+h1-signup-custom {
+    font-size: 32px;
+    color: #333; 
+    margin-bottom: 20px;
+    font-weight: 600; 
+    text-align: center; 
+    display: block; 
+    margin-top: 0; 
+}
+
+.form-signup-custom {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-signup-row {
+    display: flex;
+    flex-wrap: wrap; 
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%; 
+}
+
+.form-signup-row label {
+    flex-basis: 20%; 
+    text-align: right;
+    padding-right: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.form-signup-row input {
+    flex-basis: 60%; 
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    width: auto; 
+    box-sizing: border-box; 
+}
+
+.form-signup-row input:focus {
+    border-color: #ff9a9e;
+    outline: none;
+    box-shadow: 0 0 8px rgba(255, 154, 158, 0.5);
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 12px; 
+    margin-top: 5px;
+    display: inline; 
+    margin-left: 10px; 
+    flex-basis: 100%; /* Coloca el mensaje de error en una nueva línea para evitar reducir el input */
+}
+
+.button-signup-custom {
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.button-signup-custom:hover {
+    background-color: #e85d57;
+    transform: scale(1.05);
+}
+
+.footer-signup-custom {
+    margin-top: 30px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+}
+
+.footer-signup-custom a {
+    color: #ff6f61;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-signup-custom a:hover {
+    color: #e85d57;
+}

@@ -1,11 +1,22 @@
 {% extends 'base_template.html' %}
+{% load static %}
 
-{% block title %} Iniciar sesión {% endblock %}
+
 {% block main %}
-<form method="post">
-  {% csrf_token %}
-  {{ form }}
-  <button type="submit">Inicia sesión</button>
-</form>
-
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+<body class="login-page">
+    <div class="login-container-custom">
+        <h1-login-custom>Iniciar sesión</h1-login-custom>
+        <form method="post" class="form-login-custom">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="button-login-custom">Inicia sesión</button>
+        </form>
+        <div class="footer-login-custom">
+            <p>¿No tienes una cuenta? <a href="{% url 'signup' %}">Regístrate</a></p>
+        </div>
+    </div>
+</body>
 {% endblock %}
+
+
