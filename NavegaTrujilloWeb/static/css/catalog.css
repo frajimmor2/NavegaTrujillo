@@ -1,128 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
 /* Estilos Generales */
-.body_list {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
+body.catalog {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; 
+    min-height: 100vh; 
+    color: #333;
+    padding-top: 100px; 
 }
 
-.show{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Estilo para centrar el mensaje */
+.body_list {
+    width: 90%;
+    max-width: 600px; 
+    margin: 0 auto; 
+    text-align: center;
 }
 
 .h1_list {
-    color: #000000;
     text-align: center;
-    margin-bottom: 2rem;
+    font-size: 36px;
+    font-weight: 700;
+    color: #333; 
+    margin: 0 0 40px; 
 }
 
 .card {
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    background-color: #fff;
-    overflow: hidden;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 0 auto; 
+    width: 100%;
 }
 
 .card-header {
-    background-color: #007bff;
-    color: white;
-    padding: 1rem;
+    background-color: #66a6ff; 
+    padding: 15px;
+    border-radius: 15px 15px 0 0;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .card-body {
-    padding: 1.5rem;
+    padding: 20px;
 }
 
-.btn-primary {
-    background-color: #03bb85 ;
-    border: none;
-    transition: background-color 0.3s;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-/* Estilos de la Tabla */
 .table_catalogo {
-    width: 70%;
-    margin-bottom: 1rem;
-    background-color: transparent;
+    width: 100%;
     border-collapse: collapse;
+    margin: 20px 0;
+    text-align: center;
 }
 
-.table th, .table td {
-    padding: 0.75rem;
-    vertical-align: top;
-    border-top: 1px solid #dee2e6;
+.table_catalogo th,
+.table_catalogo td {
+    border: 1px solid #ddd;
+    padding: 15px;
+    font-size: 16px;
 }
 
-.table thead th {
-    vertical-align: bottom;
-    border-bottom: 2px solid #dee2e6;
+.table_catalogo th {
+    background-color: #66a6ff;
+    color: white;
+    font-weight: 600;
 }
 
-.table tbody tr:hover {
-    background-color: #f1f1f1;
+.table_catalogo tbody tr:hover {
+    background-color: #f1f1f1; 
 }
 
-/* Links dentro de la tabla */
-.table a {
-    color: #007bff;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.table a:hover {
-    color: #0056b3;
-}
-
-/* Iconos */
-i[data-feather] {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-i[data-feather]:hover {
-    color: #0056b3;
-}
-
-
-
-/* Mensaje cuando no hay barcos */
-.card-title {
-    font-size: 1.25rem;
-    font-weight: bold;
+.data_column {
+    color: #28a745; 
+    font-weight: 600;
 }
 
 .card-text {
-    color: #000000;
-}
-
-/* Estilo del enlace "te devuelve al /home" */
-.btn {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border-radius: 4px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    font-size: 16px;
+    color: #555;
+    margin: 20px 0;
 }
 
 .btn-primary {
-    color: #fff;
+    background-color: #66a6ff; 
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background-color: #4e89df; 
 }
-
-

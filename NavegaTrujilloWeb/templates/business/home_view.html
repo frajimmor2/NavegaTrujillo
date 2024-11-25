@@ -1,78 +1,70 @@
 {% extends 'base_template.html' %}
+{% load static %}
 
 {% block main %}
-	<body>
-                <h1 style="text-align: center;">
-                Bienvenido a NavegaTrujillo, tu alquiler en un momentillo!
-                </h1>
-                <h1></h1>
-                <h2>
-                        Esta es nuestra selección de barcos
-                </h2>
-        </body>
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<body class="home-page-home">
+    <div class="header-home-home">
+        <h1>Bienvenido a NavegaTrujillo, tu alquiler en un momentillo!</h1>
+        <h2>Esta es nuestra selección de barcos</h2>
+    </div>
 
-        
-{% if ships %}
+    {% if ships %}
+    <div class="body-list-home">
+        <div class="card-home">
+            <div class="card-body-home">
+                <table class="table-catalogo-home">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Coste de alquiler por día</th>
+                            <th>Capacidad</th>
+                            <th>Disponibilidad</th>
+                            <th>Puerto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ship in ships %}
+                        <tr>
+                            <td>
+                                <a href="/catalog/ship/{{ ship.id }}">
+                                    {{ ship.name }}
+                                </a>
+                            </td>
+                            <td>{{ ship.rent_per_day }}</td>
+                            <td>{{ ship.capacity }}</td>
+                            <td class="data-column-home">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
+                            <td>{{ ship.port.ubication }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="body-list-home">
+        <div class="card-home">
+            <div class="card-header-home">
+                No se han encontrado barcos
+            </div>
+            <div class="card-body-home">
+                <p class="card-text-home">
+                    El escaparate no está disponible ahora mismo. Por favor, inténtelo más tarde.
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
-<div class="body_list">
-	<div class="card">
-
-		<div class="card-body">
-			<table class="table_catalogo">
-				<thead>
-					<tr>
-						<th>Título</th>
-						<th>Coste de alquiler por día</th>
-						<th>Capacidad</th>
-						<th>Disponibilidad</th>
-						<th>Puerto</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for ship in ships %}
-					<tr>
-						<td>
-							<a href="/catalog/ship/{{ship.id}}">
-								{{ ship.name }}
-							</a>
-						</td>
-						<td>{{ ship.rent_per_day }}</td>
-						<td>{{ ship.capacity }}</td>
-						<td class= "data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
-						<td>{{ ship.port.ubication }}</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
-
-	</div>
-
-</div>
-{% else %}
-<div class="body_list">
-	<div class="card">
-		<div class="card-header">
-			<h5 class="card-title">No se han encontrado barcos</h5>
-		</div>
-		<div class="card-body">
-			<p class="card-text">
-			El escaparate no está disponible ahora mismo. Por favor, intentelo mas tarde.
-			</p>
-		</div>
-	</div>
-</div>
-{% endif %}
-
-<div>
+    <div class="footer-home-home">
         <h4>En la empresa NavegaTrujillo promovemos el mayor disfrute del mar mediante el alquiler de barcos desde 2007</h4>
         <h4>Puedes encontrarnos en los siguientes puertos:</h4>
-        <div style="display: flex; flex-direction: row;">
-                {% for port in ports %}
-                <h4 style="margin-right: 5px;">{{ port.ubication }}</h4>
-                {% endfor %}
+        <div class="port-locations-home">
+            {% for port in ports %}
+            <h4>{{ port.ubication }}</h4>
+            {% endfor %}
         </div>
-</div>
-
-
+    </div>
+</body>
 {% endblock %}
