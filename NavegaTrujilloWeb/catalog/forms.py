@@ -34,3 +34,8 @@ class ReservationDataForm(forms.Form):
 
 class shopping_basket_form(forms.Form):
     captain = forms.BooleanField()
+
+class search_form(forms.Form):
+    price = forms.FloatField(min_value=1.0)
+    capacity = forms.IntegerField(min_value=2)
+    need_license = forms.BooleanField()

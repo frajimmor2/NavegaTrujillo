@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm,shopping_basket_form
 from business.models import Ship,Port, Shopping_basket
-from .forms import ShipForm, shopping_basket_form
+from .forms import ShipForm, shopping_basket_form, search_form
 
 # Create your views here.
 
@@ -14,6 +14,23 @@ def list(request):
     ships = Ship.objects.all().order_by('capacity')
 
     return render(request,"./catalog/list.html",{"ships":ships})
+
+def filtered_list(request):
+    ships = None
+    #Ship.objects.all().order_by('capacity')
+    '''Es un get que recoge lo del formulario y filtra según él, en caso de dar error pues la lista de barcos esta vacia'''
+    form = search_form()
+    if form.is_valid():
+            try:
+                ships = Ship.objects.all().order_by('capacity').filter(
+                capacity__gte = form.capacity,
+                price__lte = form.price,
+                need_license = form.need_license)
+            except:
+                ships = None
+                pass
+    
+    return render(request,"./catalog/list.html" ,{"ships":ships, "search_form": form})
 
 def show(request, ship_id):
 
