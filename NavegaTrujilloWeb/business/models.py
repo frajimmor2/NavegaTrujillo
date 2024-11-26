@@ -22,6 +22,7 @@ class Ship(models.Model):
     description = models.CharField(max_length=350,validators=[MinLengthValidator(0)], blank=False)
     image = models.ImageField()
     name = models.CharField(max_length=45,unique=True, validators=[MinLengthValidator(0)], blank=False)
+    quantity = models.IntegerField(default=1, validators=[MinValueValidator(1)])
 
     def __str__(self):
         return f"{self.name} - {self.capacity} {self.rent_per_day} {self.available} {self.need_license} {self.description}"

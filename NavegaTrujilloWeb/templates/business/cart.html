@@ -82,7 +82,10 @@ function updateCaptainAmount(action){
                     <td>{{ item.quantity }}</td>
                     <td>${{ item.get_total }}</td>
                     <td> 
-                        {% if item.quantity > 0 %}
+                        {% if item.quantity >= item.ship.quantity %}
+                            <button onclick="addCookieItem('{{ item.ship.id }}', 'remove')">-</button>
+                            Cantidad máxima de barcos alcanzada
+                        {% elif item.quantity > 0 %}
                             <button onclick="addCookieItem('{{ item.ship.id }}', 'add')">+</button>
                             <button onclick="addCookieItem('{{ item.ship.id }}', 'remove')">-</button>
                         {% endif %}
