@@ -39,8 +39,6 @@ def filtered_list(request):
         except:
             pass
 
-    if ships == Ship.objects.all().order_by('capacity'):
-        ships = None
     print(request)
     return render(request,"./catalog/list.html" ,{"ships":ships, "search_form": form})
 
