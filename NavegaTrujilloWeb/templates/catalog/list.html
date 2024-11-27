@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% static 'css/catalog.css' %}" type="text/css">
 <body class="catalog">
     <h1 class="h1_list">Barcos</h1>
-    <form action="../catalog/results/" method="get">
+    <form action="/catalog/results/" method="get">
         {% csrf_token %}
 		{{ search_form }}
         <input type="Submit" value="Buscar">

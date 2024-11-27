@@ -6,14 +6,15 @@ from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,Reservation
 from business.models import Ship,Port, Shopping_basket
 from .forms import ShipForm, shopping_basket_form, search_form
 
+
 # Create your views here.
 
 def list(request):
     ''' Lista, básico de entender, hay que mover esta función para que aplique también al escaparate en home'''
 
     ships = Ship.objects.all().order_by('capacity')
-
-    return render(request,"./catalog/list.html",{"ships":ships})
+    form = search_form()
+    return render(request,"./catalog/list.html",{"ships":ships, "search_form": form})
 
 def filtered_list(request):
     ships = None
@@ -21,15 +22,26 @@ def filtered_list(request):
     '''Es un get que recoge lo del formulario y filtra según él, en caso de dar error pues la lista de barcos esta vacia'''
     form = search_form()
     if form.is_valid():
-            try:
-                ships = Ship.objects.all().order_by('capacity').filter(
-                capacity__gte = form.capacity,
-                price__lte = form.price,
-                need_license = form.need_license)
-            except:
-                ships = None
-                pass
+        ships = Ship.objects.all().order_by('capacity')
+        ''' JesuCristo perdóname por lo que estoy a punto de hacer'''
+        try:
+            ships.filter(capacity__gte = form.capacity)
+        except:
+            pass
     
+        try:
+            ships.filter(price__lte = form.price)
+        except:
+            pass
+
+        try:
+            ships.filter(need_license = form.need_license)
+        except:
+            pass
+
+    if ships == Ship.objects.all().order_by('capacity'):
+        ships = None
+    print(request)
     return render(request,"./catalog/list.html" ,{"ships":ships, "search_form": form})
 
 def show(request, ship_id):
