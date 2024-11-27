@@ -108,25 +108,31 @@ def reservation(request,ship_id):
                 return HttpResponse("Ese email ya existe, si tienes cuenta inicia sesión por favor",status=401)
             
             user = CustomUser()
-            user.username = hash(" ".join([name,email,str(ship.id)]))
-            user.email = email
-            user.name = name
-            user.surname = surname
-            client = Client()
-            client.license_number=""
-            client.license_validated=False
-            shopping_basket = Shopping_basket()
-            shopping_basket.rental_start_date = timezone.now()
-            shopping_basket.rental_end_date = timezone.now()
-            shopping_basket.captain_amount = 0 # TODO arreglar esto
-            shopping_basket.save()
-            shopping_basket.ships.add(ship)
-            shopping_basket.save()
-            client.shopping_basket = shopping_basket
-            client.save()
-            user.shopping_basket = shopping_basket
-            user.client = client
-            user.save()
+            user.username = hash(" ".join([name,email]))
+            try:
+                CustomUser.objects.get(username=user.username)
+                exists=True
+            except:
+                exists=False
+            if not exists:
+                user.email = email
+                user.name = name
+                user.surname = surname
+                client = Client()
+                client.license_number=""
+                client.license_validated=False
+                shopping_basket = Shopping_basket()
+                shopping_basket.rental_start_date = timezone.now()
+                shopping_basket.rental_end_date = timezone.now()
+                shopping_basket.captain_amount = 0 # TODO arreglar esto
+                shopping_basket.save()
+                shopping_basket.ships.add(ship)
+                shopping_basket.save()
+                client.shopping_basket = shopping_basket
+                client.save()
+                user.shopping_basket = shopping_basket
+                user.client = client
+                user.save()
             
 
             form = ReservationTimeUnloggedForm()
@@ -176,22 +182,28 @@ def cart_reservation(request):
             
             user = CustomUser()
             user.username = hash(" ".join([name,email]))
-            user.email = email
-            user.name = name
-            user.surname = surname
-            client = Client()
-            client.license_number=""
-            client.license_validated=False
-            shopping_basket = Shopping_basket()
-            shopping_basket.rental_start_date = timezone.now()
-            shopping_basket.rental_end_date = timezone.now()
-            shopping_basket.captain_amount = 0 # TODO arreglar esto
-            shopping_basket.save()
-            client.shopping_basket = shopping_basket
-            client.save()
-            user.shopping_basket = shopping_basket
-            user.client = client
-            user.save()
+            try:
+                CustomUser.objects.get(username=user.username)
+                exists=True
+            except:
+                exists=False
+            if not exists:
+                user.email = email
+                user.name = name
+                user.surname = surname
+                client = Client()
+                client.license_number=""
+                client.license_validated=False
+                shopping_basket = Shopping_basket()
+                shopping_basket.rental_start_date = timezone.now()
+                shopping_basket.rental_end_date = timezone.now()
+                shopping_basket.captain_amount = 0 # TODO arreglar esto
+                shopping_basket.save()
+                client.shopping_basket = shopping_basket
+                client.save()
+                user.shopping_basket = shopping_basket
+                user.client = client
+                user.save()
             
 
             form = ReservationTimeUnloggedForm()
