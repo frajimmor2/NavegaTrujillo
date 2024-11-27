@@ -1,7 +1,8 @@
 {% extends 'base_template.html' %}
-
+{% load static %}
 
 {% block main %}
+
 <script>
 function addCookieItem(shipId, action){
 	console.log('User is not authenticated')
@@ -49,60 +50,69 @@ function redirect_reservation(){
 }
 </script>
 
-<h2>Tu carrito</h2>
-
-{% if cartItems > 0 %}
-    <p>Capitanes: <span id="captain-amount">{{ order.captain_amount }}</span></p>
-    <button onclick="updateCaptainAmount('increase')">Aumentar Capitan</button>
-    <button onclick="updateCaptainAmount('decrease')">Disminuir Capitan</button>
-    <p>Coste de Capitanes: ${{ order.captain_cost }}</p>
-
-{% endif %}
-
+<link rel="stylesheet" href="{% static 'css/carrito.css' %}">
+<div class="cart-page">
+    <div class="header-cart">
+        <h2>Tu carrito</h2>
+    </div>
 
     {% if cartItems > 0 %}
+        <div class="captain-info">
+            <p>Capitanes: <span id="captain-amount">{{ order.captain_amount }}</span></p>
+        </div>
+        <div class="captain-controls">
+            <button class="button-cart" onclick="updateCaptainAmount('increase')">Aumentar Capitán</button>
+            <button class="button-cart" onclick="updateCaptainAmount('decrease')">Disminuir Capitán</button>
+        </div>
+        <div class="captain-info">
+            <p>Coste de Capitanes: ${{ order.captain_cost }}</p>
+        </div>
+
         <p>Tienes {{ cartItems }} artículo(s) en tu carrito.</p>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre del Barco</th>
-                    <th>Puerto</th>
-                    <th>Capacidad</th>
-                    <th>Precio por Día</th>
-                    <th>Cantidad</th>
-                    <th>Total</th>
-                    <th>Ajustar cantidad</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in items %}
-                {% if item.quantity > 0 %}
-                <tr>
-                    <td>{{ item.ship.name }}</td>
-                    <td>{{ item.ship.port.ubication }}</td>
-                    <td>{{ item.ship.capacity }}</td>
-                    <td>${{ item.ship.rent_per_day }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>${{ item.get_total }}</td>
-                    <td> 
-                        {% if item.quantity > 0 %}
-                            <button onclick="addCookieItem('{{ item.ship.id }}', 'add')">+</button>
-                            <button onclick="addCookieItem('{{ item.ship.id }}', 'remove')">-</button>
-                        {% endif %}
-                    </td>
 
-                </tr>
-                {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="body-cart">
+            <table class="table-cart">
+                <thead>
+                    <tr>
+                        <th>Nombre del Barco</th>
+                        <th>Puerto</th>
+                        <th>Capacidad</th>
+                        <th>Precio por Día</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th>Ajustar cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    {% if item.quantity > 0 %}
+                    <tr>
+                        <td>{{ item.ship.name }}</td>
+                        <td>{{ item.ship.port.ubication }}</td>
+                        <td>{{ item.ship.capacity }}</td>
+                        <td>${{ item.ship.rent_per_day }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.get_total }}</td>
+                        <td> 
+                            {% if item.quantity > 0 %}
+                                <button class="button-cart" onclick="addCookieItem('{{ item.ship.id }}', 'add')">+</button>
+                                <button class="button-cart" onclick="addCookieItem('{{ item.ship.id }}', 'remove')">-</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
 
-        <p>Total del carrito (incluyendo capitanes): ${{ order.total_with_captain }}</p>
-	<button onclick="redirect_reservation()"> Reservar </button>
+            <p>Total del carrito (incluyendo capitanes): ${{ order.total_with_captain }}</p>
+            <button class="button-cart" onclick="redirect_reservation()">Reservar</button>
+        </div>
     {% else %}
-        <p>No tienes barcos en tu carrito.</p>
+        <div class="body-cart">
+            <p>No tienes barcos en tu carrito.</p>
+        </div>
     {% endif %}
 
-
+</div>
 {% endblock %}
