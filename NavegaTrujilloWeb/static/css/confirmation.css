@@ -1,0 +1,64 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap');
+
+/* Ajustar el body para eliminar el margen superior */
+body.confirmation {
+    margin: 0; 
+    padding: 0; 
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #a8edea, #fed6e3); 
+    min-height: 100vh; 
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* Ajuste del contenedor principal */
+.container-confirmed {
+    flex: 1; 
+    padding-top: 80px; /* Deja espacio para la navbar */
+    padding-bottom: 60px; /* Deja espacio para la barra inferior */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilo del bloque de confirmación */
+.confirmation-message-box {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    text-align: center;
+    max-width: 600px;
+    margin: 20px;
+}
+
+/* Estilo del título */
+.confirmation-message-box h2 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Estilo del mensaje */
+.confirmation-message-box p {
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+    color: #666;
+    margin: 10px 0;
+}
+
+/* Estilo de los enlaces dentro del mensaje */
+.confirmation-message-box a {
+    font-size: 18px;
+    color: #4a90e2;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.confirmation-message-box a:hover {
+    color: #ff7675;
+    transform: scale(1.05);
+}

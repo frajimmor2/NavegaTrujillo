@@ -1,13 +1,19 @@
 {% extends 'base_template.html' %}
+{% load static %}
 
 {% block main %}
-<body>
-    <h1>Añadir un nuevo puerto</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="ubication">Ubicación del puerto:</label>
-        <input type="text" name="ubication" id="ubication" required>
-        <button type="submit">Añadir Puerto</button>
-    </form>
+<link rel="stylesheet" href="{% static 'css/add_port.css' %}">
+<body class="add-port">
+    <div class="container-add-port">
+        <div class="add-port-box">
+            <h1>Añadir un nuevo puerto</h1>
+            <form method="post">
+                {% csrf_token %}
+                <label for="ubication">Ubicación del puerto:</label>
+                <input type="text" name="ubication" id="ubication" required>
+                <button type="submit">Añadir Puerto</button>
+            </form>
+        </div>
+    </div>
 </body>
 {% endblock %}
