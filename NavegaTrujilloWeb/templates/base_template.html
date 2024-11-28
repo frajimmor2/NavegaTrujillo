@@ -32,8 +32,11 @@
 </head>
 <body>
     <div class="section_top">
-        <div style="padding-left: 1%;">
-            <a href="/catalog" class="btn">Catálogo de barcos</a>
+        <div style="padding-left: 1%; display: flex; align-items: center;">
+            <a href="/home">
+                <img src="{% static 'imagenes/imagen/logo.png' %}" class="logo-btn" alt="Logo">
+            </a>
+            <a href="/catalog" class="btn" style="margin-left: 10px;">Catálogo de barcos</a>
         </div>
         <div style="padding-right: 1%; display: flex; align-items: center;">
             {% if user.is_authenticated %}
@@ -69,4 +72,3 @@
     </div>
 </body>
 </html>
-
