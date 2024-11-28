@@ -1,8 +1,6 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap');
-
 /* Ajustar el body para eliminar el margen superior */
-body.reservation-cart {
+body.add-port {
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
@@ -14,7 +12,7 @@ body.reservation-cart {
 }
 
 /* Ajuste del contenedor principal */
-.container-reservation-cart {
+.container-add-port {
     flex: 1;
     padding-top: 80px; /* Deja espacio para la navbar */
     padding-bottom: 60px; /* Deja espacio para la barra inferior */
@@ -24,7 +22,7 @@ body.reservation-cart {
 }
 
 /* Estilo del formulario */
-.reservation-cart-box {
+.add-port-box {
     background: white;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -35,14 +33,14 @@ body.reservation-cart {
 }
 
 /* Estilo del formulario */
-.reservation-cart-box form {
+.add-port-box form {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
 /* Estilo de los botones */
-.reservation-cart-box input[type="submit"] {
+.add-port-box button[type="submit"] {
     background-color: #4a90e2;
     color: white;
     font-weight: bold;
@@ -53,18 +51,27 @@ body.reservation-cart {
     transition: background-color 0.3s ease;
 }
 
-.reservation-cart-box input[type="submit"]:hover {
+.add-port-box button[type="submit"]:hover {
     background-color: #ff7675;
 }
 
-/* Estilo del texto */
-.reservation-cart-box label {
+/* Estilo del label y el input */
+.add-port-box label {
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
     color: #333;
 }
 
-/* Asegura que el script de JavaScript tenga el estilo adecuado */
-script {
-    display: none;
+.add-port-box input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.add-port-box input[type="text"]:focus {
+    border-color: #4a90e2;
+    outline: none;
 }

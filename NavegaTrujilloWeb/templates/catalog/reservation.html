@@ -1,35 +1,36 @@
 {% extends 'base_template.html' %}
-
+{% load static %}
 {% block title %} {{ship_name}} {% endblock %}
 {% block main %}
-<script> window.onload = function() {
-	document.getElementById("id_name").labels[0].innerHTML = "Nombre: ";
-	document.getElementById("id_surname").labels[0].innerHTML = "Appellidos: ";
-}
-</script>
+<link rel="stylesheet" href="{% static 'css/reservation_rapid.css' %}">
+<body class="reservation-rapid-page">
+    <div class="container-reservation-rapid">
+        <div class="reservation-rapid-box">
+            <script>
+                window.onload = function() {
+                    document.getElementById("id_name").labels[0].innerHTML = "Nombre: ";
+                    document.getElementById("id_surname").labels[0].innerHTML = "Apellidos: ";
+                }
+            </script>
 
+            {% if user.is_authenticated %}
+            <!-- redirigimos inmediatamente a la selección de fechas -->
+            <script> window.location.href = "/reserva/{{ship_id}}"; </script>
+            {% else %}
 
-{% if user.is_authenticated %}
-<!-- redirigimos inmediatamente a la selección de fechas -->
-<script> window.location.href = "/reserva/"{{ship_id}} </script>
-{% else %}
+            <!-- Mostrar mensaje si no está autenticado -->
+            <p>No estás autenticado, por favor, rellena tus datos para la reserva</p>
 
-<!-- Hora de traducir labels jiji -->
+            <form action="/reserva/{{ship_id}}" method="post">
+                {% csrf_token %}
+                {{ form }}
+                <button type="submit">Continuar con la reserva</button>
+            </form>
 
-<!-- Toca pedir datos y/o proponer que se loguee el usuario -->
-<p>No estás autentificado, por favor, rellena tus datos para la reserva</p>
+            <a href="/auth/fast_login/{{ship_id}}"> O, si tienes cuenta, puedes iniciar sesión </a>
 
-<form action="/reserva/{{ship_id}}" method="post">
-  {% csrf_token %}
-  {{ form }}
-  <button type="submit">Continuar con la reserva</button>
-</form>
-
-<a href="/auth/fast_login/{{ship_id}}"> O, si tienes cuenta, puedes iniciar sesión </a>
-
-
-
-
-{% endif %}
-
+            {% endif %}
+        </div>
+    </div>
+</body>
 {% endblock %}

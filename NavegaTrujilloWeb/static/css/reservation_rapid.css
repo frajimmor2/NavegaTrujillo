@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap');
 
 /* Ajustar el body para eliminar el margen superior */
-body.reservation-cart {
+body.reservation-rapid-page {
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
@@ -14,7 +14,7 @@ body.reservation-cart {
 }
 
 /* Ajuste del contenedor principal */
-.container-reservation-cart {
+.container-reservation-rapid {
     flex: 1;
     padding-top: 80px; /* Deja espacio para la navbar */
     padding-bottom: 60px; /* Deja espacio para la barra inferior */
@@ -24,7 +24,7 @@ body.reservation-cart {
 }
 
 /* Estilo del formulario */
-.reservation-cart-box {
+.reservation-rapid-box {
     background: white;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -35,14 +35,14 @@ body.reservation-cart {
 }
 
 /* Estilo del formulario */
-.reservation-cart-box form {
+.reservation-rapid-box form {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
 /* Estilo de los botones */
-.reservation-cart-box input[type="submit"] {
+.reservation-rapid-box button[type="submit"] {
     background-color: #4a90e2;
     color: white;
     font-weight: bold;
@@ -53,18 +53,31 @@ body.reservation-cart {
     transition: background-color 0.3s ease;
 }
 
-.reservation-cart-box input[type="submit"]:hover {
+.reservation-rapid-box button[type="submit"]:hover {
     background-color: #ff7675;
 }
 
-/* Estilo del texto */
-.reservation-cart-box label {
+/* Estilo del mensaje para el usuario no autenticado */
+.reservation-rapid-box p {
+    font-size: 18px;
     font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-    color: #333;
+    color: #666;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-/* Asegura que el script de JavaScript tenga el estilo adecuado */
-script {
-    display: none;
+/* Estilo de los enlaces */
+.reservation-rapid-box a {
+    font-size: 16px;
+    color: #4a90e2;
+    text-align: center;
+    display: block;
+    margin-top: 20px;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.reservation-rapid-box a:hover {
+    color: #ff7675;
+    transform: scale(1.05);
 }

@@ -7,7 +7,6 @@
 {% block main %}
 <link rel="stylesheet" href="{% static 'css/confirmation.css' %}">
     <body class="confirmation">
-        <!-- Sección principal con contenedor específico para la confirmación -->
         <div class="container-confirmed">
             <div class="confirmation-message-box">
                 {% if not user.is_authenticated %}
