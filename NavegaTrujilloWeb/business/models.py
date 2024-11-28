@@ -20,7 +20,7 @@ class Ship(models.Model):
     available = models.BooleanField(default=True)
     need_license = models.BooleanField()
     description = models.CharField(max_length=350,validators=[MinLengthValidator(0)], blank=False)
-    image = models.ImageField()
+    image = models.ImageField(upload_to='images/')
     name = models.CharField(max_length=45,unique=True, validators=[MinLengthValidator(0)], blank=False)
 
     def __str__(self):
