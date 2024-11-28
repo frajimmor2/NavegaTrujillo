@@ -5,8 +5,7 @@ from django.template import RequestContext
 from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm,shopping_basket_form
 from business.models import Ship,Port, Shopping_basket
 from .forms import ShipForm, shopping_basket_form, search_form
-
-
+from catalog.filters import ship_filter
 # Create your views here.
 
 def list(request):
@@ -17,30 +16,19 @@ def list(request):
     return render(request,"./catalog/list.html",{"ships":ships, "search_form": form})
 
 def filtered_list(request):
-    ships = None
+    ships = Ship.objects.all().order_by('capacity')
     #Ship.objects.all().order_by('capacity')
     '''Es un get que recoge lo del formulario y filtra según él, en caso de dar error pues la lista de barcos esta vacia'''
-    form = search_form()
-    if form.is_valid():
-        ships = Ship.objects.all().order_by('capacity')
-        ''' JesuCristo perdóname por lo que estoy a punto de hacer'''
-        try:
-            ships.filter(capacity__gte = form.capacity)
-        except:
-            pass
+    #form = search_form()
+
     
-        try:
-            ships.filter(price__lte = form.price)
-        except:
-            pass
+    ''' JesuCristo perdóname por lo que estoy a punto de hacer'''
 
-        try:
-            ships.filter(need_license = form.need_license)
-        except:
-            pass
-
-    print(request)
-    return render(request,"./catalog/list.html" ,{"ships":ships, "search_form": form})
+    f = ship_filter(request.GET, ships)
+    print(f)
+    print(request.GET)
+    print("se hace print")
+    return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f})
 
 def show(request, ship_id):
 
