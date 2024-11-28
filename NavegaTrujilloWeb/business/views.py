@@ -6,7 +6,7 @@ from accounts.models import CustomUser
 from django.utils import timezone
 from .forms import ReservationTimeForm,ReservationTimeUnloggedForm
 from catalog.forms import ReservationDataForm
-from datetime import datetime
+from datetime import datetime,timedelta
 from django.contrib.auth.decorators import login_required
 
 
@@ -131,16 +131,12 @@ def reservation(request,ship_id):
 
             form = ReservationTimeUnloggedForm()
             form.initial['user'] = user.username
-            # TODO crear lista con los intervalos en los que el barco no está disponible
-            taken_days = []
 
             return render(request,'./business/reservation.html', {'form':form,'taken_days':taken_days,'ship':ship})
 
         else:
 
             if request.user.is_authenticated:
-                # TODO crear lista con los intervalos en los que el barco no está disponible
-                taken_days = []
                 form = ReservationTimeForm()
                 return render(request,'./business/reservation.html', {'form':form,'taken_days':taken_days,'ship':ship})
 
@@ -196,8 +192,27 @@ def cart_reservation(request):
 
             form = ReservationTimeUnloggedForm()
             form.initial['user'] = user.username
-            # TODO crear lista con los intervalos en los que el barco no está disponible
             taken_days = []
+            ships = []
+            for i in items:
+                ship = i['ship']
+                ship = Ship.objects.get(id = ship.id)
+                for o in range(i['quantity']):
+                    ships.append(ship)
+            if not ships:
+                return HttpResponse("Algo ha ido mal",status = 500)
+
+            taken_days = set()
+            for ship in ships:
+                for reservation in ship.reservation_set.all():
+                    start_date = reservation.rental_start_date
+                    end_date = reservation.rental_end_date
+                    if start_date in taken_days and end_date in taken_days:
+                        break
+                    delta = end_date-start_date
+                    delta = delta.days
+                    for i in range(delta):
+                        taken_days.add(start_date+timedelta(days=i))            
 
             return render(request,'./business/reservation_cart.html', {'form':form,'taken_days':taken_days})
 
@@ -214,7 +229,27 @@ def cart_reservation(request):
             form2 = ReservationDataForm()
         
         # TODO crear lista con los intervalos en los que el barco no está disponible
-        taken_days = []
+        ships = []
+        for i in items:
+            ship = i['ship']
+            ship = Ship.objects.get(id = ship.id)
+            for o in range(i['quantity']):
+                ships.append(ship)
+        if not ships:
+            return HttpResponse("Algo ha ido mal",status = 500)
+
+        taken_days = set()
+        for ship in ships:
+            for reservation in ship.reservation_set.all():
+                start_date = reservation.rental_start_date
+                end_date = reservation.rental_end_date
+                if start_date in taken_days and end_date in taken_days:
+                    break
+                delta = end_date-start_date
+                delta = delta.days
+                for i in range(delta):
+                    taken_days.add(start_date+timedelta(days=i))
+
         return render(request,'./business/reservation_cart.html', {'form':form,'form2':form2,'taken_days':taken_days})
 
 
@@ -293,7 +328,7 @@ def confirm_reservation(request,ship_id):
         reservation.captain_amount = 0 # TODO fix this
         reservation.total_cost = 0 # TODO calcular coste
         reservation.client = user.client
-        reservation.port = user.shopping_basket.ships.all()[0].port
+        reservation.port = ship.port
         reservation.save()
         reservation.ships.set(user.shopping_basket.ships.all())
         reservation.save()
