@@ -8,6 +8,8 @@ from .forms import ReservationTimeForm,ReservationTimeUnloggedForm
 from catalog.forms import ReservationDataForm
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from catalog.forms import dates_form
+from catalog.filters import ship_filter
 
 
 
@@ -15,7 +17,9 @@ def home(request):
 
     ships = Ship.objects.all()[:8]
     ports = Port.objects.all()
-    context = {"ships": ships, "ports": ports}
+    f = ship_filter(request.GET, queryset=(Ship.objects.all()))
+    form = dates_form()
+    context = {"ships": ships, "ports": ports, "filter": f, "form": form}
     return render(request,"./business/home_view.html", context)
 
 

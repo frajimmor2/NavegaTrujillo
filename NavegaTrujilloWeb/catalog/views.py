@@ -6,6 +6,9 @@ from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,Reservation
 from business.models import Ship,Port, Shopping_basket
 from .forms import ShipForm, shopping_basket_form, dates_form
 from catalog.filters import ship_filter
+from datetime import timedelta, date
+
+
 # Create your views here.
 
 def list(request):
@@ -32,7 +35,24 @@ def filtered_list(request):
     '''Ahora se viene el codigo de la cabra, con unos ifs miro que el tema fechas esta bien, meto el codigo de comprobar si un barco esta disp
     en las fechas dadas y si no lo está le cambio el disp a no disp sin guardarlo en la bd'''
     form = dates_form(request.GET)
-    
+    if form.is_valid():
+        start = request.GET.get('rent_start_day') if request.GET.get('rent_start_day') else date(1900, 12, 25)
+        end = request.GET.get('rent_end_day') if request.GET.get('rent_end_day') else date(1900, 12, 25)
+
+        for ship in ships:
+            taken_days = set()
+            for reservation in ship.reservation_set.all():
+                start_date = reservation.rental_start_date
+                end_date = reservation.rental_end_date
+                if start_date in taken_days and end_date in taken_days:
+                    break
+                delta = end_date-start_date
+                delta = delta.days
+                for i in range(delta):
+                    taken_days.add(start_date+timedelta(days=i))
+            
+            if start in taken_days or end in taken_days:
+                ship.available = False
 
 
     return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f, "form": form})
