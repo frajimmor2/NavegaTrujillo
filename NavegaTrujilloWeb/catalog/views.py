@@ -31,7 +31,7 @@ def filtered_list(request):
 
     '''Ahora se viene el codigo de la cabra, con unos ifs miro que el tema fechas esta bien, meto el codigo de comprobar si un barco esta disp
     en las fechas dadas y si no lo está le cambio el disp a no disp sin guardarlo en la bd'''
-    form = dates_form()
+    form = dates_form(request.GET)
     
 
 
