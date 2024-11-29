@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm,shopping_basket_form
 from business.models import Ship,Port, Shopping_basket
-from .forms import ShipForm, shopping_basket_form, search_form
+from .forms import ShipForm, shopping_basket_form, dates_form
 from catalog.filters import ship_filter
 # Create your views here.
 
@@ -12,8 +12,10 @@ def list(request):
     ''' Lista, básico de entender, hay que mover esta función para que aplique también al escaparate en home'''
 
     ships = Ship.objects.all().order_by('capacity')
-    form = search_form()
-    return render(request,"./catalog/list.html",{"ships":ships, "search_form": form})
+    
+    f = ship_filter(request.GET, queryset=(ships))
+    form = dates_form()
+    return render(request,"./catalog/list.html",{"ships":ships, "filter": f, "form": form})
 
 def filtered_list(request):
     ships = Ship.objects.all().order_by('capacity')
@@ -24,11 +26,16 @@ def filtered_list(request):
     
     ''' JesuCristo perdóname por lo que estoy a punto de hacer'''
 
-    f = ship_filter(request.GET, ships)
-    print(f)
-    print(request.GET)
-    print("se hace print")
-    return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f})
+    f = ship_filter(request.GET, queryset=(ships))
+    ships = f.qs
+
+    '''Ahora se viene el codigo de la cabra, con unos ifs miro que el tema fechas esta bien, meto el codigo de comprobar si un barco esta disp
+    en las fechas dadas y si no lo está le cambio el disp a no disp sin guardarlo en la bd'''
+    form = dates_form()
+    
+
+
+    return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f, "form": form})
 
 def show(request, ship_id):
 

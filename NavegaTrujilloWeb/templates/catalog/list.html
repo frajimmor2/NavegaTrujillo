@@ -8,13 +8,18 @@
     
 
 
-    <form method="get">
+    <form method="get" action="/catalog/results/">
         {{ filter.form.as_p }}
+        {{ form }}
+        {% if form.non_field_errors %}
+        <ul class="errorlist">
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         <input type="submit" value="Filtrar"/>
     </form>
-    {% for obj in filter.qs %}
-        {{ obj.name }} - ${{ obj.price }} - ${{ obj.available }} - ${{ obj.capacity }} - ${{ obj.need_license}}<br />
-    {% endfor %}
 
     {% if ships %}
     <div class="body_list">
