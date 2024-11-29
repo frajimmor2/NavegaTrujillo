@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator, MaxLengthValidator, MinLen
 # Create your models here.
 
 class Port(models.Model):
-    ubication = models.CharField(max_length=150,validators=[MinLengthValidator(0)], blank=False)
+    ubication = models.CharField(max_length=150,validators=[MinLengthValidator(0)], blank=False, unique=True)
 
     def __str__(self):
         return f"{self.ubication}"

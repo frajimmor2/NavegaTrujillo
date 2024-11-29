@@ -1,6 +1,6 @@
 import json
 from django.http import HttpResponse,HttpResponseForbidden
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
 from django.utils import timezone
@@ -8,6 +8,7 @@ from .forms import ReservationTimeForm,ReservationTimeUnloggedForm
 from catalog.forms import ReservationDataForm
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 
 
 
@@ -363,3 +364,50 @@ def add_port(request):
             return redirect("home")  # Redirige al usuario al inicio después de añadir el puerto
 
     return render(request, "./business/add_port.html")
+
+@login_required
+def add_ship(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
+
+    if request.method == "POST":
+        name = request.POST.get("name")
+        capacity = request.POST.get("capacity")
+        rent_per_day = request.POST.get("rent_per_day")
+        available = request.POST.get("available") == "on"
+        need_license = request.POST.get("need_license") == "on"
+        description = request.POST.get("description")
+        port_id = request.POST.get("port")
+        image = request.FILES.get("image")
+
+        if name and capacity and rent_per_day and description and port_id:
+            try:
+                port = Port.objects.get(id=port_id)
+
+                Ship.objects.create(
+                    name=name,
+                    capacity=int(capacity),
+                    rent_per_day=float(rent_per_day),
+                    available=available,
+                    need_license=need_license,
+                    description=description,
+                    image=image,
+                    port=port  
+                )
+                return redirect("home")
+
+            except Port.DoesNotExist:
+                return render(request, "./business/add_ship.html", {
+                    "ports": Port.objects.all(),
+                    "error": "El puerto seleccionado no existe."
+                })
+
+            except ValidationError as e:
+                return render(request, "./business/add_ship.html", {
+                    "ports": Port.objects.all(),
+                    "error": f"Error de validación: {e.messages}"
+                })
+
+    return render(request, "./business/add_ship.html", {
+        "ports": Port.objects.all()  
+    })
