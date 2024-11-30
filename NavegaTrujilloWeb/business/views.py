@@ -8,7 +8,7 @@ from .forms import ReservationTimeForm,ReservationTimeUnloggedForm
 from catalog.forms import ReservationDataForm
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
-
+from django.shortcuts import get_object_or_404, redirect
 
 
 def home(request):
@@ -363,3 +363,37 @@ def add_port(request):
             return redirect("home")  # Redirige al usuario al inicio después de añadir el puerto
 
     return render(request, "./business/add_port.html")
+
+
+
+
+@login_required
+def manage_license(request, username):
+    # Solo usuarios con permisos de staff pueden acceder
+    if not request.user.is_staff:
+        return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
+
+    # Obtén el usuario a partir del username
+    user = get_object_or_404(CustomUser, username=username)
+
+    # Intenta obtener el cliente asociado al usuario
+    try:
+        client = Client.objects.get(id=user.client_id)  # Relación entre CustomUser y Client usando `client_id`
+    except Client.DoesNotExist:
+        return HttpResponse("El usuario no tiene un cliente asociado.", status=404)
+
+    if request.method == "POST":
+        # Toma los datos enviados desde el formulario para actualizar la licencia
+        license_number = request.POST.get("license_number")
+        license_validated = request.POST.get("license_validated") == "on"
+
+        # Actualiza los atributos del cliente que corresponda al campo username que ponemos en la ruta
+        client.license_number = license_number
+        client.license_validated = license_validated
+        client.save()
+
+        # Redirige al usuario al home después de guardar para que sea mas comodo
+        return redirect("home")
+
+    
+    return render(request, './business/manage_license.html', {"client": client, "username": username})
