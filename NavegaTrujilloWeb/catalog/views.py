@@ -46,7 +46,7 @@ def filtered_list(request):
 
         for i in range(delta_rent_days):
             rent_days.add(start+timedelta(days=i))
-        print(rent_days)
+        
 
         for ship in ships:
             taken_days = set()
@@ -63,7 +63,7 @@ def filtered_list(request):
                 for i in range(delta):
                     taken_days.add(start_date+timedelta(days=i))
                 
-                print(taken_days)
+                
                 for day in rent_days:
                     if day in taken_days:
                         ship.available = False
