@@ -34,9 +34,15 @@
                         {% for ship in ships %}
                         <tr>
                             <td style="display: flex; justify-content: center; align-items: center;">
-                                <a href="ship/{{ship.id}}">
+                                {% if ship.available%}
+                                <a href="/catalog/ship/{{ship.id}}">
                                     {{ ship.name }}
                                 </a>
+                                {% else %}
+                                <a>
+                                    {{ ship.name }}
+                                </a>
+                                {% endif %}
                             </td>
                             <td>{{ ship.rent_per_day }}</td>
                             <td>{{ ship.capacity }}</td>

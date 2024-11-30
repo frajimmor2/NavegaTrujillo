@@ -6,7 +6,7 @@ from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,Reservation
 from business.models import Ship,Port, Shopping_basket
 from .forms import ShipForm, shopping_basket_form, dates_form
 from catalog.filters import ship_filter
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 
 
 # Create your views here.
@@ -36,23 +36,40 @@ def filtered_list(request):
     en las fechas dadas y si no lo está le cambio el disp a no disp sin guardarlo en la bd'''
     form = dates_form(request.GET)
     if form.is_valid():
-        start = request.GET.get('rent_start_day') if request.GET.get('rent_start_day') else date(1900, 12, 25)
-        end = request.GET.get('rent_end_day') if request.GET.get('rent_end_day') else date(1900, 12, 25)
+        start = datetime.strptime(request.GET.get('rent_start_day'), "%Y-%m-%d").date() if request.GET.get('rent_start_day') else date(1900, 12, 25)
+        end = datetime.strptime(request.GET.get('rent_end_day'), "%Y-%m-%d").date() if request.GET.get('rent_end_day') else date(1900, 12, 25)
+
+        rent_days = set()
+        delta_rent_days = end-start
+        delta_rent_days = delta_rent_days.days
+        rent_days.add(start)
+
+        for i in range(delta_rent_days):
+            rent_days.add(start+timedelta(days=i))
+        print(rent_days)
 
         for ship in ships:
             taken_days = set()
             for reservation in ship.reservation_set.all():
                 start_date = reservation.rental_start_date
                 end_date = reservation.rental_end_date
+                
                 if start_date in taken_days and end_date in taken_days:
                     break
                 delta = end_date-start_date
                 delta = delta.days
+                
+                taken_days.add(start_date)
                 for i in range(delta):
                     taken_days.add(start_date+timedelta(days=i))
+                
+                print(taken_days)
+                for day in rent_days:
+                    if day in taken_days:
+                        ship.available = False
+                        
+                
             
-            if start in taken_days or end in taken_days:
-                ship.available = False
 
 
     return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f, "form": form})
