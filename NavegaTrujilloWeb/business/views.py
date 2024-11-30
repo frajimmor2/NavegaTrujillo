@@ -1,11 +1,12 @@
 import json
+from random import randint
 from django.http import HttpResponse,HttpResponseForbidden
 from django.shortcuts import render
 from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
 from django.utils import timezone
 from .forms import ReservationTimeForm,ReservationTimeUnloggedForm
-from catalog.forms import ReservationDataForm
+from catalog.forms import ReservationDataForm,ReservationForm,ReservationFormNotLogged
 from datetime import datetime,timedelta
 from django.contrib.auth.decorators import login_required
 
@@ -97,28 +98,26 @@ def reservation(request,ship_id):
             email = form.cleaned_data['Email']
             name = form.cleaned_data['name']
             surname = form.cleaned_data['surname']
+            captain = form.cleaned_data['captain']
             try:
-                user = CustomUser.objects.get(Email=email)
-                user = True
+                user1 = CustomUser.objects.get(Email=email)
+                user1 = True
             except:
-                user = False
+                user1 = False
 
-            if user:
-                ''' Ese email está en uso, nanai '''
-                return HttpResponse("Ese email ya existe, si tienes cuenta inicia sesión por favor",status=401)
             
             user = CustomUser()
-            user.username = hash(" ".join([name,email,str(ship.id)]))
-            user.email = email
-            user.name = name
-            user.surname = surname
+            user.username = hash(" ".join([name,email,str(randint(1,100000))]))
+            user.email = ""
+            user.name = email if user1 else name
+            user.surname = str(name+surname) if user1 else surname
             client = Client()
             client.license_number=""
             client.license_validated=False
             shopping_basket = Shopping_basket()
-            shopping_basket.rental_start_date = timezone.now()
-            shopping_basket.rental_end_date = timezone.now()
-            shopping_basket.captain_amount = 0 # TODO arreglar esto
+            shopping_basket.rental_start_date = timezone.now()+timedelta(days=1)
+            shopping_basket.rental_end_date = timezone.now()+timedelta(days=1)
+            shopping_basket.captain_amount = 1 if captain else 0
             shopping_basket.save()
             shopping_basket.ships.add(ship)
             shopping_basket.save()
@@ -129,20 +128,54 @@ def reservation(request,ship_id):
             user.save()
             
 
-            form = ReservationTimeUnloggedForm()
+            form = ReservationTimeUnloggedForm() # TODO
             form.initial['user'] = user.username
+            form.initial['captain'] = captain
+            return render(request,'./business/reservation_payment.html', {'form':form,'ship':ship})
 
-            return render(request,'./business/reservation.html', {'form':form,'taken_days':taken_days,'ship':ship})
-
+        form = ReservationForm(request.POST)
+        if form.is_valid():
+            captain = form.cleaned_data['captain']
         else:
+            form = ReservationFormNotLogged(request.POST)
+            if form.is_valid():
+                captain = form.cleaned_data['captain']
+        name = request.user.name
+        surname = request.user.surname
+        email = request.user.email
+        user = CustomUser()
+        user.username = hash(" ".join([name,email,str(randint(1,100000))]))
+        user.email = ""
+        user.name = email 
+        user.surname = str(name+surname) 
+        client = Client()
+        client.license_number=""
+        client.license_validated=False
+        shopping_basket = Shopping_basket()
+        shopping_basket.rental_start_date = timezone.now()+timedelta(days=1)
+        shopping_basket.rental_end_date = timezone.now()+timedelta(days=1)
+        shopping_basket.captain_amount = 1 if captain else 0
+        shopping_basket.save()
+        shopping_basket.ships.add(ship)
+        shopping_basket.save()
+        client.shopping_basket = shopping_basket
+        client.save()
+        user.shopping_basket = shopping_basket
+        user.client = client
+        user.save()
 
-            if request.user.is_authenticated:
-                form = ReservationTimeForm()
-                return render(request,'./business/reservation.html', {'form':form,'taken_days':taken_days,'ship':ship})
+        form = ReservationTimeUnloggedForm() # TODO
+        form.initial['user'] = user.username
+        form.initial['captain'] = captain
+        return render(request,'./business/reservation_payment.html',{'form':form,'ship':ship})
+
+    else:
+        if not request.user.is_authenticated:
+            return HttpResponse("Acceda desde el escaparate o la página del barco por favor",status=405)
+        if not ship:
+            return HttpResponse("Ese barco no existe",status=404)
 
 
-            ''' ¿Que? '''
-            return HttpResponse("Rellene el formulario correctamente por favor",status=405)
 
 
 def cart_reservation(request):
@@ -153,6 +186,7 @@ def cart_reservation(request):
     cartItems = cookieData['cartItems']
     order = cookieData['order']
     items = cookieData['items']
+            
     if request.method=="POST":
         
         form = ReservationDataForm(request.POST)
@@ -161,27 +195,23 @@ def cart_reservation(request):
             name = form.cleaned_data['name']
             surname = form.cleaned_data['surname']
             try:
-                user = CustomUser.objects.get(Email=email)
-                user = True
+                user1 = CustomUser.objects.get(Email=email)
+                user1 = True
             except:
-                user = False
+                user1 = False
 
-            if user:
-                ''' Ese email está en uso, nanai '''
-                return HttpResponse("Ese email ya existe, si tienes cuenta inicia sesión por favor",status=401)
-            
             user = CustomUser()
-            user.username = hash(" ".join([name,email]))
-            user.email = email
-            user.name = name
-            user.surname = surname
+            user.username = hash(" ".join([name,email,str(randint(1,1000000))]))
+            user.email = ""
+            user.name = email if user1 else name
+            user.surname = str(name+surname) if user1 else surname
             client = Client()
             client.license_number=""
             client.license_validated=False
             shopping_basket = Shopping_basket()
             shopping_basket.rental_start_date = timezone.now()
             shopping_basket.rental_end_date = timezone.now()
-            shopping_basket.captain_amount = 0 # TODO arreglar esto
+            shopping_basket.captain_amount = order['captain_amount']
             shopping_basket.save()
             client.shopping_basket = shopping_basket
             client.save()
@@ -192,6 +222,7 @@ def cart_reservation(request):
 
             form = ReservationTimeUnloggedForm()
             form.initial['user'] = user.username
+            form.initial['captain'] = False
             taken_days = []
             ships = []
             for i in items:
@@ -211,7 +242,7 @@ def cart_reservation(request):
                         break
                     delta = end_date-start_date
                     delta = delta.days
-                    for i in range(delta):
+                    for i in range(delta+1):
                         taken_days.add(start_date+timedelta(days=i))            
 
             return render(request,'./business/reservation_cart.html', {'form':form,'taken_days':taken_days})
@@ -224,11 +255,29 @@ def cart_reservation(request):
         form2 = False
         if request.user.is_authenticated:
             form = ReservationTimeUnloggedForm()
-            form.initial['user'] = request.user.username
+            form.initial['captain'] = False
+            form.initial['user'] = hash(request.user.email+request.user.username+str(randint(1,10000)))
+            user = CustomUser()
+            user.username = form.initial['user']
+            user.email = ""
+            user.name = request.user.email
+            user.surname = str(request.user.name+request.user.surname)
+            client = Client()
+            client.license_number=""
+            client.license_validated=False
+            shopping_basket = Shopping_basket()
+            shopping_basket.rental_start_date = timezone.now()
+            shopping_basket.rental_end_date = timezone.now()
+            shopping_basket.captain_amount = order['captain_amount']
+            shopping_basket.save()
+            client.shopping_basket = shopping_basket
+            client.save()
+            user.shopping_basket = shopping_basket
+            user.client = client
+            user.save()
         else:
             form2 = ReservationDataForm()
         
-        # TODO crear lista con los intervalos en los que el barco no está disponible
         ships = []
         for i in items:
             ship = i['ship']
@@ -246,7 +295,7 @@ def cart_reservation(request):
                 if start_date in taken_days and end_date in taken_days:
                     break
                 delta = end_date-start_date
-                delta = delta.days
+                delta = delta.days+1
                 for i in range(delta):
                     taken_days.add(start_date+timedelta(days=i))
 
@@ -317,6 +366,7 @@ def confirm_reservation(request,ship_id):
         if form.is_valid():
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
+            captain = form.cleaned_data['captain']
         else:
             return HttpResponse("Algo ha ido mal",status=400)
 
@@ -325,8 +375,8 @@ def confirm_reservation(request,ship_id):
         reservation.rental_start_date = start_date
         reservation.rental_end_date = end_date
         reservation.reservation_state = 'R'
-        reservation.captain_amount = 0 # TODO fix this
-        reservation.total_cost = 0 # TODO calcular coste
+        reservation.captain_amount = 1 if captain else 0
+        reservation.total_cost = ship.rent_per_day+reservation.captain_amount*120
         reservation.client = user.client
         reservation.port = ship.port
         reservation.save()
@@ -341,6 +391,7 @@ def confirm_reservation(request,ship_id):
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
             username = form.cleaned_data['user']
+            captain = form.cleaned_data['captain']
         else:
             return HttpResponse("Algo ha salido mal",status=500)
 
@@ -349,8 +400,8 @@ def confirm_reservation(request,ship_id):
         reservation.rental_start_date = start_date
         reservation.rental_end_date = end_date
         reservation.reservation_state = 'R'
-        reservation.captain_amount = 0 # TODO fix this
-        reservation.total_cost = 0 # TODO calcular coste
+        reservation.captain_amount = 1 if captain else 0
+        reservation.total_cost = ship.rent_per_day+reservation.captain_amount*120
         reservation.client = user.client
         reservation.port = user.shopping_basket.ships.all()[0].port
         reservation.save()

@@ -4,13 +4,13 @@
 {% block main %}
 <script> window.onload = function() {
 	document.getElementById("id_name").labels[0].innerHTML = "Nombre: ";
-	document.getElementById("id_surname").labels[0].innerHTML = "Appellidos: ";
+	document.getElementById("id_surname").labels[0].innerHTML = "Apellidos: ";
 }
 </script>
 
 
 {% if user.is_authenticated %}
-<!-- redirigimos inmediatamente a la selección de fechas -->
+<!-- este código ya no se usa -->
 <script> window.location.href = "/reserva/"{{ship_id}} </script>
 {% else %}
 
@@ -25,8 +25,7 @@
   <button type="submit">Continuar con la reserva</button>
 </form>
 
-<a href="/auth/fast_login/{{ship_id}}"> O, si tienes cuenta, puedes iniciar sesión </a>
-
+<a> (también puedes iniciar sesión) </a>
 
 
 

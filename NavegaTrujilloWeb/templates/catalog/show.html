@@ -6,7 +6,6 @@
 
 <script>
 	function addCookieItem(shipId, action){
-		console.log('User is not authenticated')
 	
 		if (action == 'add'){
 			if (cart[shipId] == undefined){
@@ -21,11 +20,9 @@
 			cart[shipId]['quantity'] = 0
 	
 			if (cart[shipId]['quantity'] <= 0){
-				console.log('Item should be deleted')
 				delete cart[shipId];
 			}
 		}
-		console.log('CART:', cart)
 		document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
 		location.reload()
 	}
@@ -85,7 +82,7 @@
 		<form action={% if request.user.is_authenticated %} "../../../reserva/{{ship.id}}" {% else %} "reserva" {% endif %} method="post">
 			{% csrf_token %}
 			{{ reservation_form }}
-			<input type="Submit" value="Reservar">
+			<input type="Submit" value="Reservar para mañana">
 		</form>
 	</div>
 	<!-- Sigue sin hacer -->
