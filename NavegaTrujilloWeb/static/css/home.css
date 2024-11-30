@@ -100,13 +100,13 @@ body.home-page-home {
     padding-bottom: 10px; 
 }
 
-.footer-home-home h4 {
+.footer-home-home { 
     font-size: 16px; 
     color: #333;
     margin: 15px 0; 
 }
 
-.footer-home-home .port-locations-home {
+.footer-home-home .port-locations-home h4 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
