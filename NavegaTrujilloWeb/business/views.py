@@ -369,7 +369,7 @@ def add_port(request):
 
 @login_required
 def manage_license(request, username):
-    # Solo usuarios con permisos de staff pueden acceder
+    # Solo usuarios con permisos de staff pueden acceder a la pagina
     if not request.user.is_staff:
         return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
 
@@ -383,7 +383,7 @@ def manage_license(request, username):
         return HttpResponse("El usuario no tiene un cliente asociado.", status=404)
 
     if request.method == "POST":
-        # Toma los datos enviados desde el formulario para actualizar la licencia
+        # Toma los datos enviados desde el formulario para actualizar la licencia del cliente
         license_number = request.POST.get("license_number")
         license_validated = request.POST.get("license_validated") == "on"
 
