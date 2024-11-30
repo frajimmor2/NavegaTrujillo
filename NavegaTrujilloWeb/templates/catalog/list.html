@@ -7,6 +7,14 @@
 <link rel="stylesheet" href="{% static 'css/catalog.css' %}" type="text/css">
 <body class="catalog">
     <h1 class="h1_list">Barcos</h1>
+    
+
+
+    <form method="get" action="/catalog/results/">
+        {{ filter.form.as_p }}
+        {{ form }}
+        <input type="submit" value="Filtrar"/>
+    </form>
 
     {% if ships %}
     <div class="body_list">
@@ -26,9 +34,15 @@
                         {% for ship in ships %}
                         <tr>
                             <td style="display: flex; justify-content: center; align-items: center;">
-                                <a href="ship/{{ship.id}}">
+                                {% if ship.available%}
+                                <a href="/catalog/ship/{{ship.id}}">
                                     {{ ship.name }}
                                 </a>
+                                {% else %}
+                                <a>
+                                    {{ ship.name }}
+                                </a>
+                                {% endif %}
                             </td>
                             <td>{{ ship.rent_per_day }}</td>
                             <td>{{ ship.capacity }}</td>

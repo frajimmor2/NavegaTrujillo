@@ -4,7 +4,10 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm,shopping_basket_form
 from business.models import Ship,Port, Shopping_basket
-from .forms import ShipForm, shopping_basket_form
+from .forms import ShipForm, shopping_basket_form, dates_form
+from catalog.filters import ship_filter
+from datetime import timedelta, date, datetime
+
 
 # Create your views here.
 
@@ -12,8 +15,64 @@ def list(request):
     ''' Lista, básico de entender, hay que mover esta función para que aplique también al escaparate en home'''
 
     ships = Ship.objects.all().order_by('capacity')
+    
+    f = ship_filter(request.GET, queryset=(ships))
+    form = dates_form()
+    return render(request,"./catalog/list.html",{"ships":ships, "filter": f, "form": form})
 
-    return render(request,"./catalog/list.html",{"ships":ships})
+def filtered_list(request):
+    ships = Ship.objects.all().order_by('capacity')
+    #Ship.objects.all().order_by('capacity')
+    '''Es un get que recoge lo del formulario y filtra según él, en caso de dar error pues la lista de barcos esta vacia'''
+    #form = search_form()
+
+    
+    ''' JesuCristo perdóname por lo que estoy a punto de hacer'''
+
+    f = ship_filter(request.GET, queryset=(ships))
+    ships = f.qs
+
+    '''Ahora se viene el codigo de la cabra, con unos ifs miro que el tema fechas esta bien, meto el codigo de comprobar si un barco esta disp
+    en las fechas dadas y si no lo está le cambio el disp a no disp sin guardarlo en la bd'''
+    form = dates_form(request.GET)
+    if form.is_valid():
+        start = datetime.strptime(request.GET.get('rent_start_day'), "%Y-%m-%d").date() if request.GET.get('rent_start_day') else date(1900, 12, 25)
+        end = datetime.strptime(request.GET.get('rent_end_day'), "%Y-%m-%d").date() if request.GET.get('rent_end_day') else date(1900, 12, 25)
+
+        rent_days = set()
+        delta_rent_days = end-start
+        delta_rent_days = delta_rent_days.days
+        rent_days.add(start)
+
+        for i in range(delta_rent_days):
+            rent_days.add(start+timedelta(days=i))
+        print(rent_days)
+
+        for ship in ships:
+            taken_days = set()
+            for reservation in ship.reservation_set.all():
+                start_date = reservation.rental_start_date
+                end_date = reservation.rental_end_date
+                
+                if start_date in taken_days and end_date in taken_days:
+                    break
+                delta = end_date-start_date
+                delta = delta.days
+                
+                taken_days.add(start_date)
+                for i in range(delta):
+                    taken_days.add(start_date+timedelta(days=i))
+                
+                print(taken_days)
+                for day in rent_days:
+                    if day in taken_days:
+                        ship.available = False
+                        
+                
+            
+
+
+    return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f, "form": form})
 
 def show(request, ship_id):
 
