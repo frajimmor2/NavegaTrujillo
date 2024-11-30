@@ -1,16 +1,16 @@
 import json
 from django.http import HttpResponse,HttpResponseForbidden
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
 from django.utils import timezone
-from .forms import ReservationTimeForm,ReservationTimeUnloggedForm
+from .forms import ReservationTimeForm,ReservationTimeUnloggedForm, EditProfileForm
 from catalog.forms import ReservationDataForm
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from catalog.forms import dates_form
 from catalog.filters import ship_filter
-
 
 
 def home(request):
@@ -379,3 +379,102 @@ def add_port(request):
             return redirect("home")  # Redirige al usuario al inicio después de añadir el puerto
 
     return render(request, "./business/add_port.html")
+
+@login_required
+def add_ship(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
+
+    if request.method == "POST":
+        name = request.POST.get("name")
+        capacity = request.POST.get("capacity")
+        rent_per_day = request.POST.get("rent_per_day")
+        available = request.POST.get("available") == "on"
+        need_license = request.POST.get("need_license") == "on"
+        description = request.POST.get("description")
+        port_id = request.POST.get("port")
+        image = request.FILES.get("image")
+
+        if name and capacity and rent_per_day and description and port_id:
+            try:
+                port = Port.objects.get(id=port_id)
+
+                Ship.objects.create(
+                    name=name,
+                    capacity=int(capacity),
+                    rent_per_day=float(rent_per_day),
+                    available=available,
+                    need_license=need_license,
+                    description=description,
+                    image=image,
+                    port=port  
+                )
+                return redirect("home")
+
+            except Port.DoesNotExist:
+                return render(request, "./business/add_ship.html", {
+                    "ports": Port.objects.all(),
+                    "error": "El puerto seleccionado no existe."
+                })
+
+            except ValidationError as e:
+                return render(request, "./business/add_ship.html", {
+                    "ports": Port.objects.all(),
+                    "error": f"Error de validación: {e.messages}"
+                })
+
+    return render(request, "./business/add_ship.html", {
+        "ports": Port.objects.all()  
+    })
+
+def profile(request):
+    user = request.user
+    client = user.client
+    return render(request, "./business/profile.html", {"user": user, "client": client})
+
+def edit_profile(request):
+    user = request.user
+
+    # Prellenar el formulario con los datos del usuario y del cliente
+    initial_data = {
+        'name': user.name,
+        'surname': user.surname,
+        'username': user.username,
+        'email': user.email,
+    }
+    if user.client:
+        initial_data['license_number'] = user.client.license_number
+
+    if request.method == 'POST':
+        user = request.user
+
+    # Prellenar el formulario con los datos del usuario y del cliente
+    initial_data = {
+        'name': user.name,
+        'surname': user.surname,
+        'username': user.username,
+        'email': user.email,
+    }
+    if user.client:
+        initial_data['license_number'] = user.client.license_number
+
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST)
+        if form.is_valid():
+            # Actualizar los datos del usuario
+            user.name = form.cleaned_data['name']
+            user.surname = form.cleaned_data['surname']
+            user.username = form.cleaned_data['username']
+            user.email = form.cleaned_data['email']
+            user.save()
+
+            # Actualizar los datos del cliente (si existe)
+            if user.client:
+                user.client.license_number = form.cleaned_data['license_number']
+                user.client.save()
+
+            return redirect('profile')  # Redirigir al perfil después de guardar
+    else:
+        form = EditProfileForm(initial=initial_data)
+
+    return render(request, 'business/edit_profile.html', {'form': form})

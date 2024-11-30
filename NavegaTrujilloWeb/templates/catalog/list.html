@@ -28,6 +28,7 @@
                             <th>Capacidad</th>
                             <th>Disponibilidad</th>
                             <th>Puerto</th>
+                            <th>Imagen</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,6 +49,7 @@
                             <td>{{ ship.capacity }}</td>
                             <td class="data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
                             <td>{{ ship.port.ubication }}</td>
+                            <td><img src="{{ ship.image.url }}" alt="Barco" style="width: 150px; height: 100px;"></td>
                         </tr>
                         {% endfor %}
                     </tbody>
