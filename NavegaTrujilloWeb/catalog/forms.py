@@ -31,7 +31,8 @@ class ReservationDataForm(forms.Form):
     Email = forms.EmailField(required = True)
     name = forms.CharField(required = True)
     surname = forms.CharField(required = True)
-
+    captain = forms.BooleanField(required = False,widget=forms.HiddenInput())
+    captain.disabled = True
 
 class shopping_basket_form(forms.Form):
     captain = forms.BooleanField()

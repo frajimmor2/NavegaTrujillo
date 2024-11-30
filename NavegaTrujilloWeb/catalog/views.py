@@ -94,8 +94,6 @@ def show(request, ship_id):
             reservation_form = ReservationFormNotLogged()
 
         return render(request,"./catalog/show.html", {"ship":ship,"ship_form":form,"reservation_form":reservation_form})
-        form_shopping_basket = shopping_basket_form()
-        return render(request,"./catalog/show.html", {"ship":ship,"form":form,"form_shopping_basket":form_shopping_basket,"reservation_form":reservation_form})
 
     form = ShipForm(request.POST)
     if form.is_valid():
@@ -144,8 +142,19 @@ def reservation(request, ship_id):
     if not ship:
         ''' Esto solo pasa si se accede escribiendo una url incorrecta directamente '''
         return HttpResponse("Ese barco no existe",404)
+    form = ReservationForm(request.POST)
+
+    if (request.user.is_authenticated and request.user.client.license_validated) or not ship.need_license:
+        captain = form.cleaned_data['captain']
+    else:
+        form = ReservationFormNotLogged(request.POST)
+        if form.is_valid():
+            captain = form.cleaned_data['captain']
+        else:
+            captain = False
 
     form = ReservationDataForm() 
+    form.initial['captain'] = captain
 
     return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form})
 

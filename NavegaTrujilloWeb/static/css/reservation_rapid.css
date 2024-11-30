@@ -76,8 +76,9 @@ body.reservation-rapid-page {
     text-decoration: none;
     transition: color 0.3s ease, transform 0.3s ease;
 }
-
+/*
 .reservation-rapid-box a:hover {
     color: #ff7675;
     transform: scale(1.05);
 }
+*/
