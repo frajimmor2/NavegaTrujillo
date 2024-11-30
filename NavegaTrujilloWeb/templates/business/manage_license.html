@@ -1,0 +1,40 @@
+{% extends "base_template.html" %}
+{% load static %}
+{% block title %}{% endblock %}
+
+{% block main %}
+
+<link rel="stylesheet" href="{% static 'css/edit_user_license.css' %}" type="text/css">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/edit_user_license.css' %}"> 
+    <title>Gestionar Licencia de {{ username }}</title>
+</head>
+<body class="edit-license">
+    <div class="container-edit-license">
+        <div class="edit-license-box">
+            <h2>Gestionar Licencia de {{ username }}</h2>
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="license_number">Número de Licencia:</label><br>
+                    <input type="text" id="license_number" name="license_number" value="{{ client.license_number }}">
+                </div>
+                
+                <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+                    <label for="license_validated">Licencia Validada:</label>
+                    <input type="checkbox" id="license_validated" name="license_validated" {% if client.license_validated %}checked{% endif %}>
+                </div>
+                
+                <input type="submit" value="Guardar">
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+{% endblock %}
