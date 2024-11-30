@@ -47,6 +47,7 @@
                 <a href="/cart" class="nav-link">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
+                <a href="/profile" class="nav-link">Perfil</a>
                 <form action="{% url 'logout' %}" method="post" style="margin-left: 10px;">
                     {% csrf_token %}
                     <button type="submit" class="btn" style="background-color: #f44336; border: none;">Cerrar sesión</button>

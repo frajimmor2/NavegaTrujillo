@@ -12,3 +12,15 @@ class ReservationTimeUnloggedForm(forms.Form):
     user = forms.CharField(widget=forms.HiddenInput())
 
 
+class EditProfileForm(forms.Form):
+    ''' Formulario de edición de perfil '''
+    name = forms.CharField(max_length=50, required=True, label="Nombre")
+    surname = forms.CharField(max_length=100, required=True, label="Apellidos")
+    username = forms.CharField(max_length=150, required=True, label="Nombre de usuario")
+    email = forms.EmailField(max_length=50, required=True, label="Correo electrónico")
+    license_number = forms.CharField(
+        max_length=50,
+        required=False,
+        label="Número de Licencia",
+        help_text="Introduce el número de licencia si corresponde."
+    )

@@ -4,11 +4,12 @@ from django.shortcuts import render, redirect
 from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
 from django.utils import timezone
-from .forms import ReservationTimeForm,ReservationTimeUnloggedForm
+from .forms import ReservationTimeForm,ReservationTimeUnloggedForm, EditProfileForm
 from catalog.forms import ReservationDataForm
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+
 
 
 
@@ -411,3 +412,55 @@ def add_ship(request):
     return render(request, "./business/add_ship.html", {
         "ports": Port.objects.all()  
     })
+
+def profile(request):
+    user = request.user
+    client = user.client
+    return render(request, "./business/profile.html", {"user": user, "client": client})
+
+def edit_profile(request):
+    user = request.user
+
+    # Prellenar el formulario con los datos del usuario y del cliente
+    initial_data = {
+        'name': user.name,
+        'surname': user.surname,
+        'username': user.username,
+        'email': user.email,
+    }
+    if user.client:
+        initial_data['license_number'] = user.client.license_number
+
+    if request.method == 'POST':
+        user = request.user
+
+    # Prellenar el formulario con los datos del usuario y del cliente
+    initial_data = {
+        'name': user.name,
+        'surname': user.surname,
+        'username': user.username,
+        'email': user.email,
+    }
+    if user.client:
+        initial_data['license_number'] = user.client.license_number
+
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST)
+        if form.is_valid():
+            # Actualizar los datos del usuario
+            user.name = form.cleaned_data['name']
+            user.surname = form.cleaned_data['surname']
+            user.username = form.cleaned_data['username']
+            user.email = form.cleaned_data['email']
+            user.save()
+
+            # Actualizar los datos del cliente (si existe)
+            if user.client:
+                user.client.license_number = form.cleaned_data['license_number']
+                user.client.save()
+
+            return redirect('profile')  # Redirigir al perfil después de guardar
+    else:
+        form = EditProfileForm(initial=initial_data)
+
+    return render(request, 'business/edit_profile.html', {'form': form})
