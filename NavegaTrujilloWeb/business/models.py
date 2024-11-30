@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator, MaxLengthValidator, MinLen
 # Create your models here.
 
 class Port(models.Model):
-    ubication = models.CharField(max_length=150,validators=[MinLengthValidator(0)], blank=False)
+    ubication = models.CharField(max_length=150,validators=[MinLengthValidator(0)], blank=False, unique=True)
 
     def __str__(self):
         return f"{self.ubication}"
@@ -21,6 +21,7 @@ class Ship(models.Model):
     need_license = models.BooleanField()
     description = models.CharField(max_length=350,validators=[MinLengthValidator(0)], blank=False)
     image = models.ImageField(upload_to='images/')
+
     name = models.CharField(max_length=45,unique=True, validators=[MinLengthValidator(0)], blank=False)
 
     def __str__(self):
