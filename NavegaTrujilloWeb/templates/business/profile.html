@@ -1,0 +1,36 @@
+{% extends 'base_template.html' %}
+{% load static %}
+{% block main %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+</head>
+<body>
+    <h1>Perfil de Usuario</h1>
+    <p><strong>Nombre:</strong> {{ user.name }}</p>
+    <p><strong>Apellidos:</strong> {{ user.surname }}</p>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Fecha de Registro:</strong> {{ user.date_joined }}</p>
+    <p><strong>Número de licencia:</strong>
+        {% if client.license_number %}
+            {{ client.license_number }}
+        {% else %}
+            Licencia no registrada
+        {% endif %}
+    </p>
+    {% if client.license_number %}
+        <p><strong>¿La licencia está validada?:</strong> 
+            {% if client.license_validated %}
+                Sí
+            {% else %}
+                No
+            {% endif %}
+        </p>
+    {% endif %}
+    
+
+    <a href="{% url 'edit_profile' %}">Editar perfil</a>
+</body>
+{% endblock %}

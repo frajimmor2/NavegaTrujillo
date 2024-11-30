@@ -11,5 +11,4 @@ urlpatterns = [
     path('cart/reserva', views.cart_reservation, name = "cart_reservation"),
     path('cart/reserva/confirmacion', views.confirm_reservation_cart, name = "cart_reservation_confirm"),
     path('add-port/', views.add_port, name="add_port"),
-    path('accounts/<str:username>/', views.manage_license, name="manage_license"),
 ]
