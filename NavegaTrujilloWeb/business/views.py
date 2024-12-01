@@ -8,7 +8,7 @@ from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
 from django.utils import timezone
 from .forms import ReservationTimeForm,ReservationTimeUnloggedForm, EditProfileForm
-from catalog.forms import ReservationDataForm,ReservationForm,ReservationFormNotLogged
+from catalog.forms import ReservationDataForm,ReservationForm,ReservationFormNotLogged,ReservationDataHiddenForm
 from datetime import datetime,timedelta
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -369,12 +369,21 @@ def confirm_reservation(request,ship_id):
         return HttpResponse("¿Cómo has llegado aquí?",status=400)
 
     user1 = request.user.is_authenticated
-    form = ReservationDataForm(request.POST)
+    if not user1:
+        form = ReservationDataForm(request.POST)
+    else:
+        form = ReservationDataHiddenForm(request.POST)
     if not form.is_valid():
         return HttpResponse("Algo ha ido mal, vuelva a intentarlo",status=400)
-    email = form.cleaned_data['Email']
-    name = form.cleaned_data['name']
-    surname = form.cleaned_data['surname']
+    if not user1:
+        email = form.cleaned_data['Email']
+        name = form.cleaned_data['name']
+        surname = form.cleaned_data['surname']
+    else:
+        email = request.user.email
+        name = request.user.name
+        surname = request.user.surname
+
     captain = form.cleaned_data['captain']
 
     user = CustomUser()
@@ -597,6 +606,7 @@ def confirm_reservation_paypal(request,ship_id,captain):
     ship = Ship.objects.get(id=ship_id)
     user = CustomUser()
     user.username = hash(" ".join([ship.name,id_usuario,str(captain),str(randint(1,100000))]))
+    user.name = "" if not request.user.is_authenticated else request.user.email
     user.email = id_usuario
     shopping_basket = Shopping_basket()
     shopping_basket.rental_start_date = timezone.now()

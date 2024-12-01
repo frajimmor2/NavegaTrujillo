@@ -34,6 +34,11 @@ class ReservationDataForm(forms.Form):
     captain = forms.BooleanField(required = False,widget=forms.HiddenInput())
     captain.disabled = True
 
+class ReservationDataHiddenForm(forms.Form):
+    captain = forms.BooleanField(required = False,widget=forms.HiddenInput())
+    captain.disabled = True
+
+
 class shopping_basket_form(forms.Form):
     captain = forms.BooleanField()
 

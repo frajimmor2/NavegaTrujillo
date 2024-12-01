@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.template import Template, Context
 from django.http import HttpResponse
 from django.template import RequestContext
-from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm,shopping_basket_form
+from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm,shopping_basket_form,ReservationDataHiddenForm
 from business.models import Ship,Port, Shopping_basket
 from .forms import ShipForm, shopping_basket_form, dates_form
 from catalog.filters import ship_filter
@@ -164,6 +164,8 @@ def reservation(request, ship_id):
             captain = False
 
     form = ReservationDataForm() 
+    form2 = ReservationDataHiddenForm()
+    form2.initial['captain'] = captain
     form.initial['captain'] = captain
 
     
@@ -178,5 +180,5 @@ def reservation(request, ship_id):
         }
     form_paypal = PayPalPaymentsForm(initial=paypal_dict)
 
-    return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form,"form_paypal":form_paypal})
+    return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form,"form_paypal":form_paypal,"form2":form2})
 

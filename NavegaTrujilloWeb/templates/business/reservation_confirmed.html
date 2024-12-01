@@ -1,25 +1,23 @@
 {% extends 'base_template.html' %}
 {% load static %}
 {% block title %}
-    Reserva Confirmada
+	Reserva Confirmada
 {% endblock %}
 
 {% block main %}
 <link rel="stylesheet" href="{% static 'css/confirmation.css' %}">
-    <body class="confirmation">
-        <div class="container-confirmed">
-            <div class="confirmation-message-box">
-                {% if not user.is_authenticated %}
-                    <h2>¡Enhorabuena!</h2>
-                    <p>Tu reserva se ha realizado correctamente. Tu ID de seguimiento es:</p>
-                    <p>{{ lookup_id }}</p>
-                    <p>¡Procura guardarla bien!</p>
-                {% else %}
-                    <h2>¡Reserva Realizada!</h2>
-                    <p>La reserva está realizada con éxito, podrás revisarla próximamente.</p>
-                {% endif %}
-            </div>
-        </div>
-    </body>
+<body class="confirmation">
+	<div class="container-confirmed">
+		<div class="confirmation-message-box">
+			<h2>¡Enhorabuena!</h2>
+			<p>Tu reserva se ha realizado correctamente. Tu ID de seguimiento es:</p>
+			<p>{{ lookup_id }}</p>
+			<p>¡Procura guardarla bien!</p>
+			{% if request.user.is_authenticated %}
+			<p>También puedes revisar tus reservas en tu cuenta</p>
+			{% endif %}
+		</div>
+	</div>
+</body>
 {% endblock %}
 

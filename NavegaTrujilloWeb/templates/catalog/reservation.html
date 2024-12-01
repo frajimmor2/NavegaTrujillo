@@ -4,36 +4,38 @@
 {% block main %}
 <link rel="stylesheet" href="{% static 'css/reservation_rapid.css' %}">
 <body class="reservation-rapid-page">
-    <div class="container-reservation-rapid">
-        <div class="reservation-rapid-box">
-            <script>
-                window.onload = function() {
-			document.getElementById("id_name").labels[0].innerHTML = "Nombre: ";
-			document.getElementById("id_surname").labels[0].innerHTML = "Apellidos: ";
+	<div class="container-reservation-rapid">
+		<div class="reservation-rapid-box">
+			<script>
+				window.onload = function() {
+					document.getElementById("id_name").labels[0].innerHTML = "Nombre: ";
+					document.getElementById("id_surname").labels[0].innerHTML = "Apellidos: ";
+				}
+			</script>
+			{% if user.is_authenticated %}
+			<form action="/reserva/{{ship_id}}/confirmacion" method="post">
+				{% csrf_token %}
+				{{ form2 }}
+				<button type="submit" >Pagar a contrarreembolso </button>
+			</form>
+			<a> Pagar por paypal </a>
+			{{form_paypal.render}} 
+			{% else %}
 
-			document.getElementById("pp").addEventListener("click",function() {document.getElementById("id_Email").form.action="/paypal/{{ship_id}}"});
-			document.getElementById("reembolso").addEventListener("click",function() {document.getElementById("id_Email").form.action="/reserva/{{ship_id}}/confirmacion"});
-                }
-            </script>
-            {% if user.is_authenticated %}
-            <!-- redirigimos inmediatamente a la selección de fechas -->
-            <script> window.location.href = "/reserva/{{ship_id}}"; </script>
-            {% else %}
+			<!-- Mostrar mensaje si no está autenticado -->
+			<p>No estás autentificado, por favor, rellena tus datos para la reserva</p>
 
-            <!-- Mostrar mensaje si no está autenticado -->
-            <p>No estás autentificado, por favor, rellena tus datos para la reserva</p>
+			<form action="/reserva/{{ship_id}}/confirmacion" method="post">
+				{% csrf_token %}
+				{{ form }}
+				<button type="submit">Pagar a contrareembolso</button>
+			</form>
+			<a>También puedes pagar usando paypal</a>
+			{{ form_paypal.render }}
 
-            <form action="/reserva/{{ship_id}}/confirmacion" method="post">
-                {% csrf_token %}
-                {{ form }}
-                <button id="reembolso" type="submit">Pagar a contrareembolso</button>
-            </form>
-	    <a>También puedes pagar usando paypal</a>
-	    {{ form_paypal.render }}
-		
-	    <a>(o iniciar sesión si tienes y quieres que la reserva se enlace a tu cuenta)</a>
-            {% endif %}
-        </div>
-    </div>
+			<a>(o iniciar sesión si tienes y quieres que la reserva se enlace a tu cuenta)</a>
+			{% endif %}
+		</div>
+	</div>
 </body>
 {% endblock %}
