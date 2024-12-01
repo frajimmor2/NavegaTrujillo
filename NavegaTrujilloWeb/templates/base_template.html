@@ -37,6 +37,7 @@
                 <img src="{% static 'css/imagenes/imagen/logo.png' %}" class="logo-btn" alt="Logo">
             </a>
             <a href="/catalog" class="btn" style="margin-left: 10px;">Catálogo de barcos</a>
+            <a href="/track-reservation" class="btn">Consultar seguimiento de pedido</a>
         </div>
         <div style="padding-right: 1%; display: flex; align-items: center;">
             {% if user.is_staff %}
@@ -72,7 +73,6 @@
 
         <div class="section_bottom">
             <h2>BarcosTrujillo©️ ¡Hasta los pícaros de playa pueden alquilar!</h2>
-            <a href="/track-reservation">Consultar seguimiento de pedido</a>
         </div>
     </div>
 </body>

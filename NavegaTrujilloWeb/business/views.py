@@ -612,12 +612,9 @@ def track_reservation(request):
                 reservation = None  # O maneja el caso sin reserva
             print(2)
             reservation_state = reservation.get_reservation_state_display()
-        except CustomUser.DoesNotExist:
-            reservation_state = "No user found with the provided tracking ID."
-        except AttributeError:
-            reservation_state = "The user does not have a reservation linked."
+
         except Exception as e:
-            reservation_state = f"An unexpected error occurred: {str(e)}"
+            reservation_state = f"No se ha encontrado un pedido con esa ID"
 
     return render(request, './business/track_reservation.html', {
         'reservation_state': reservation_state,
