@@ -27,6 +27,5 @@ class EditProfileForm(forms.Form):
     license_number = forms.CharField(
         max_length=50,
         required=False,
-        label="Número de Licencia",
-        help_text="Introduce el número de licencia si corresponde."
+        label="Número de Licencia (opcional)",
     )

@@ -9,7 +9,7 @@ from django.core.validators import MinValueValidator, MaxLengthValidator, MinLen
 class Port(models.Model):
     ubication = models.CharField(max_length=150,validators=[MinLengthValidator(0)], blank=False, unique=True)
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.ubication}"
 
 class Ship(models.Model):
@@ -24,7 +24,7 @@ class Ship(models.Model):
 
     name = models.CharField(max_length=45,unique=True, validators=[MinLengthValidator(0)], blank=False)
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.name} - {self.capacity} {self.rent_per_day} {self.available} {self.need_license} {self.description}"
     
 class Reservation_state(models.TextChoices):
@@ -32,8 +32,30 @@ class Reservation_state(models.TextChoices):
     RESERVED_AND_PAID = 'P', 'RESERVED_AND_PAID'
     CANCELED = 'C', 'CANCELED'
     ALREADY_RENTED = 'A', 'ALREADY_RENTED'
+    
+class Shopping_basket(models.Model):
+    ships = models.ManyToManyField(Ship)
+    #client = models.OneToOneField(Client, on_delete=models.CASCADE)
 
+    rental_start_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
+    rental_end_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
+    captain_amount = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+
+    def _str_(self):
+        return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount}"
+    
+class Client(models.Model):
+    #user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
+    #shopping_basket = models.OneToOneField(Shopping_basket, on_delete=models.CASCADE)
+
+    license_number = models.CharField(blank=True, max_length=50)
+    license_validated = models.BooleanField(default=False)
+
+    def _str_(self):
+        return f"{self.license_number} {self.license_validated}"
+    
 class Reservation(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="reservations")
     ships = models.ManyToManyField(Ship)
     port = models.ForeignKey(Port, on_delete=models.CASCADE)
 
@@ -47,26 +69,5 @@ class Reservation(models.Model):
         default=Reservation_state.RESERVED,
     )
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount} {self.total_cost} {self.reservation_state}"
-    
-class Shopping_basket(models.Model):
-    ships = models.ManyToManyField(Ship)
-    #client = models.OneToOneField(Client, on_delete=models.CASCADE)
-
-    rental_start_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
-    rental_end_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
-    captain_amount = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-
-    def __str__(self):
-        return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount}"
-    
-class Client(models.Model):
-    #user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
-    #shopping_basket = models.OneToOneField(Shopping_basket, on_delete=models.CASCADE)
-
-    license_number = models.CharField(blank=True, max_length=50)
-    license_validated = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.license_number} {self.license_validated}"
