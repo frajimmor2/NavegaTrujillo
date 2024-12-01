@@ -26,7 +26,7 @@ urlpatterns = [
     path('auth/', include("accounts.urls")),
     path('auth/', include("django.contrib.auth.urls")), 
     path('', include("catalog.urls")),
-
+    path('paypal/', include('paypal.standard.ipn.urls')),
 ]
 
 if settings.DEBUG:

@@ -25,6 +25,7 @@ SECRET_KEY = 'django-insecure-21b-bxa@#)20u5pi#oz+()brb91&kbj4dt4!$5m)2idxbkdi!q
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+PAYPAL_TEST = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'https://proyectonavegatrujillo.pythonanywhere.com']
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'paypal.standard.ipn',
     'business.apps.BusinessConfig',
     'accounts',
     'catalog.apps.CatalogConfig',

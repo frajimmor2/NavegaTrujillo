@@ -7,7 +7,8 @@ from business.models import Ship,Port, Shopping_basket
 from .forms import ShipForm, shopping_basket_form, dates_form
 from catalog.filters import ship_filter
 from datetime import timedelta, date, datetime
-
+from django.urls import reverse,reverse_lazy
+from paypal.standard.forms import PayPalPaymentsForm
 
 # Create your views here.
 
@@ -156,6 +157,17 @@ def reservation(request, ship_id):
     form = ReservationDataForm() 
     form.initial['captain'] = captain
 
-    return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form})
+    
+    paypal_dict = {
+            "business": "sb-iqwdg34506520@business.example.com",
+            "amount": str(ship.rent_per_day+[0,120][captain]),
+            "item_name": str(ship.name),
+            "invoice": "",
+            #"notify_url": request.build_absolute_uri(reverse('paypal-ipn')),#request.build_absolute_uri(reverse("paypal_congrats")), # TODO create reservation registerer
+            "return": request.build_absolute_uri(reverse_lazy("confirm_reservation_paypal",kwargs={'ship_id':ship_id,'captain':[0,1][captain]})), # TODO create view
+            "cancel_return": request.build_absolute_uri(reverse('home')),
+        }
+    form_paypal = PayPalPaymentsForm(initial=paypal_dict)
 
+    return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form,"form_paypal":form_paypal})
 

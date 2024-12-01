@@ -8,8 +8,11 @@
         <div class="reservation-rapid-box">
             <script>
                 window.onload = function() {
-                    document.getElementById("id_name").labels[0].innerHTML = "Nombre: ";
-                    document.getElementById("id_surname").labels[0].innerHTML = "Apellidos: ";
+			document.getElementById("id_name").labels[0].innerHTML = "Nombre: ";
+			document.getElementById("id_surname").labels[0].innerHTML = "Apellidos: ";
+
+			document.getElementById("pp").addEventListener("click",function() {document.getElementById("id_Email").form.action="/paypal/{{ship_id}}"});
+			document.getElementById("reembolso").addEventListener("click",function() {document.getElementById("id_Email").form.action="/reserva/{{ship_id}}/confirmacion"});
                 }
             </script>
             {% if user.is_authenticated %}
@@ -18,16 +21,17 @@
             {% else %}
 
             <!-- Mostrar mensaje si no está autenticado -->
-            <p>No estás autenticado, por favor, rellena tus datos para la reserva</p>
+            <p>No estás autentificado, por favor, rellena tus datos para la reserva</p>
 
-            <form action="/reserva/{{ship_id}}" method="post">
+            <form action="/reserva/{{ship_id}}/confirmacion" method="post">
                 {% csrf_token %}
                 {{ form }}
-                <button type="submit">Continuar con la reserva</button>
+                <button id="reembolso" type="submit">Pagar a contrareembolso</button>
             </form>
-
-
-	    <a> (también puedes iniciar sesión) </a>
+	    <a>También puedes pagar usando paypal</a>
+	    {{ form_paypal.render }}
+		
+	    <a>(o iniciar sesión si tienes y quieres que la reserva se enlace a tu cuenta)</a>
             {% endif %}
         </div>
     </div>
