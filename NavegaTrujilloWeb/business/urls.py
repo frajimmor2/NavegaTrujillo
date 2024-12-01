@@ -14,4 +14,5 @@ urlpatterns = [
     path('add-ship/', views.add_ship, name="add_ship"),
     path('profile/', views.profile, name="profile"),
     path('profile/edit/', views.edit_profile, name="edit_profile"),
+    path('accounts/<str:username>/', views.manage_license, name="manage_license"),
 ]
