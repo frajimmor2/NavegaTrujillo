@@ -12,7 +12,9 @@ body.catalog {
     justify-content: flex-start; 
     min-height: 100vh; 
     color: #333;
-    padding-top: 100px; 
+    padding-top: 10px; 
+    overflow-y: auto; /* Permitir scroll vertical */
+    padding-bottom: 150px; /* Añadir espacio para la navbar inferior */
 }
 
 /* Estilo para centrar el mensaje */

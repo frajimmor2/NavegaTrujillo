@@ -1,18 +1,32 @@
 {% extends 'base_template.html' %}
 {% load static %}
 {% block main %}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Perfil</title>
-</head>
-<body>
-    <h1>Editar Perfil</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        <a href="{% url 'profile' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+<link rel="stylesheet" href="{% static 'css/edit_profile.css' %}">
+<body class="edit-profile">
+    <div class="container-edit-profile">
+        <div class="edit-profile-box">
+            <h2>Editar Perfil</h2>
+            <form action="{% url 'edit_profile' %}" method="post">
+                {% csrf_token %}
+                <label for="first_name">Nombre:</label>
+                <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}">
+
+                <label for="last_name">Apellidos:</label>
+                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}">
+
+                <label for="username">Nombre de usuario:</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}">
+
+                <label for="email">Correo electrónico:</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}">
+
+                <label for="license_number">Número de Licencia:</label>
+                <input type="text" id="license_number" name="license_number" value="{{ client.license_number }}" placeholder="Introduce el número de licencia si corresponde.">
+
+                <input type="submit" value="Guardar Cambios">
+                <a href="{% url 'profile' %}" class="cancel-button">Cancelar</a>
+            </form>
+        </div>
+    </div>
 </body>
 {% endblock %}

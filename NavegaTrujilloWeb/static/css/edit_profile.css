@@ -1,0 +1,78 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap');
+
+
+body.edit-profile {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+
+.container-edit-profile {
+    flex: 1;
+    padding-top: 20px; 
+    padding-bottom: 100px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.edit-profile-box {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px 40px; 
+    max-width: 600px;
+    width: 100%;
+    margin: 20px;
+}
+
+
+.edit-profile-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+.edit-profile-box input[type="submit"],
+.edit-profile-box .cancel-button {
+    background-color: #4a90e2;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: fit-content;
+    align-self: center;
+}
+
+.edit-profile-box .cancel-button {
+    background-color: #aaaaaa;
+    margin-top: 10px;
+}
+
+.edit-profile-box input[type="submit"]:hover,
+.edit-profile-box .cancel-button:hover {
+    background-color: #ff7675;
+}
+
+
+.edit-profile-box label {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #333;
+}
+
+script {
+    display: none;
+}
