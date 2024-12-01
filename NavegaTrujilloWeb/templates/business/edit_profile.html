@@ -5,14 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Perfil</title>
+    <link rel="stylesheet" href="{% static 'css/edit_profile.css' %}">
 </head>
 <body>
+    <div class="edit_profile_page">
     <h1>Editar Perfil</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        <a href="{% url 'profile' %}" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="primary-button">Guardar Cambios</button>
+        <a href="{% url 'profile' %}" class="secondary-button">Cancelar</a>
     </form>
+    </div>
 </body>
 {% endblock %}
