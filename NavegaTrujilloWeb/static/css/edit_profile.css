@@ -1,78 +1,111 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap');
-
-
-body.edit-profile {
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9; 
+    color: #333; 
     margin: 0;
     padding: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #a8edea, #fed6e3);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-
-
-.container-edit-profile {
-    flex: 1;
-    padding-top: 20px; 
-    padding-bottom: 100px; 
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100vh;
 }
 
 
-.edit-profile-box {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 30px 40px; 
-    max-width: 600px;
-    width: 100%;
-    margin: 20px;
-}
-
-
-.edit-profile-box form {
+.edit_profile_page {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    background-color: #ffffff; 
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
 }
 
-
-.edit-profile-box input[type="submit"],
-.edit-profile-box .cancel-button {
-    background-color: #4a90e2;
-    color: white;
+h1 {
+    color: #333; 
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
     font-weight: bold;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: fit-content;
-    align-self: center;
 }
 
-.edit-profile-box .cancel-button {
-    background-color: #aaaaaa;
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+}
+
+button.primary-button {
+    background-color: #4a90e2;
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s;
     margin-top: 10px;
 }
 
-.edit-profile-box input[type="submit"]:hover,
-.edit-profile-box .cancel-button:hover {
-    background-color: #ff7675;
+button.primary-button:hover {
+    background-color: #357abd;
+    transform: translateY(-2px);
 }
 
-
-.edit-profile-box label {
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
+a.secondary-button {
+    text-align: center;
     color: #333;
+    background-color: #e9ecef;
+    padding: 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-top: 10px;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-script {
-    display: none;
+a.secondary-button:hover {
+    background-color: #d0d2d6;
+    transform: translateY(-2px);
+}
+
+button.primary-button:focus, a.secondary-button:focus {
+    outline: 2px solid #4a90e2;
+    outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+    .edit_profile_page {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    button.primary-button, a.secondary-button {
+        font-size: 0.95rem;
+    }
 }
