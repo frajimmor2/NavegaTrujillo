@@ -32,22 +32,6 @@ class Reservation_state(models.TextChoices):
     CANCELED = 'C', 'CANCELED'
     ALREADY_RENTED = 'A', 'ALREADY_RENTED'
 
-class Reservation(models.Model):
-    ships = models.ManyToManyField(Ship)
-    port = models.ForeignKey(Port, on_delete=models.CASCADE)
-
-    rental_start_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
-    rental_end_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
-    captain_amount = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    total_cost = models.FloatField(validators=[MinValueValidator(0.)])
-    reservation_state = models.CharField(
-        max_length=1,
-        choices=Reservation_state.choices,
-        default=Reservation_state.RESERVED,
-    )
-
-    def __str__(self):
-        return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount} {self.total_cost} {self.reservation_state}"
     
 class Shopping_basket(models.Model):
     ships = models.ManyToManyField(Ship)
@@ -69,3 +53,21 @@ class Client(models.Model):
 
     def __str__(self):
         return f"{self.license_number} {self.license_validated}"
+    
+class Reservation(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="reservations")
+    ships = models.ManyToManyField(Ship)
+    port = models.ForeignKey(Port, on_delete=models.CASCADE)
+
+    rental_start_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
+    rental_end_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
+    captain_amount = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    total_cost = models.FloatField(validators=[MinValueValidator(0.)])
+    reservation_state = models.CharField(
+        max_length=1,
+        choices=Reservation_state.choices,
+        default=Reservation_state.RESERVED,
+    )
+
+    def __str__(self):
+        return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount} {self.total_cost} {self.reservation_state}"

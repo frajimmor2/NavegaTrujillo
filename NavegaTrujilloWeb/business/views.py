@@ -1,6 +1,6 @@
 import json
 from django.http import HttpResponse,HttpResponseForbidden
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
 from django.utils import timezone
@@ -271,6 +271,7 @@ def confirm_reservation_cart(request):
 
         user = CustomUser.objects.get(username=username)
         reservation = Reservation()
+        reservation.client = user.client
         reservation.rental_start_date = start_date
         reservation.rental_end_date = end_date
         reservation.reservation_state = 'R'
@@ -290,6 +291,8 @@ def confirm_reservation_cart(request):
         reservation.save()
         user.client.reservation = reservation
         user.save()
+        print(user.username)
+        print(1)
         return render(request, './business/reservation_cart_confirmed.html', {'lookup_id':user.username})
 
 
@@ -357,7 +360,8 @@ def confirm_reservation(request,ship_id):
         reservation.ships.set(user.shopping_basket.ships.all())
         reservation.save()
         user.save()
-
+        print(user.username)
+        print(2)
         return render(request, './business/reservation_confirmed.html', {'lookup_id':user.username})
 
 def cart(request):
@@ -398,3 +402,33 @@ def add_port(request):
             return redirect("home")  # Redirige al usuario al inicio después de añadir el puerto
 
     return render(request, "./business/add_port.html")
+
+
+def track_reservation(request):
+    reservation_state = None
+    id_seguimiento = None
+    if request.method == 'POST':
+        id_seguimiento = request.POST.get('id_seguimiento')
+
+        try:
+            user = CustomUser.objects.get(username=id_seguimiento)
+            print(1)
+            reservations = Reservation.objects.filter(client=user.client)
+            if reservations.exists():
+                reservation = reservations.first()  # Toma la primera reserva encontrada
+            else:
+                print("No hay reservas para este cliente.")
+                reservation = None  # O maneja el caso sin reserva
+            print(2)
+            reservation_state = reservation.get_reservation_state_display()
+        except CustomUser.DoesNotExist:
+            reservation_state = "No user found with the provided tracking ID."
+        except AttributeError:
+            reservation_state = "The user does not have a reservation linked."
+        except Exception as e:
+            reservation_state = f"An unexpected error occurred: {str(e)}"
+
+    return render(request, './business/track_reservation.html', {
+        'reservation_state': reservation_state,
+        'reservation_id': id_seguimiento,
+    })
