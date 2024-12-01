@@ -447,16 +447,28 @@ def add_port(request):
     if not request.user.is_staff:
         return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
 
+    # Manejo del formulario de creación de puerto
     if request.method == "POST":
+        # Si el formulario es para añadir un nuevo puerto
         ubication = request.POST.get("ubication")
         if ubication:
             Port.objects.create(ubication=ubication)
             return redirect("home")  # Redirige al usuario al inicio después de añadir el puerto
 
-    return render(request, "./business/add_port.html")
+        # Si el formulario es para eliminar un puerto
+        puerto_id = request.POST.get("puerto_id")
+        if puerto_id:
+            try:
+                puerto = Port.objects.get(id=puerto_id)
+                puerto.delete()  # Eliminar el puerto seleccionado
+                return redirect("home")  # Redirigir de nuevo a la página para actualizar la lista
+            except Port.DoesNotExist:
+                pass  # Si el puerto no existe, no hacer nada
 
+    # Obtener todos los puertos existentes
+    puertos = Port.objects.all()
 
-
+    return render(request, "business/add_port.html", {"puertos": puertos})
 
 
 @login_required
