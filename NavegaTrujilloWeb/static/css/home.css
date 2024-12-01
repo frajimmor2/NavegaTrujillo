@@ -12,6 +12,9 @@ body.home-page-home {
     min-height: 100vh;
     color: #333;
     box-sizing: border-box;
+    padding-top: 10px; 
+    overflow-y: auto; /* Permitir scroll vertical */
+    padding-bottom: 80px; /* Añadir espacio para la navbar inferior */
 }
 
 .header-home-home {

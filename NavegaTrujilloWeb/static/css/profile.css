@@ -1,0 +1,66 @@
+/* Importar una fuente bonita de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap');
+
+/* Ajustar el body para eliminar el margen superior */
+body.profile {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* Ajuste del contenedor principal */
+.container-profile {
+    flex: 1;
+    padding-top: 80px; /* Deja espacio para la navbar */
+    padding-bottom: 60px; /* Deja espacio para la barra inferior */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilo del bloque de perfil */
+.profile-box {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    max-width: 600px;
+    width: 100%;
+    margin: 20px;
+    text-align: left;
+}
+
+/* Estilo del título */
+.profile-box h1 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilo del texto */
+.profile-box p {
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+    color: #666;
+    margin: 10px 0;
+}
+
+/* Estilo del enlace para editar */
+.profile-box a {
+    font-size: 18px;
+    color: #4a90e2;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.profile-box a:hover {
+    color: #ff7675;
+    transform: scale(1.05);
+}
