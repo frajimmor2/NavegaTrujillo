@@ -612,11 +612,12 @@ def confirm_reservation_paypal(request,ship_id,captain):
     reservation.reservation_state = 'P'
     reservation.captain_amount = captain
     reservation.total_cost = ship.rent_per_day+[0,120][captain] #jiji
-    reservation.client = user.client
     reservation.port = ship.port
+    reservation.client = client
     reservation.save()
     reservation.ships.set([ship])
     reservation.save()
+    client.save()
     user.save()         
 
 
