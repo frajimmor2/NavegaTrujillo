@@ -67,12 +67,18 @@ def filtered_list(request):
                 for day in rent_days:
                     if day in taken_days:
                         ship.available = False
+
+        ships_f = Ship.objects.all().order_by('capacity')
+
+        for ship in ships_f:
+            if not(ship in ships):
+                ship.available= False
                         
                 
             
 
 
-    return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f, "form": form})
+    return render(request,"./catalog/list.html" ,{"ships":ships_f, "filter": f, "form": form})
 
 def show(request, ship_id):
 
