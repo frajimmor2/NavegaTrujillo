@@ -69,14 +69,19 @@ def filtered_list(request):
                 for day in rent_days:
                     if day in taken_days:
                         ship.available = False
-                        
+
+        ships_f = Ship.objects.all().order_by('capacity')
+
+        for ship in ships_f:
+            if not(ship in ships):
+                ship.available= False    
                 
     form_obligatory_captain = ReservationForm()
     form_optional_captain = ReservationFormNotLogged()
         
 
 
-    return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
+    return render(request,"./catalog/list.html" ,{"ships":ships_f, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
 
 def show(request, ship_id):
 
