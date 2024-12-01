@@ -1,6 +1,8 @@
 import json
 from random import randint
 from django.http import HttpResponse,HttpResponseForbidden
+from django.urls import reverse_lazy,reverse
+from paypal.standard.forms import PayPalPaymentsForm
 from django.shortcuts import render, redirect
 from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
@@ -13,7 +15,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.core.exceptions import ValidationError
 from catalog.forms import dates_form
 from catalog.filters import ship_filter
-
+from django.dispatch import receiver
 
 
 def home(request):
@@ -366,55 +368,43 @@ def confirm_reservation(request,ship_id):
         # os.sleep(100000)
         return HttpResponse("¿Cómo has llegado aquí?",status=400)
 
-    if request.user.is_authenticated:
-        form = ReservationTimeForm(request.POST)
-        if form.is_valid():
-            start_date = form.cleaned_data['start_date']
-            end_date = form.cleaned_data['end_date']
-            captain = form.cleaned_data['captain']
-        else:
-            return HttpResponse("Algo ha ido mal",status=400)
+    user1 = request.user.is_authenticated
+    form = ReservationDataForm(request.POST)
+    if not form.is_valid():
+        return HttpResponse("Algo ha ido mal, vuelva a intentarlo",status=400)
+    email = form.cleaned_data['Email']
+    name = form.cleaned_data['name']
+    surname = form.cleaned_data['surname']
+    captain = form.cleaned_data['captain']
 
-        user = CustomUser.objects.get(username=request.user.username)
-        reservation = Reservation()
-        reservation.rental_start_date = start_date
-        reservation.rental_end_date = end_date
-        reservation.reservation_state = 'R'
-        reservation.captain_amount = 1 if captain else 0
-        reservation.total_cost = ship.rent_per_day+reservation.captain_amount*120
-        reservation.client = user.client
-        reservation.port = ship.port
-        reservation.save()
-        reservation.ships.set(user.shopping_basket.ships.all())
-        reservation.save()
-        user.save()         
-        return render(request, './business/reservation_confirmed.html')
+    user = CustomUser()
+    user.username = hash(" ".join([name,email,str(randint(1,100000))]))
+    user.name = email if user1 else name
+    user.email = email
+    user.surname = name+surname if user1 else surname
+    client = Client()
+    shopping_basket = Shopping_basket()
+    shopping_basket.rental_start_date = timezone.now()
+    shopping_basket.rental_end_date = timezone.now()
+    shopping_basket.save()
+    user.shopping_basket = shopping_basket
+    client.save()
+    user.client = client
+    user.save()
+    reservation = Reservation()
+    reservation.rental_start_date = timezone.now()+timedelta(days=1)
+    reservation.rental_end_date = timezone.now()+timedelta(days=1)
+    reservation.reservation_state = 'R'
+    reservation.captain_amount = 1 if captain else 0
+    reservation.total_cost = ship.rent_per_day+[0,120][captain] #jiji
+    reservation.client = user.client
+    reservation.port = ship.port
+    reservation.save()
+    reservation.ships.set([ship])
+    reservation.save()
+    user.save()         
 
-    else:
-        form = ReservationTimeUnloggedForm(request.POST)
-        if form.is_valid():
-            start_date = form.cleaned_data['start_date']
-            end_date = form.cleaned_data['end_date']
-            username = form.cleaned_data['user']
-            captain = form.cleaned_data['captain']
-        else:
-            return HttpResponse("Algo ha salido mal",status=500)
-
-        user = CustomUser.objects.get(username=username)
-        reservation = Reservation()
-        reservation.rental_start_date = start_date
-        reservation.rental_end_date = end_date
-        reservation.reservation_state = 'R'
-        reservation.captain_amount = 1 if captain else 0
-        reservation.total_cost = ship.rent_per_day+reservation.captain_amount*120
-        reservation.client = user.client
-        reservation.port = user.shopping_basket.ships.all()[0].port
-        reservation.save()
-        reservation.ships.set(user.shopping_basket.ships.all())
-        reservation.save()
-        user.save()
-
-        return render(request, './business/reservation_confirmed.html', {'lookup_id':user.username})
+    return render(request, './business/reservation_confirmed.html', {'lookup_id':user.username})
 
 def cart(request):
     '''
@@ -601,3 +591,33 @@ def edit_profile(request):
 
     return render(request, 'business/edit_profile.html', {'form': form})
 
+
+def confirm_reservation_paypal(request,ship_id,captain):
+    id_usuario = request.GET.get('PayerID')
+    ship = Ship.objects.get(id=ship_id)
+    user = CustomUser()
+    user.username = hash(" ".join([ship.name,id_usuario,str(captain),str(randint(1,100000))]))
+    user.email = id_usuario
+    shopping_basket = Shopping_basket()
+    shopping_basket.rental_start_date = timezone.now()
+    shopping_basket.rental_end_date = timezone.now()
+    shopping_basket.save()
+    client = Client()
+    client.save()
+    user.client = client
+    user.shopping_basket = shopping_basket
+    reservation = Reservation()
+    reservation.rental_start_date = timezone.now()+timedelta(days=1)
+    reservation.rental_end_date = timezone.now()+timedelta(days=1)
+    reservation.reservation_state = 'P'
+    reservation.captain_amount = captain
+    reservation.total_cost = ship.rent_per_day+[0,120][captain] #jiji
+    reservation.client = user.client
+    reservation.port = ship.port
+    reservation.save()
+    reservation.ships.set([ship])
+    reservation.save()
+    user.save()         
+
+
+    return render(request,"business/reservation_confirmed.html",{"lookup_id":user.username})
