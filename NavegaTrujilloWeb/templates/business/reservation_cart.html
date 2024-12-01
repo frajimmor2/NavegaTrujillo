@@ -1,27 +1,35 @@
 {% extends 'base_template.html' %}
-
+{% load static %}
+{% block title %}
+    
+{% endblock %}
 
 {% block main %}
-<script>
-	window.onload = function() {
+<link rel="stylesheet" href="{% static 'css/reservation_cart.css' %}" type="text/css">
+	<body class="reservation-cart">
+        <div class="container-reservation-cart">
+            <div class="reservation-cart-box">
+                <script>
+                    window.onload = function() {
+                        document.getElementById("id_start_date").labels[0].innerHTML = "Día de inicio: ";
+                        document.getElementById("id_end_date").labels[0].innerHTML = "Día de fin: ";
+                    }
+                </script>
 
-		document.getElementById("id_start_date").labels[0].innerHTML = "Día de inicio: "
-		document.getElementById("id_end_date").labels[0].innerHTML = "Día de fin: "
-	}
-</script>
-{% if form %}
-<form action="/cart/reserva/confirmacion" method="post">
-
-	{% csrf_token %}
-	{{ form }}
-	<input type="submit" value="Reservar">
-</form>
-{% else %}
-<form action="" method="post">
-
-	{% csrf_token %}
-	{{ form2 }}
-	<input type="submit" value="Reservar">
-</form>
-{% endif %}
+                {% if form %}
+                <form action="/cart/reserva/confirmacion" method="post">
+                    {% csrf_token %}
+                    {{ form }}
+                    <input type="submit" value="Reservar">
+                </form>
+                {% else %}
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form2 }}
+                    <input type="submit" value="Reservar">
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </body>
 {% endblock %}

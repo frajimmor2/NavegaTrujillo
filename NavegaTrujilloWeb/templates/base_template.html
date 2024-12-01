@@ -1,25 +1,19 @@
 <!DOCTYPE html>
 <html>
 
-<head>   
+<head>
     <script type="text/javascript">
     function getCookie(name) {
-        // Split cookie string and get all individual name=value pairs in an array
         var cookieArr = document.cookie.split(";");
     
-        // Loop through the array elements
         for(var i = 0; i < cookieArr.length; i++) {
             var cookiePair = cookieArr[i].split("=");
     
-            /* Removing whitespace at the beginning of the cookie name
-            and compare it with the given string */
             if(name == cookiePair[0].trim()) {
-                // Decode the cookie value and return
                 return decodeURIComponent(cookiePair[1]);
             }
         }
     
-        // Return null if not found
         return null;
     }
     var cart = JSON.parse(getCookie('cart'))
@@ -35,42 +29,49 @@
     {% load static %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/navbar_styles.css' %}" type="text/css">
-    <h4>
-        <div class="section_top">
-            <div style="padding-left: 1%;">
-                <a href="/catalog" class="btn">Catálogo de barcos</a>
-            </div>
-            <div style="padding-right: 1%;">
-                {% if user.is_authenticated %}
-                    <a href="/cart">
-                        <i class="fas fa-shopping-cart"></i>
-                    </a>
-                    <form action="{% url 'logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit">Cerrar sesión</button>
-                    </form>
-                {% else %}
-                    <a href="/cart">
-                        <i class="fas fa-shopping-cart"></i>
-                    </a>
-                    <a href="/auth/login">Iniciar sesión</a>
-                    <a href="/auth/signup">Registrarse</a>
-                {% endif %}
-            </div>
-        </div>
-    </h4>
 </head>
 <body>
+    <div class="section_top">
+        <div style="padding-left: 1%; display: flex; align-items: center;">
+            <a href="/home">
+                <img src="{% static 'css/imagenes/imagen/logo.png' %}" class="logo-btn" alt="Logo">
+            </a>
+            <a href="/catalog" class="btn" style="margin-left: 10px;">Catálogo de barcos</a>
+        </div>
+        <div style="padding-right: 1%; display: flex; align-items: center;">
+            {% if user.is_staff %}
+                <a href="/add-ship" class="nav-link">Añadir barco</a>
+            {% endif %}
+            {% if user.is_authenticated %}
+                
+                <a href="/cart" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <a href="/profile" class="nav-link">Perfil</a>
+                <form action="{% url 'logout' %}" method="post" style="margin-left: 10px;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn" style="background-color: #f44336; border: none;">Cerrar sesión</button>
+                </form>
+            {% else %}
+                <a href="/cart" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <a href="/auth/login" class="nav-link">Iniciar sesión</a>
+                <a href="/auth/signup" class="nav-link" style="margin-left: 10px;">Registrarse</a>
+            {% endif %}
+        </div>
+    </div>
+
     <div class="title_css">
-    {% block title %}
-    {% endblock %}
+        {% block title %}
+        {% endblock %}
     </div>
     <div class="container">
         {% block main %}
         {% endblock %}
 
-        <div class="section_bottom" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
-            <h2>BarcosTrujillo©️      ¡Hasta los pícaros de playa pueden alquilar!</h2>
+        <div class="section_bottom">
+            <h2>BarcosTrujillo©️ ¡Hasta los pícaros de playa pueden alquilar!</h2>
             <a href="/track-reservation">Consultar seguimiento de pedido</a>
         </div>
     </div>

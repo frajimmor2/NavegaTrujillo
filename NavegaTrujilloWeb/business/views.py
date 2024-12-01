@@ -1,13 +1,18 @@
 import json
+from random import randint
 from django.http import HttpResponse,HttpResponseForbidden
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
 from django.utils import timezone
-from .forms import ReservationTimeForm,ReservationTimeUnloggedForm
-from catalog.forms import ReservationDataForm
+from .forms import ReservationTimeForm,ReservationTimeUnloggedForm, EditProfileForm
+from catalog.forms import ReservationDataForm,ReservationForm,ReservationFormNotLogged
 from datetime import datetime,timedelta
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from django.core.exceptions import ValidationError
+from catalog.forms import dates_form
+from catalog.filters import ship_filter
 
 
 
@@ -15,7 +20,9 @@ def home(request):
 
     ships = Ship.objects.all()[:8]
     ports = Port.objects.all()
-    context = {"ships": ships, "ports": ports}
+    f = ship_filter(request.GET, queryset=(Ship.objects.all()))
+    form = dates_form()
+    context = {"ships": ships, "ports": ports, "filter": f, "form": form}
     return render(request,"./business/home_view.html", context)
 
 
@@ -97,28 +104,26 @@ def reservation(request,ship_id):
             email = form.cleaned_data['Email']
             name = form.cleaned_data['name']
             surname = form.cleaned_data['surname']
+            captain = form.cleaned_data['captain']
             try:
-                user = CustomUser.objects.get(Email=email)
-                user = True
+                user1 = CustomUser.objects.get(Email=email)
+                user1 = True
             except:
-                user = False
+                user1 = False
 
-            if user:
-                ''' Ese email está en uso, nanai '''
-                return HttpResponse("Ese email ya existe, si tienes cuenta inicia sesión por favor",status=401)
             
             user = CustomUser()
-            user.username = hash(" ".join([name,email,str(ship.id)]))
-            user.email = email
-            user.name = name
-            user.surname = surname
+            user.username = hash(" ".join([name,email,str(randint(1,100000))]))
+            user.email = ""
+            user.name = email if user1 else name
+            user.surname = str(name+surname) if user1 else surname
             client = Client()
             client.license_number=""
             client.license_validated=False
             shopping_basket = Shopping_basket()
-            shopping_basket.rental_start_date = timezone.now()
-            shopping_basket.rental_end_date = timezone.now()
-            shopping_basket.captain_amount = 0 # TODO arreglar esto
+            shopping_basket.rental_start_date = timezone.now()+timedelta(days=1)
+            shopping_basket.rental_end_date = timezone.now()+timedelta(days=1)
+            shopping_basket.captain_amount = 1 if captain else 0
             shopping_basket.save()
             shopping_basket.ships.add(ship)
             shopping_basket.save()
@@ -129,20 +134,54 @@ def reservation(request,ship_id):
             user.save()
             
 
-            form = ReservationTimeUnloggedForm()
+            form = ReservationTimeUnloggedForm() # TODO
             form.initial['user'] = user.username
+            form.initial['captain'] = captain
+            return render(request,'./business/reservation_payment.html', {'form':form,'ship':ship})
 
-            return render(request,'./business/reservation.html', {'form':form,'taken_days':taken_days,'ship':ship})
-
+        form = ReservationForm(request.POST)
+        if form.is_valid():
+            captain = form.cleaned_data['captain']
         else:
+            form = ReservationFormNotLogged(request.POST)
+            if form.is_valid():
+                captain = form.cleaned_data['captain']
+        name = request.user.name
+        surname = request.user.surname
+        email = request.user.email
+        user = CustomUser()
+        user.username = hash(" ".join([name,email,str(randint(1,100000))]))
+        user.email = ""
+        user.name = email 
+        user.surname = str(name+surname) 
+        client = Client()
+        client.license_number=""
+        client.license_validated=False
+        shopping_basket = Shopping_basket()
+        shopping_basket.rental_start_date = timezone.now()+timedelta(days=1)
+        shopping_basket.rental_end_date = timezone.now()+timedelta(days=1)
+        shopping_basket.captain_amount = 1 if captain else 0
+        shopping_basket.save()
+        shopping_basket.ships.add(ship)
+        shopping_basket.save()
+        client.shopping_basket = shopping_basket
+        client.save()
+        user.shopping_basket = shopping_basket
+        user.client = client
+        user.save()
 
-            if request.user.is_authenticated:
-                form = ReservationTimeForm()
-                return render(request,'./business/reservation.html', {'form':form,'taken_days':taken_days,'ship':ship})
+        form = ReservationTimeUnloggedForm() # TODO
+        form.initial['user'] = user.username
+        form.initial['captain'] = captain
+        return render(request,'./business/reservation_payment.html',{'form':form,'ship':ship})
+
+    else:
+        if not request.user.is_authenticated:
+            return HttpResponse("Acceda desde el escaparate o la página del barco por favor",status=405)
+        if not ship:
+            return HttpResponse("Ese barco no existe",status=404)
 
 
-            ''' ¿Que? '''
-            return HttpResponse("Rellene el formulario correctamente por favor",status=405)
 
 
 def cart_reservation(request):
@@ -153,6 +192,7 @@ def cart_reservation(request):
     cartItems = cookieData['cartItems']
     order = cookieData['order']
     items = cookieData['items']
+            
     if request.method=="POST":
         
         form = ReservationDataForm(request.POST)
@@ -161,37 +201,33 @@ def cart_reservation(request):
             name = form.cleaned_data['name']
             surname = form.cleaned_data['surname']
             try:
-                user = CustomUser.objects.get(Email=email)
-                user = True
+                user1 = CustomUser.objects.get(Email=email)
+                user1 = True
             except:
-                user = False
+                user1 = False
 
-            if user:
-                ''' Ese email está en uso, nanai '''
-                return HttpResponse("Ese email ya existe, si tienes cuenta inicia sesión por favor",status=401)
-            
             user = CustomUser()
-            user.username = hash(" ".join([name,email]))
-            user.email = email
-            user.name = name
-            user.surname = surname
+            user.username = hash(" ".join([name,email,str(randint(1,1000000))]))
+            user.email = ""
+            user.name = email if user1 else name
+            user.surname = str(name+surname) if user1 else surname
             client = Client()
             client.license_number=""
             client.license_validated=False
             shopping_basket = Shopping_basket()
             shopping_basket.rental_start_date = timezone.now()
             shopping_basket.rental_end_date = timezone.now()
-            shopping_basket.captain_amount = 0 # TODO arreglar esto
+            shopping_basket.captain_amount = order['captain_amount']
             shopping_basket.save()
             client.shopping_basket = shopping_basket
             client.save()
             user.shopping_basket = shopping_basket
             user.client = client
             user.save()
-            
 
             form = ReservationTimeUnloggedForm()
             form.initial['user'] = user.username
+            form.initial['captain'] = False
             taken_days = []
             ships = []
             for i in items:
@@ -211,7 +247,7 @@ def cart_reservation(request):
                         break
                     delta = end_date-start_date
                     delta = delta.days
-                    for i in range(delta):
+                    for i in range(delta+1):
                         taken_days.add(start_date+timedelta(days=i))            
 
             return render(request,'./business/reservation_cart.html', {'form':form,'taken_days':taken_days})
@@ -224,11 +260,29 @@ def cart_reservation(request):
         form2 = False
         if request.user.is_authenticated:
             form = ReservationTimeUnloggedForm()
-            form.initial['user'] = request.user.username
+            form.initial['captain'] = False
+            form.initial['user'] = hash(request.user.email+request.user.username+str(randint(1,10000)))
+            user = CustomUser()
+            user.username = form.initial['user']
+            user.email = ""
+            user.name = request.user.email
+            user.surname = str(request.user.name+request.user.surname)
+            client = Client()
+            client.license_number=""
+            client.license_validated=False
+            shopping_basket = Shopping_basket()
+            shopping_basket.rental_start_date = timezone.now()
+            shopping_basket.rental_end_date = timezone.now()
+            shopping_basket.captain_amount = order['captain_amount']
+            shopping_basket.save()
+            client.shopping_basket = shopping_basket
+            client.save()
+            user.shopping_basket = shopping_basket
+            user.client = client
+            user.save()
         else:
             form2 = ReservationDataForm()
         
-        # TODO crear lista con los intervalos en los que el barco no está disponible
         ships = []
         for i in items:
             ship = i['ship']
@@ -246,7 +300,7 @@ def cart_reservation(request):
                 if start_date in taken_days and end_date in taken_days:
                     break
                 delta = end_date-start_date
-                delta = delta.days
+                delta = delta.days+1
                 for i in range(delta):
                     taken_days.add(start_date+timedelta(days=i))
 
@@ -320,6 +374,7 @@ def confirm_reservation(request,ship_id):
         if form.is_valid():
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
+            captain = form.cleaned_data['captain']
         else:
             return HttpResponse("Algo ha ido mal",status=400)
 
@@ -328,8 +383,8 @@ def confirm_reservation(request,ship_id):
         reservation.rental_start_date = start_date
         reservation.rental_end_date = end_date
         reservation.reservation_state = 'R'
-        reservation.captain_amount = 0 # TODO fix this
-        reservation.total_cost = 0 # TODO calcular coste
+        reservation.captain_amount = 1 if captain else 0
+        reservation.total_cost = ship.rent_per_day+reservation.captain_amount*120
         reservation.client = user.client
         reservation.port = ship.port
         reservation.save()
@@ -344,6 +399,7 @@ def confirm_reservation(request,ship_id):
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
             username = form.cleaned_data['user']
+            captain = form.cleaned_data['captain']
         else:
             return HttpResponse("Algo ha salido mal",status=500)
 
@@ -352,8 +408,8 @@ def confirm_reservation(request,ship_id):
         reservation.rental_start_date = start_date
         reservation.rental_end_date = end_date
         reservation.reservation_state = 'R'
-        reservation.captain_amount = 0 # TODO fix this
-        reservation.total_cost = 0 # TODO calcular coste
+        reservation.captain_amount = 1 if captain else 0
+        reservation.total_cost = ship.rent_per_day+reservation.captain_amount*120
         reservation.client = user.client
         reservation.port = user.shopping_basket.ships.all()[0].port
         reservation.save()
@@ -402,6 +458,141 @@ def add_port(request):
             return redirect("home")  # Redirige al usuario al inicio después de añadir el puerto
 
     return render(request, "./business/add_port.html")
+
+
+
+
+
+@login_required
+def manage_license(request, username):
+    # Solo usuarios con permisos de staff pueden acceder a la pagina
+    if not request.user.is_staff:
+        return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
+
+    # Obtén el usuario a partir del username
+    user = get_object_or_404(CustomUser, username=username)
+
+    # Intenta obtener el cliente asociado al usuario
+    try:
+        client = Client.objects.get(id=user.client_id)  # Relación entre CustomUser y Client usando `client_id`
+    except Client.DoesNotExist:
+        return HttpResponse("El usuario no tiene un cliente asociado.", status=404)
+
+    if request.method == "POST":
+        # Toma los datos enviados desde el formulario para actualizar la licencia del cliente
+        license_number = request.POST.get("license_number")
+        license_validated = request.POST.get("license_validated") == "on"
+
+        # Actualiza los atributos del cliente que corresponda al campo username que ponemos en la ruta
+        client.license_number = license_number
+        client.license_validated = license_validated
+        client.save()
+
+        # Redirige al usuario al home después de guardar para que sea mas comodo
+        return redirect("home")
+
+    
+    return render(request, './business/manage_license.html', {"client": client, "username": username})
+
+@login_required
+def add_ship(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
+
+    if request.method == "POST":
+        name = request.POST.get("name")
+        capacity = request.POST.get("capacity")
+        rent_per_day = request.POST.get("rent_per_day")
+        available = request.POST.get("available") == "on"
+        need_license = request.POST.get("need_license") == "on"
+        description = request.POST.get("description")
+        port_id = request.POST.get("port")
+        image = request.FILES.get("image")
+
+        if name and capacity and rent_per_day and description and port_id:
+            try:
+                port = Port.objects.get(id=port_id)
+
+                Ship.objects.create(
+                    name=name,
+                    capacity=int(capacity),
+                    rent_per_day=float(rent_per_day),
+                    available=available,
+                    need_license=need_license,
+                    description=description,
+                    image=image,
+                    port=port  
+                )
+                return redirect("home")
+
+            except Port.DoesNotExist:
+                return render(request, "./business/add_ship.html", {
+                    "ports": Port.objects.all(),
+                    "error": "El puerto seleccionado no existe."
+                })
+
+            except ValidationError as e:
+                return render(request, "./business/add_ship.html", {
+                    "ports": Port.objects.all(),
+                    "error": f"Error de validación: {e.messages}"
+                })
+
+    return render(request, "./business/add_ship.html", {
+        "ports": Port.objects.all()  
+    })
+
+def profile(request):
+    user = request.user
+    client = user.client
+    return render(request, "./business/profile.html", {"user": user, "client": client})
+
+def edit_profile(request):
+    user = request.user
+
+    # Prellenar el formulario con los datos del usuario y del cliente
+    initial_data = {
+        'name': user.name,
+        'surname': user.surname,
+        'username': user.username,
+        'email': user.email,
+    }
+    if user.client:
+        initial_data['license_number'] = user.client.license_number
+
+    if request.method == 'POST':
+        user = request.user
+
+    # Prellenar el formulario con los datos del usuario y del cliente
+    initial_data = {
+        'name': user.name,
+        'surname': user.surname,
+        'username': user.username,
+        'email': user.email,
+    }
+    if user.client:
+        initial_data['license_number'] = user.client.license_number
+
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST)
+        if form.is_valid():
+            # Actualizar los datos del usuario
+            user.name = form.cleaned_data['name']
+            user.surname = form.cleaned_data['surname']
+            user.username = form.cleaned_data['username']
+            user.email = form.cleaned_data['email']
+            user.save()
+
+            # Actualizar los datos del cliente (si existe)
+            if user.client:
+                user.client.license_number = form.cleaned_data['license_number']
+                user.client.save()
+
+            return redirect('profile')  # Redirigir al perfil después de guardar
+    else:
+        form = EditProfileForm(initial=initial_data)
+
+    return render(request, 'business/edit_profile.html', {'form': form})
+
 
 
 def track_reservation(request):

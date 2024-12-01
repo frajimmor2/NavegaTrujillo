@@ -12,6 +12,9 @@ body.home-page-home {
     min-height: 100vh;
     color: #333;
     box-sizing: border-box;
+    padding-top: 10px; 
+    overflow-y: auto; /* Permitir scroll vertical */
+    padding-bottom: 80px; /* Añadir espacio para la navbar inferior */
 }
 
 .header-home-home {
@@ -100,13 +103,13 @@ body.home-page-home {
     padding-bottom: 10px; 
 }
 
-.footer-home-home h4 {
+.footer-home-home { 
     font-size: 16px; 
     color: #333;
     margin: 15px 0; 
 }
 
-.footer-home-home .port-locations-home {
+.footer-home-home .port-locations-home h4 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;

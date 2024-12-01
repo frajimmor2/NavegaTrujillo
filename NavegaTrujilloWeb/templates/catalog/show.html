@@ -1,51 +1,52 @@
 {% extends 'base_template.html' %}
 
-{% block title %} <h1>{{ship.name}}</h1> {% endblock %}
+{% block title %}
+<h1 class="ship-show-title">{{ ship.name }}</h1>
+{% endblock %}
 
 {% block main %}
 
 <script>
-	function addCookieItem(shipId, action){
-		console.log('User is not authenticated')
-	
-		if (action == 'add'){
-			if (cart[shipId] == undefined){
-			cart[shipId] = {'quantity':1}
-	
-			}else{
-				cart[shipId]['quantity'] = 1
-			}
-		}
-	
-		if (action == 'remove'){
-			cart[shipId]['quantity'] = 0
-	
-			if (cart[shipId]['quantity'] <= 0){
-				console.log('Item should be deleted')
-				delete cart[shipId];
-			}
-		}
-		console.log('CART:', cart)
-		document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
-		location.reload()
-	}
-</script>	
+<<<<<<< HEAD
+    function addCookieItem(shipId, action){
+
+        if (action == 'add') {
+            if (cart[shipId] == undefined) {
+                cart[shipId] = {'quantity': 1};
+            } else {
+                cart[shipId]['quantity'] = 1;
+            }
+        }
+
+        if (action == 'remove') {
+            cart[shipId]['quantity'] = 0;
+
+            if (cart[shipId]['quantity'] <= 0) {
+                delete cart[shipId];
+            }
+        }
+        document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/";
+        location.reload();
+    }
+</script>
 
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/show.css' %}" type="text/css">
 
+<body class="ship-show-page">
+    <div class="ship-show-container">
+        <!-- Título del Barco -->
+        
 
-<div class=" col-12">
-	<!-- En caso de que se sea admin, devuelve el formulario para cambiar los datos -->
-	{% if request.user.is_staff and form %}
-		<form action="" method="post">
-
-			{% csrf_token %}
-			{{ ship_form }}
-			<input type="submit" value="Actualizar">
-		</form>
-	{% else %}
+        <!-- En caso de que sea admin, devuelve el formulario para cambiar los datos -->
+        {% if request.user.is_staff and form %}
+        <form action="" method="post" class="ship-show-card">
+            {% csrf_token %}
+            {{ ship_form }}
+            <input type="submit" value="Actualizar" class="ship-show-button-action">
+        </form>
+        {% else %}
 	<div class="card">
 
 		<div class="card-body">
@@ -85,7 +86,7 @@
 		<form action={% if request.user.is_authenticated %} "../../../reserva/{{ship.id}}" {% else %} "reserva" {% endif %} method="post">
 			{% csrf_token %}
 			{{ reservation_form }}
-			<input type="Submit" value="Reservar">
+			<input type="Submit" value="Reservar para mañana">
 		</form>
 	</div>
 	<!-- Sigue sin hacer -->
@@ -96,11 +97,9 @@
 
 <!-- Esto es para cambiar lo que pone en el texto mostrado en el formulario de reserva (inglés por defecto de Django) -->
 <script>
-	window.onload = function() { 
-		document.getElementById("id_captain").labels[0].innerHTML = "Capitán";
-	}
+    window.onload = function() {
+        document.getElementById("id_captain").labels[0].innerHTML = "Capitán";
+    }
 </script>
 
 {% endblock %}
-
-

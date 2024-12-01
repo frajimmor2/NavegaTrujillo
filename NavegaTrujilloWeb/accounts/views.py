@@ -6,7 +6,7 @@ from django.shortcuts import render,redirect
 from business.models import Shopping_basket
 from .forms import CustomUserCreationForm,LoginForm
 from django.contrib.auth import login, authenticate
-from .models import Client, Shopping_basket 
+from .models import Client
 from .forms import CustomUserCreationForm
 
 

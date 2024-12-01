@@ -1,0 +1,84 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap');
+
+/* Ajustar el body para eliminar el margen superior */
+body.reservation-rapid-page {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* Ajuste del contenedor principal */
+.container-reservation-rapid {
+    flex: 1;
+    padding-top: 80px; /* Deja espacio para la navbar */
+    padding-bottom: 60px; /* Deja espacio para la barra inferior */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilo del formulario */
+.reservation-rapid-box {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    max-width: 600px;
+    width: 100%;
+    margin: 20px;
+}
+
+/* Estilo del formulario */
+.reservation-rapid-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Estilo de los botones */
+.reservation-rapid-box button[type="submit"] {
+    background-color: #4a90e2;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reservation-rapid-box button[type="submit"]:hover {
+    background-color: #ff7675;
+}
+
+/* Estilo del mensaje para el usuario no autenticado */
+.reservation-rapid-box p {
+    font-size: 18px;
+    font-family: 'Roboto', sans-serif;
+    color: #666;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilo de los enlaces */
+.reservation-rapid-box a {
+    font-size: 16px;
+    color: #4a90e2;
+    text-align: center;
+    display: block;
+    margin-top: 20px;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+/*
+.reservation-rapid-box a:hover {
+    color: #ff7675;
+    transform: scale(1.05);
+}
+*/
