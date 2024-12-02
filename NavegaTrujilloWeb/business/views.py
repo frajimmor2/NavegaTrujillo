@@ -709,6 +709,9 @@ def my_reservations(request):
     return render(request, './business/my_reservations.html', {"reservations": reservations})
 
 def my_reservation_status_view(request, reservation_id):
+    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    print(Reservation.objects.get(id=reservation_id).ships.all())
+    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
     try: 
         reservation = Reservation.objects.get(id=reservation_id)
         
@@ -724,17 +727,24 @@ def my_reservation_status_view(request, reservation_id):
             client_user.add(c.client)
 
         for client in client_user:
-            if client.reservation == reservation:
+            if client == reservation.client:
                 belongs_to_this_user = True
+                break
 
         if not(belongs_to_this_user):
             return HttpResponseForbidden("No tienes permiso para venir aquí.")
         
+        ships = reservation.ships.all()
+        print("ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO")
+        print(ships)
+        print(reservation)
+        print("ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO")
 
     except:
         reservation = False
-    if not reservation:
-        return redirect("/",permanent=True)
+        
+        ships = False
     
-    render(request, '.business/reservation_info.html', {"reservation": reservation})
+    
+    return render(request, './business/reservation_info.html', {"reservation": reservation, "ships": ships})
     

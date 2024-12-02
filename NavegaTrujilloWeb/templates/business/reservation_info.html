@@ -1,0 +1,71 @@
+{% extends "base_template.html" %}
+{% load static %}
+{% block title %}{% endblock %}
+
+{% block main %}
+
+<link rel="stylesheet" href="{% static 'css/catalog.css' %}" type="text/css">
+<body class="catalog">
+    <h1 class="h1_list">Mis reservas</h1>
+
+    {% if reservation %}
+    <div class="body_list">
+        <div class="card">
+            <div class="card-body">
+                <table class="table_catalogo">
+                    <thead>
+                        <tr>
+                            <th>Coste Total</th>
+                            <th>Día de incio</th>
+                            <th>Día de finalización</th>
+                            <th>Estado</th>
+                            <th>Puerto</th>
+                            <th>Barcos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ reservation.total_cost }}</td>
+                            <td>{{ reservation.rental_start_date }}</td>
+                            <td>{{ reservation.rental_end_date }}</td>
+                            
+                            {% if reservation_state == reservation_state.R%}
+                                <td>Reservada</td>
+                            {% elif reservation_state == reservation_state.P %}
+                                <td>Reservada y pagada</td>
+                            {% elif reservation_state == reservation_state.C %}
+                                <td>Cancelada</td>
+                            {% else %}
+                                <td>Ya alquilado</td>
+                            {% endif %}
+                            <td>{{ reservation.port.ubication }}</td>
+                            <td>
+                                {% for ship in ships %}
+                                <a>{{ ship.name }}</a>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="body_list">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">ALgo ha salido mal.</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Por favor, inténtelo más tarde.
+                </p>
+                <a href="{{"../home"}}" class="btn-primary">
+                    Volver al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+{% endblock %}

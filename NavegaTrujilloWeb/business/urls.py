@@ -19,5 +19,5 @@ urlpatterns = [
     #path('paypal_confirm',views.paypal_congrats,name="paypal_congrats"),
     path('track-reservation/', views.track_reservation, name='track_reservation'),
     path('my-reservations/', views.my_reservations, name="my_reservations"),
-    path('my-reservations/<int:reservation_id>', views.home, name="reservation_view"),
+    path('my-reservations/<int:reservation_id>', views.my_reservation_status_view, name="reservation_view"),
 ]
