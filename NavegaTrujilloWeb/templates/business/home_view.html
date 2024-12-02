@@ -26,6 +26,7 @@
                             <th>Capacidad</th>
                             <th>Disponibilidad</th>
                             <th>Puerto</th>
+			    <th>Reservar para mañana</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,6 +41,11 @@
                             <td>{{ ship.capacity }}</td>
                             <td class="data-column-home">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
                             <td>{{ ship.port.ubication }}</td>
+			    <td><form action={% if request.user.is_authenticated %} "/reserva/{{ship.id}}" {% else %} "/catalog/ship/{{ship.id}}/reserva" {% endif %} method="post">
+			{% csrf_token %}
+			{% if request.user.is_authenticated and request.user.client.license_validated or not ship.need_license %} {{form_optional_captain}} {% else %} {{form_mandatory_captain}} {% endif %}
+			<input type="Submit" value="Reservar">
+				    </form></td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -18,7 +18,9 @@ def list(request):
     
     f = ship_filter(request.GET, queryset=(ships))
     form = dates_form()
-    return render(request,"./catalog/list.html",{"ships":ships, "filter": f, "form": form})
+    form_obligatory_captain = ReservationForm()
+    form_optional_captain = ReservationFormNotLogged()
+    return render(request,"./catalog/list.html",{"ships":ships, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
 
 def filtered_list(request):
     ships = Ship.objects.all().order_by('capacity')
@@ -69,10 +71,12 @@ def filtered_list(request):
                         ship.available = False
                         
                 
-            
+    form_obligatory_captain = ReservationForm()
+    form_optional_captain = ReservationFormNotLogged()
+        
 
 
-    return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f, "form": form})
+    return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
 
 def show(request, ship_id):
 
