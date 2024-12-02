@@ -14,7 +14,9 @@ body.ship-show-page {
     display: flex;
     flex-direction: column;
     align-items: center; /* Centra el contenido horizontalmente */
-    justify-content: flex-start;
+    justify-content: center; /* Centra el contenido verticalmente */
+    overflow-y: auto; /* Permitir scroll vertical */
+    padding-bottom: 100px; /* Añadir espacio para la navbar inferior */
 }
 
 /* Contenedor Principal */
@@ -24,6 +26,10 @@ body.ship-show-page {
     margin: 0 auto;
     padding: 20px;
     text-align: center; /* Alineación al centro */
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px; /* Añade espacio con el pie de página */
 }
 
 /* Título del Barco */
