@@ -656,3 +656,23 @@ def list_reservations_admin(request):
     return render(request, './business/list_reservations.html', {'reservation_states': dict})
 
 
+@login_required
+def update_reservation_state(request, reservation_id):
+    if request.method == "POST":
+        # Verifica que el usuario tenga permiso para cambiar el estado
+        if not request.user.is_staff:
+            return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
+
+        # Obtén la reserva
+        reservation = get_object_or_404(Reservation, id=reservation_id)
+        
+        # Obtener el estado desde el formulario (por ejemplo, 'R' para RESERVED)
+        new_state = request.POST.get('reservation_state')
+        
+        # Cambiar el estado de la reserva
+        if new_state:
+            reservation.reservation_state = new_state
+            reservation.save()
+
+        # Redirige después de actualizar
+        return redirect('/reservations')  # Cambia a la URL correspondiente

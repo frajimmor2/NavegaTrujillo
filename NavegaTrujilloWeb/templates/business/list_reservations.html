@@ -9,6 +9,7 @@
         <tr>
             <th>ID</th>
             <th>Estado</th>
+            <th>Modificar a este estado</th>
         </tr>
     </thead>
     <tbody>
@@ -16,6 +17,31 @@
         <tr>
             <td>{{ reservation_id }}</td>
             <td>{{ reservation_state }}</td>
+            <td>
+                <form method="POST" action="{% url 'update_reservation_state' reservation_id=reservation_id %}" style="display: inline-block; margin-right: 10px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="reservation_state" value="R">
+                    <button type="submit">RESERVED</button>
+                </form>
+                
+                <form method="POST" action="{% url 'update_reservation_state' reservation_id=reservation_id %}" style="display: inline-block; margin-right: 10px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="reservation_state" value="P">
+                    <button type="submit">RESERVED_AND_PAID</button>
+                </form>
+                
+                <form method="POST" action="{% url 'update_reservation_state' reservation_id=reservation_id %}" style="display: inline-block; margin-right: 10px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="reservation_state" value="C">
+                    <button type="submit">CANCELLED</button>
+                </form>
+                
+                <form method="POST" action="{% url 'update_reservation_state' reservation_id=reservation_id %}" style="display: inline-block;">
+                    {% csrf_token %}
+                    <input type="hidden" name="reservation_state" value="A">
+                    <button type="submit">ALREADY_RENTED</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -26,6 +52,7 @@
         width: 100%;
         border-collapse: collapse;
         margin-top: 20px;
+        table-layout: fixed;
     }
     th, td {
         border: 1px solid #ccc;
