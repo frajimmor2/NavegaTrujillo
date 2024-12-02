@@ -2,12 +2,13 @@ from django.shortcuts import render,redirect
 from django.template import Template, Context
 from django.http import HttpResponse
 from django.template import RequestContext
-from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm,shopping_basket_form
+from .forms import ShipForm,ReservationForm,ReservationFormNotLogged,ReservationDataForm,shopping_basket_form,ReservationDataHiddenForm
 from business.models import Ship,Port, Shopping_basket
 from .forms import ShipForm, shopping_basket_form, dates_form
 from catalog.filters import ship_filter
 from datetime import timedelta, date, datetime
-
+from django.urls import reverse,reverse_lazy
+from paypal.standard.forms import PayPalPaymentsForm
 
 # Create your views here.
 
@@ -69,14 +70,19 @@ def filtered_list(request):
                 for day in rent_days:
                     if day in taken_days:
                         ship.available = False
-                        
+
+        ships_f = Ship.objects.all().order_by('capacity')
+
+        for ship in ships_f:
+            if not(ship in ships):
+                ship.available= False    
                 
     form_obligatory_captain = ReservationForm()
     form_optional_captain = ReservationFormNotLogged()
         
 
 
-    return render(request,"./catalog/list.html" ,{"ships":ships, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
+    return render(request,"./catalog/list.html" ,{"ships":ships_f, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
 
 def show(request, ship_id):
 
@@ -158,8 +164,21 @@ def reservation(request, ship_id):
             captain = False
 
     form = ReservationDataForm() 
+    form2 = ReservationDataHiddenForm()
+    form2.initial['captain'] = captain
     form.initial['captain'] = captain
 
-    return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form})
+    
+    paypal_dict = {
+            "business": "sb-iqwdg34506520@business.example.com",
+            "amount": str(ship.rent_per_day+[0,120][captain]),
+            "item_name": str(ship.name),
+            "invoice": "",
+            #"notify_url": request.build_absolute_uri(reverse('paypal-ipn')),#request.build_absolute_uri(reverse("paypal_congrats")), # TODO create reservation registerer
+            "return": request.build_absolute_uri(reverse_lazy("confirm_reservation_paypal",kwargs={'ship_id':ship_id,'captain':[0,1][captain]})), # TODO create view
+            "cancel_return": request.build_absolute_uri(reverse('home')),
+        }
+    form_paypal = PayPalPaymentsForm(initial=paypal_dict)
 
+    return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form,"form_paypal":form_paypal,"form2":form2})
 

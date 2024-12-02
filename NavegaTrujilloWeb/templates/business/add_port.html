@@ -14,6 +14,20 @@
                 <button type="submit">Añadir Puerto</button>
             </form>
         </div>
+
+        <div class="add-port-box">
+            <h1>Eliminar un puerto existente</h1>
+            <form method="post">
+                {% csrf_token %}
+                <label for="puerto_id">Selecciona un puerto para eliminar:</label>
+                <select name="puerto_id" id="puerto_id" required>
+                    {% for puerto in puertos %}
+                        <option value="{{ puerto.id }}">{{ puerto.ubication }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Eliminar Puerto</button>
+            </form>
+        </div>
     </div>
 </body>
 {% endblock %}
