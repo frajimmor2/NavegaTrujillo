@@ -16,6 +16,7 @@ from django.core.exceptions import ValidationError
 from catalog.forms import dates_form
 from catalog.filters import ship_filter
 from django.dispatch import receiver
+from django.contrib.auth.decorators import user_passes_test
 
 
 def home(request):
@@ -632,3 +633,16 @@ def confirm_reservation_paypal(request,ship_id,captain):
 
 
     return render(request,"business/reservation_confirmed.html",{"lookup_id":user.username})
+
+
+
+
+@user_passes_test(lambda u: u.is_staff)
+def user_management(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        if username:
+            return redirect('manage_license', username=username)
+
+    return render(request, './business/user_management.html')
+
