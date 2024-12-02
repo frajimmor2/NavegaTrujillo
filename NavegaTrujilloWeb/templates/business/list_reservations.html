@@ -1,0 +1,42 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{% block main %}
+<h1>Listado de Reservas</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for reservation_id, reservation_state in reservation_states.items %}
+        <tr>
+            <td>{{ reservation_id }}</td>
+            <td>{{ reservation_state }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: left;
+    }
+    th {
+        background-color: #f4f4f4;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+</style>
+{% endblock %}

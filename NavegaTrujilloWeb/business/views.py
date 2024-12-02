@@ -1,6 +1,6 @@
 import json
 from random import randint
-from django.http import HttpResponse,HttpResponseForbidden
+from django.http import HttpResponse,HttpResponseForbidden, JsonResponse
 from django.urls import reverse_lazy,reverse
 from paypal.standard.forms import PayPalPaymentsForm
 from django.shortcuts import render, redirect
@@ -645,4 +645,19 @@ def user_management(request):
             return redirect('manage_license', username=username)
 
     return render(request, './business/user_management.html')
+
+
+@login_required
+def list_reservations_admin(request):
+    dict = {}
+    if not request.user.is_staff:
+        return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
+
+    reservations = Reservation.objects.all()
+    for reservation in reservations:
+        reservation_state = reservation.get_reservation_state_display()
+        dict[reservation.id] = reservation_state
+    print(dict)
+    return render(request, './business/list_reservations.html', {'reservation_states': dict})
+
 
