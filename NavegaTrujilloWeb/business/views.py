@@ -707,3 +707,34 @@ def my_reservations(request):
 
     reservations = Reservation.objects.filter(client__in=client_user)
     return render(request, './business/my_reservations.html', {"reservations": reservations})
+
+def my_reservation_status_view(request, reservation_id):
+    try: 
+        reservation = Reservation.objects.get(id=reservation_id)
+        
+        ''' Comprobacion de que te has metido con el user correcto (mas te vale >:[ o me chivaré)'''
+        belongs_to_this_user = False
+
+        '''Veo con el codigo de antes que entre las reservas de tus phantomuser esta la que pides'''
+        client_user1 = request.user
+        email = client_user1.email
+        Customusers_set =CustomUser.objects.filter(name=email)
+        client_user = set()
+        for c in Customusers_set:
+            client_user.add(c.client)
+
+        for client in client_user:
+            if client.reservation == reservation:
+                belongs_to_this_user = True
+
+        if not(belongs_to_this_user):
+            return HttpResponseForbidden("No tienes permiso para venir aquí.")
+        
+
+    except:
+        reservation = False
+    if not reservation:
+        return redirect("/",permanent=True)
+    
+    render(request, '.business/reservation_info.html', {"reservation": reservation})
+    
