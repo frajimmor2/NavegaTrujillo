@@ -21,7 +21,6 @@ function addCookieItem(shipId,license, action){
 		cart[shipId]['quantity'] -= 1
 
 		if (cart[shipId]['quantity'] <= 0){
-			console.log('Item should be deleted')
 			delete cart[shipId];
 		}
 	}
@@ -80,7 +79,7 @@ function redirect_reservation(){
                                 <th>Capacidad</th>
                                 <th>Precio por Día</th>
                                 <th>Cantidad</th>
-                                <th>Total</th>
+                                <th>Total por día</th>
                                 <th>Ajustar cantidad</th>
                             </tr>
                         </thead>
