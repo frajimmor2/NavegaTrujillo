@@ -41,7 +41,8 @@
         <div style="padding-right: 1%; display: flex; align-items: center;">
             {% if user.is_staff %}
                 <a href="/add-ship" class="nav-link">Añadir barco</a>
-                <a href="/add-port" class="nav-link" style="margin-left: 10px;">Gestionar puertos</a> 
+                <a href="/add-port" class="nav-link" style="margin-left: 10px;">Gestionar puertos</a>
+                <a href="/accounts" class="nav-link" style="margin-left: 10px;">Gestión usuarios</a> <!-- NUEVO BOTÓN -->
             {% endif %}
             {% if user.is_authenticated %}
                 

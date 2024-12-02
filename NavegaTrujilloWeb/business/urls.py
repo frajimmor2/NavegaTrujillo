@@ -17,4 +17,5 @@ urlpatterns = [
     path('profile/edit/', views.edit_profile, name="edit_profile"),
     path('accounts/<str:username>/', views.manage_license, name="manage_license"),
     #path('paypal_confirm',views.paypal_congrats,name="paypal_congrats"),
+    path('accounts/', views.user_management, name="user_management"),
 ]
