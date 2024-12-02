@@ -518,6 +518,7 @@ def add_ship(request):
         description = request.POST.get("description")
         port_id = request.POST.get("port")
         image = request.FILES.get("image")
+        quantity = request.POST.get("quantity")
 
         if name and capacity and rent_per_day and description and port_id:
             try:
@@ -531,7 +532,8 @@ def add_ship(request):
                     need_license=need_license,
                     description=description,
                     image=image,
-                    port=port  
+                    port=port,
+                    quantity=quantity 
                 )
                 return redirect("home")
 
@@ -735,6 +737,12 @@ def my_reservation_status_view(request, reservation_id):
             return HttpResponseForbidden("No tienes permiso para venir aquí.")
         
         ships = reservation.ships.all()
+
+        dict = {}
+        reservation_state = reservation.get_reservation_state_display()
+        rental_start_datetime = datetime.combine(reservation.rental_start_date, datetime.min.time())
+        if reservation_state == 'RESERVED' and rental_start_datetime >= datetime.now() + timedelta(weeks=1):
+            dict[reservation.id] = reservation_state
         print("ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO_ASCO")
         print(ships)
         print(reservation)
@@ -746,5 +754,20 @@ def my_reservation_status_view(request, reservation_id):
         ships = False
     
     
-    return render(request, './business/reservation_info.html', {"reservation": reservation, "ships": ships})
+    return render(request, './business/reservation_info.html', {"reservation": reservation, "ships": ships, 'reservation_states': dict}, )
+
+
+def cancel_reservation(request, reservation_id):
+    if request.method == "POST":
+
+        reservation = get_object_or_404(Reservation, id=reservation_id)
+        
+        new_state = request.POST.get('reservation_state')
+        
+        if new_state:
+            reservation.reservation_state = new_state
+            reservation.save()
+
+
+        return redirect('/my-reservations')
     

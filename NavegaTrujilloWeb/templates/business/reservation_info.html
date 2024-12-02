@@ -21,6 +21,7 @@
                             <th>Estado</th>
                             <th>Puerto</th>
                             <th>Barcos</th>
+                            <th>Cancelar reserva</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,6 +44,19 @@
                                 {% for ship in ships %}
                                 <a>{{ ship.name }}</a>
                                 {% endfor %}
+                            </td>
+                            <td>
+                                {% if reservation_states.items %}
+                                    {% for reservation_id, reservation_state in reservation_states.items %}
+                                        <form method="POST" action="{% url 'cancel_reservation' reservation_id=reservation_id %}" style="display: inline-block; margin-right: 10px;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="reservation_state" value="C">
+                                            <button type="submit">Cancelar</button>
+                                        </form>
+                                    {% endfor %}
+                                {% else %}
+                                    No disponible
+                                {% endif %}
                             </td>
                         </tr>
                     </tbody>
