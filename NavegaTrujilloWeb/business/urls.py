@@ -15,4 +15,6 @@ urlpatterns = [
     path('profile/', views.profile, name="profile"),
     path('profile/edit/', views.edit_profile, name="edit_profile"),
     path('track-reservation/', views.track_reservation, name='track_reservation'),
+    path('my-reservations/', views.my_reservations, name="my_reservations"),
+    path('my-reservations/<int:reservation_id>', views.home, name="reservation_view"),
 ]

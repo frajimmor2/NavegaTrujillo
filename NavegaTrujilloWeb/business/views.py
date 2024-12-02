@@ -623,3 +623,10 @@ def track_reservation(request):
         'reservation_state': reservation_state,
         'reservation_id': id_seguimiento,
     })
+
+
+def my_reservations(request):
+    
+    client_user = request.user.client
+    reservations = Reservation.objects.filter(client=client_user)
+    return render(request, './business/my_reservations.html', {"reservations": reservations})
