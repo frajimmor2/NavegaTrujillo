@@ -6,7 +6,7 @@
 
 <link rel="stylesheet" href="{% static 'css/catalog.css' %}" type="text/css">
 <body class="catalog">
-    <h1 class="h1_list">Mis Pedidos</h1>
+    <h1 class="h1_list">Mis reservas</h1>
 
     {% if reservations %}
     <div class="body_list">
@@ -26,11 +26,20 @@
                         {% for reservation in reservations %}
                         <tr>
                             <td style="display: flex; justify-content: center; align-items: center;">
-                                <a href="my-reservations/<int:reservation_id>">{{ reservation.total_cost }}</a>
+                                <a href="../my-reservations/{{reservation.id}}">{{ reservation.total_cost }}</a>
                             </td>
                             <td>{{ reservation.rental_start_date }}</td>
                             <td>{{ reservation.rental_end_date }}</td>
-                            <td>{{ reservation.reservation_state }}</td>
+                            
+                            {% if reservation_state == reservation_state.R%}
+                                <td>Reservada</td>
+                            {% elif reservation_state == reservation_state.P %}
+                                <td>Reservada y pagada</td>
+                            {% elif reservation_state == reservation_state.C %}
+                                <td>Cancelada</td>
+                            {% else %}
+                                <td>Ya alquilado</td>
+                            {% endif %}
                             <td>{{ reservation.port.ubication }}</td>
                         </tr>
                         {% endfor %}

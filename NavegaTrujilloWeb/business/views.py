@@ -698,6 +698,12 @@ def track_reservation(request):
 
 def my_reservations(request):
     
-    client_user = request.user.client
-    reservations = Reservation.objects.filter(client=client_user)
+    client_user1 = request.user
+    email = client_user1.email
+    Customusers_set =CustomUser.objects.filter(name=email)
+    client_user = set()
+    for c in Customusers_set:
+        client_user.add(c.client)
+
+    reservations = Reservation.objects.filter(client__in=client_user)
     return render(request, './business/my_reservations.html', {"reservations": reservations})

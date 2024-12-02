@@ -49,8 +49,7 @@
                 <a href="/cart" class="nav-link">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
-                <a href="/track-reservation" class="nav-link">Consultar seguimiento de pedido</a>
-                <a href="/my-reservations" class="nav-link">Mis pedidos</a>
+                <a href="/my-reservations" class="nav-link">Mis reservas</a>
                 <a href="/profile" class="nav-link">Perfil</a>
                 <form action="{% url 'logout' %}" method="post" style="margin-left: 10px;">
                     {% csrf_token %}
@@ -60,7 +59,6 @@
                 <a href="/cart" class="nav-link">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
-                <a href="/track-reservation" class="nav-link">Consultar seguimiento de pedido</a>
                 <a href="/auth/login" class="nav-link">Iniciar sesión</a>
                 <a href="/auth/signup" class="nav-link" style="margin-left: 10px;">Registrarse</a>
             {% endif %}
