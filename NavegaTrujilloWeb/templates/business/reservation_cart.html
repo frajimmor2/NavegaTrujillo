@@ -6,30 +6,103 @@
 
 {% block main %}
 <link rel="stylesheet" href="{% static 'css/reservation_cart.css' %}" type="text/css">
-	<body class="reservation-cart">
-        <div class="container-reservation-cart">
-            <div class="reservation-cart-box">
-                <script>
-                    window.onload = function() {
-                        document.getElementById("id_start_date").labels[0].innerHTML = "Día de inicio: ";
-                        document.getElementById("id_end_date").labels[0].innerHTML = "Día de fin: ";
-                    }
-                </script>
+<body class="reservation-cart">
+	<div class="container-reservation-cart">
+		<div class="reservation-cart-box">
 
-                {% if form %}
-                <form action="/cart/reserva/confirmacion" method="post">
-                    {% csrf_token %}
-                    {{ form }}
-                    <input type="submit" value="Reservar">
-                </form>
-                {% else %}
-                <form action="" method="post">
-                    {% csrf_token %}
-                    {{ form2 }}
-                    <input type="submit" value="Reservar">
-                </form>
-                {% endif %}
-            </div>
-        </div>
-    </body>
+
+			{% if form %}
+			<script>
+				window.onload = function() {
+					document.getElementById("id_start_date").labels[0].innerHTML = "Día de inicio: ";
+					document.getElementById("id_end_date").labels[0].innerHTML = "Día de fin: ";
+					let taken_days = JSON.parse('{{taken_days|escapejs}}');
+					document.getElementById("id_start_date").addEventListener('change',(event) => {
+						let start = document.getElementById("id_start_date").value
+						let end = document.getElementById("id_end_date").value
+						let aux_start = start.split("-")
+						let start_date = new Date(aux_start[0],parseInt(aux_start[1])-1,aux_start[2])
+						let aux_end = end.split("-")
+						let end_date = new Date(aux_end[0],parseInt(aux_end[1])-1,aux_end[2])
+						if (start && end) {
+							if (taken_days.includes(start)) {
+								document.getElementById("avisos").innerHTML = "Su selección de barcos no está disponible este día de inicio, escoga otro porfavor";
+							} else if (taken_days.includes(end)) {
+								document.getElementById("avisos").innerHTML = "Su selección de barcos no está disponible este día de final, escoga otro porfavor";
+							} else {
+								found = false;
+								for (let i=0;i<taken_days.length;i++) {
+									let aux = taken_days[i].split("-");
+									let aux_date = new Date(aux[0],parseInt(aux[1])-1,aux[2]);
+									if (aux_date > start_date && aux_date < end_date) {
+										document.getElementById("avisos").innerHTML = "El día "+taken_days[i]+" no está disponible con su selección de barcos, escoja otro porfavor";
+										found = true;
+										break
+									}
+								}
+								if (!found) {
+									document.getElementById("avisos").innerHTML = "";
+								}
+							}
+						};
+					});
+
+					// Me encanta duplicar código por pereza jjijijijjijiajdinwdvj
+					document.getElementById("id_end_date").addEventListener('change',(event) => {
+						let start = document.getElementById("id_start_date").value
+						let end = document.getElementById("id_end_date").value
+						let aux_start = start.split("-")
+						let start_date = new Date(aux_start[0],parseInt(aux_start[1])-1,aux_start[2])
+						let aux_end = end.split("-")
+						let end_date = new Date(aux_end[0],parseInt(aux_end[1])-1,aux_end[2])
+						if (start && end) {
+							if (taken_days.includes(start)) {
+								document.getElementById("avisos").innerHTML = "Su selección de barcos no está disponible este día de inicio, escoga otro porfavor";
+							} else if (taken_days.includes(end)) {
+								document.getElementById("avisos").innerHTML = "Su selección de barcos no está disponible este día de final, escoga otro porfavor";
+							} else {
+								found = false;
+								for (let i=0;i<taken_days.length;i++) {
+									let aux = taken_days[i].split("-");
+									let aux_date = new Date(aux[0],parseInt(aux[1])-1,aux[2]);
+									if (aux_date > start_date && aux_date < end_date) {
+										document.getElementById("avisos").innerHTML = "El día "+taken_days[i]+" no está disponible con su selección de barcos, escoja otro porfavor";
+										found = true;
+										break
+									}
+								}
+								if (!found) {
+									document.getElementById("avisos").innerHTML = "";
+								}
+							}
+						};
+					});
+
+				}
+			</script>
+			<form action="/cart/reserva/confirmacion" method="post">
+				<p id="avisos"></p>
+				{% csrf_token %}
+				{{ form }}
+				<input type="submit" value="Reservar">
+			</form>
+			{% else %}
+			<script>
+				window.onload = function() {
+					document.getElementById("id_name").labels[0].innerHTML = "Nombre:  ";
+					document.getElementById("id_surname").labels[0].innerHTML = "Apellidos: ";
+
+				}
+			</script>
+			<p> No estás autentificado, introduce tus datos por favor </p>
+			<form action="" method="post">
+				{% csrf_token %}
+				{{ form2 }}
+				<input type="submit" value="Reservar">
+			</form>
+			<p> También puedes iniciar sesión y volver aquí </p>
+			{% endif %}
+		</div>
+	</div>
+</body>
 {% endblock %}

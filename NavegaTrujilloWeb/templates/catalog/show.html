@@ -74,10 +74,10 @@
 			</table>
 			<h3> Nota: La tarifa de un capitán es de 120 euros/día</h3>
 			<div>
-				{% if shipInCart %}
-					<button onclick="addCookieItem('{{ ship.id }}', 'remove')">Quitar del carrito</button>
-				{% else %}
+				{% if ship.available %}
 					<button onclick="addCookieItem('{{ ship.id }}', 'add')">Agregar al carrito</button>
+				{% else %}
+					El barco no está disponible
 				{% endif %}
 			</div>
 		</div>

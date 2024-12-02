@@ -4,10 +4,10 @@
 {% block main %}
 
 <script>
-function addCookieItem(shipId, action){
-	console.log('User is not authenticated')
+function addCookieItem(shipId,license, action){
 
 	if (action == 'add'){
+		if (license) { min_cap+=1;};
 		if (cart[shipId] == undefined){
 		cart[shipId] = {'quantity':1}
 
@@ -17,6 +17,7 @@ function addCookieItem(shipId, action){
 	}
 
 	if (action == 'remove'){
+		if (license) { min_cap-=1;};
 		cart[shipId]['quantity'] -= 1
 
 		if (cart[shipId]['quantity'] <= 0){
@@ -24,7 +25,6 @@ function addCookieItem(shipId, action){
 			delete cart[shipId];
 		}
 	}
-	console.log('CART:', cart)
 	document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
 	location.reload()
 }
@@ -47,6 +47,7 @@ function updateCaptainAmount(action){
 
 function redirect_reservation(){
 	window.location.href="reserva";
+	
 }
 </script>
 
@@ -61,11 +62,11 @@ function redirect_reservation(){
                     <p>Capitanes: <span id="captain-amount">{{ order.captain_amount }}</span></p>
                 </div>
                 <div class="quantity-adjust">
-                    <button class="quantity-button" onclick="updateCaptainAmount('increase')">Aumentar Capitán</button>
-                    <button class="quantity-button" onclick="updateCaptainAmount('decrease')">Disminuir Capitán</button>
+                    <button class="quantity-button" onclick="updateCaptainAmount('increase')">Añadir capitán</button>
+                    <button class="quantity-button" onclick="updateCaptainAmount('decrease')">Quitar capitán</button>
                 </div>
                 <div class="captain-info">
-                    <p>Coste de Capitanes: ${{ order.captain_cost }}</p>
+                    <p>Coste de capitanes por día: ${{ order.captain_cost }}</p>
                 </div>
     
                 <p>Tienes {{ cartItems }} artículo(s) en tu carrito.</p>
@@ -84,27 +85,30 @@ function redirect_reservation(){
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in items %}
-                            {% if item.quantity > 0 %}
-                            <tr>
-                                <td>{{ item.ship.name }}</td>
-                                <td>{{ item.ship.port.ubication }}</td>
-                                <td>{{ item.ship.capacity }}</td>
-                                <td>${{ item.ship.rent_per_day }}</td>
-                                <td>{{ item.quantity }}</td>
-                                <td>${{ item.get_total }}</td>
-                                <td> 
-                                    {% if item.quantity > 0 %}
-                                        <div class="quantity-adjust">
-                                            <button class="quantity-button" onclick="addCookieItem('{{ item.ship.id }}', 'add')">+</button>
-                                            <button class="quantity-button" onclick="addCookieItem('{{ item.ship.id }}', 'remove')">-</button>
-                                        </div>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endif %}
-                            {% endfor %}
-                        </tbody>
+                            
+				{% for item in items %}
+				{% if item.quantity > 0 %}
+				<tr>
+				    <td>{{ item.ship.name }}</td>
+				    <td>{{ item.ship.port.ubication }}</td>
+				    <td>{{ item.ship.capacity }}</td>
+				    <td>${{ item.ship.rent_per_day }}</td>
+				    <td>{{ item.quantity }}</td>
+				    <td>${{ item.get_total }}</td>
+				    <td> 
+					{% if item.quantity >= item.ship.quantity %}
+					<button onclick="addCookieItem('{{ item.ship.id }}','{{ item.ship.need_license }}', 'remove')">-</button>
+					    Cantidad máxima de barcos alcanzada
+					{% elif item.quantity > 0 %}
+					    <button onclick="addCookieItem('{{ item.ship.id }}','{{ item.ship.need_license }}', 'add')">+</button>
+					    <button onclick="addCookieItem('{{ item.ship.id }}','{{ item.ship.need_license }}', 'remove')">-</button>
+					{% endif %}
+				    </td>
+
+				</tr>
+				{% endif %}
+				{% endfor %}                        
+			</tbody>
                     </table>
     
                     <p class="cart-total">Total del carrito (incluyendo capitanes): ${{ order.total_with_captain }}</p>
@@ -116,6 +120,4 @@ function redirect_reservation(){
                 </div>
             {% endif %}
         </div>
-
-    </body>
 {% endblock %}
