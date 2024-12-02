@@ -31,13 +31,8 @@ def home(request):
 
 def cookieCart(request):
     try:
+        cart = {}
         cart = json.loads(request.COOKIES['cart'])
-        ships = Ship.objects.all()
-        for ship in ships:
-            if str(ship.id) not in cart.keys():
-                cart[str(ship.id)] = {"quantity": 0}
-        
-        
     except:
         cart = {}
     
@@ -253,7 +248,7 @@ def cart_reservation(request):
                     for i in range(delta+1):
                         taken_days.add(start_date+timedelta(days=i))            
 
-            return render(request,'./business/reservation_cart.html', {'form':form,'taken_days':taken_days})
+            return render(request,'./business/reservation_cart.html', {'form':form,'taken_days':json.dumps([str(i) for i in taken_days])})
 
         else:
             return HttpResponse("Algo ha ido mal",status=500)
@@ -307,7 +302,7 @@ def cart_reservation(request):
                 for i in range(delta):
                     taken_days.add(start_date+timedelta(days=i))
 
-        return render(request,'./business/reservation_cart.html', {'form':form,'form2':form2,'taken_days':taken_days})
+        return render(request,'./business/reservation_cart.html', {'form':form,'form2':form2,'taken_days':json.dumps([str(i) for i in taken_days])})
 
 
 def confirm_reservation_cart(request):
