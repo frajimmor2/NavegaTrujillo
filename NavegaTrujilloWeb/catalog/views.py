@@ -19,8 +19,8 @@ def list(request):
     
     f = ship_filter(request.GET, queryset=(ships))
     form = dates_form()
-    form_obligatory_captain = ReservationForm()
-    form_optional_captain = ReservationFormNotLogged()
+    form_obligatory_captain = ReservationFormNotLogged()
+    form_optional_captain = ReservationForm()
     return render(request,"./catalog/list.html",{"ships":ships, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
 
 def filtered_list(request):
@@ -77,8 +77,8 @@ def filtered_list(request):
             if not(ship in ships):
                 ship.available= False    
                 
-    form_obligatory_captain = ReservationForm()
-    form_optional_captain = ReservationFormNotLogged()
+    form_obligatory_captain = ReservationFormNotLogged()
+    form_optional_captain = ReservationForm()
         
 
 
@@ -154,7 +154,7 @@ def reservation(request, ship_id):
         return HttpResponse("Ese barco no existe",404)
     form = ReservationForm(request.POST)
 
-    if (request.user.is_authenticated and request.user.client.license_validated) or not ship.need_license:
+    if ((request.user.is_authenticated and request.user.client.license_validated) or not ship.need_license) and form.is_valid():
         captain = form.cleaned_data['captain']
     else:
         form = ReservationFormNotLogged(request.POST)

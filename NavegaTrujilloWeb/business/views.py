@@ -25,7 +25,10 @@ def home(request):
     ports = Port.objects.all()
     f = ship_filter(request.GET, queryset=(Ship.objects.all()))
     form = dates_form()
-    context = {"ships": ships, "ports": ports, "filter": f, "form": form}
+    form_obligatory_captain = ReservationFormNotLogged()
+    form_optional_captain = ReservationForm()
+        
+    context = {"ships": ships, "ports": ports, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain}
     return render(request,"./business/home_view.html", context)
 
 
@@ -113,8 +116,8 @@ def reservation(request,ship_id):
             user = CustomUser()
             user.username = hash(" ".join([name,email,str(randint(1,100000))]))
             user.email = ""
-            user.name = email if user1 else name
-            user.surname = str(name+surname) if user1 else surname
+            user.name = email 
+            user.surname = str(name+surname) 
             client = Client()
             client.license_number=""
             client.license_validated=False
@@ -207,8 +210,8 @@ def cart_reservation(request):
             user = CustomUser()
             user.username = hash(" ".join([name,email,str(randint(1,1000000))]))
             user.email = ""
-            user.name = email if user1 else name
-            user.surname = str(name+surname) if user1 else surname
+            user.name = email 
+            user.surname = str(name+surname) 
             client = Client()
             client.license_number=""
             client.license_validated=False
@@ -242,7 +245,7 @@ def cart_reservation(request):
                     start_date = reservation.rental_start_date
                     end_date = reservation.rental_end_date
                     if start_date in taken_days and end_date in taken_days:
-                        break
+                        continue
                     delta = end_date-start_date
                     delta = delta.days
                     for i in range(delta+1):
@@ -337,6 +340,7 @@ def confirm_reservation_cart(request):
         if not ships:
             return HttpResponse("Algo ha ido mal",status = 500)
         reservation.port = ships[0].port
+        reservation.client = user.client
         reservation.save()
         reservation.ships.set(ships)
         reservation.save()
@@ -384,9 +388,9 @@ def confirm_reservation(request,ship_id):
 
     user = CustomUser()
     user.username = hash(" ".join([name,email,str(randint(1,100000))]))
-    user.name = email if user1 else name
-    user.email = email
-    user.surname = name+surname if user1 else surname
+    user.name = email 
+    user.email = ""
+    user.surname = name+surname
     client = Client()
     shopping_basket = Shopping_basket()
     shopping_basket.rental_start_date = timezone.now()
@@ -578,6 +582,14 @@ def edit_profile(request):
     if request.method == 'POST':
         form = EditProfileForm(request.POST)
         if form.is_valid():
+            if initial_data['email']!=form.cleaned_data['email']:
+                try:
+                    CustomUser.objects.get(email=form.cleaned_data['email'])
+                    exists = True
+                except:
+                    exists = False
+                if exists:
+                    return HttpResponse("Ese email está en uso",status=401)
             # Actualizar los datos del usuario
             user.name = form.cleaned_data['name']
             user.surname = form.cleaned_data['surname']
@@ -641,3 +653,60 @@ def user_management(request):
 
     return render(request, './business/user_management.html')
 
+
+def paypal_cart(request):
+
+    if request.method=="GET":
+        ''' No debería pasar, aquí solo se entra desde la vista anterior '''
+        return HttpResponse("Para realizar reservas, accede desde el escaparate", status=405)
+    cookieData = cookieCart(request)
+    cartItems = cookieData['cartItems']
+    order = cookieData['order']
+    items = cookieData['items']
+
+    form = ReservationTimeUnloggedForm(request.POST)
+    if form.is_valid():
+        start_date = form.cleaned_data['start_date']
+        end_date = form.cleaned_data['end_date']
+        username = form.cleaned_data['user']
+
+        user = CustomUser.objects.get(username=username)
+        reservation = Reservation()
+        reservation.rental_start_date = start_date
+        reservation.rental_end_date = end_date
+        reservation.reservation_state = 'R'
+        reservation.captain_amount = order['captain_amount']
+        reservation.total_cost = order['total_with_captain']
+        ships = []
+        for i in items:
+            ship = i['ship']
+            ship = Ship.objects.get(id = ship.id)
+            for o in range(i['quantity']):
+                ships.append(ship)
+        if not ships:
+            return HttpResponse("Algo ha ido mal",status = 500)
+        reservation.port = ships[0].port
+        reservation.client = user.client
+        reservation.save()
+        reservation.ships.set(ships)
+        reservation.save()
+        user.client.reservation = reservation
+        user.save()
+        paypal_dict = {
+            "business": "sb-iqwdg34506520@business.example.com",
+            "amount": str(reservation.total_cost),
+            "item_name": "Alquiler múltiples barcos" if len(ships)>1 else str(ship.name),
+            "invoice": "",
+            "return": request.build_absolute_uri(reverse_lazy("paypal_cart_confirmation",kwargs={'lookup_id':reservation.id})),
+            "cancel_return": request.build_absolute_uri(reverse('home')),
+        }
+        form = PayPalPaymentsForm(initial=paypal_dict)
+
+       
+        return render(request, './business/paypal_cart.html', {'form':form})
+
+def paypal_cart_confirmation(request,lookup_id):
+    reservation = Reservation.objects.get(id=lookup_id)
+    reservation.reservation_state = 'P'
+    lookup_id = reservation.client.customuser.username
+    return render(request, './business/confirm_paypal_cart.html', {'lookup_id':lookup_id})

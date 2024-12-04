@@ -6,9 +6,9 @@ from django.shortcuts import render,redirect
 from business.models import Shopping_basket
 from .forms import CustomUserCreationForm,LoginForm
 from django.contrib.auth import login, authenticate
-from .models import Client
+from .models import Client,CustomUser
 from .forms import CustomUserCreationForm
-
+from django.http import HttpResponse
 
 class SignUpView(CreateView):
     
@@ -20,7 +20,13 @@ class SignUpView(CreateView):
 
     def form_valid(self, form):
         user = form.save(commit=False)
-
+        try:
+            CustomUser.objects.get(email=user.email)
+            new_email = False
+        except:
+            new_email = True
+        if not new_email:
+            return HttpResponse("Ese email ya existe",status=401)
         shopping_basket = Shopping_basket.objects.create(
             rental_start_date=timezone.now().date(),
             rental_end_date=timezone.now().date(),

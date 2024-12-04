@@ -25,7 +25,9 @@
 						let aux_end = end.split("-")
 						let end_date = new Date(aux_end[0],parseInt(aux_end[1])-1,aux_end[2])
 						if (start && end) {
-							if (taken_days.includes(start)) {
+							if (start_date>end_date) {
+								document.getElementById("avisos").innerHTML = "El día inicial debe ser antes que el final"
+							} else if (taken_days.includes(start)) {
 								document.getElementById("avisos").innerHTML = "Su selección de barcos no está disponible este día de inicio, escoga otro porfavor";
 							} else if (taken_days.includes(end)) {
 								document.getElementById("avisos").innerHTML = "Su selección de barcos no está disponible este día de final, escoga otro porfavor";
@@ -56,7 +58,9 @@
 						let aux_end = end.split("-")
 						let end_date = new Date(aux_end[0],parseInt(aux_end[1])-1,aux_end[2])
 						if (start && end) {
-							if (taken_days.includes(start)) {
+							if (start_date>end_date) {
+								document.getElementById("avisos").innerHTML = "El día inicial debe ser antes que el final"
+							} else if (taken_days.includes(start)) {
 								document.getElementById("avisos").innerHTML = "Su selección de barcos no está disponible este día de inicio, escoga otro porfavor";
 							} else if (taken_days.includes(end)) {
 								document.getElementById("avisos").innerHTML = "Su selección de barcos no está disponible este día de final, escoga otro porfavor";
@@ -77,14 +81,17 @@
 							}
 						};
 					});
-
+					
+					document.getElementById("ct").addEventListener("click",function(){document.getElementById("ct").form.attributes.action.nodeValue = "/cart/reserva/confirmacion"});
+					document.getElementById("pp").addEventListener("click",function(){document.getElementById("pp").form.attributes.action.nodeValue = "/cart/reserva/paypal"});
 				}
 			</script>
 			<form action="/cart/reserva/confirmacion" method="post">
 				<p id="avisos"></p>
 				{% csrf_token %}
 				{{ form }}
-				<input type="submit" value="Reservar">
+				<input id = "ct" type="submit" value="Pagar a contrarreembolso">
+				<input id = "pp" type="submit" value="Registrar reserva y pagar por paypal">
 			</form>
 			{% else %}
 			<script>
