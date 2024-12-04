@@ -3,7 +3,7 @@ from random import randint
 from django.http import HttpResponse,HttpResponseForbidden, JsonResponse
 from django.urls import reverse_lazy,reverse
 from paypal.standard.forms import PayPalPaymentsForm
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from .models import Shopping_basket, Client, Ship, Reservation, Port
 from accounts.models import CustomUser
 from django.utils import timezone
@@ -326,6 +326,7 @@ def confirm_reservation_cart(request):
 
         user = CustomUser.objects.get(username=username)
         reservation = Reservation()
+        reservation.client = user.client
         reservation.rental_start_date = start_date
         reservation.rental_end_date = end_date
         reservation.reservation_state = 'R'
@@ -515,6 +516,7 @@ def add_ship(request):
         description = request.POST.get("description")
         port_id = request.POST.get("port")
         image = request.FILES.get("image")
+        quantity = request.POST.get("quantity")
 
         if name and capacity and rent_per_day and description and port_id:
             try:
@@ -528,7 +530,8 @@ def add_ship(request):
                     need_license=need_license,
                     description=description,
                     image=image,
-                    port=port  
+                    port=port,
+                    quantity=quantity 
                 )
                 return redirect("home")
 
@@ -708,6 +711,7 @@ def paypal_cart(request):
 def paypal_cart_confirmation(request,lookup_id):
     reservation = Reservation.objects.get(id=lookup_id)
     reservation.reservation_state = 'P'
+    reservation.save()
     lookup_id = reservation.client.customuser.username
     return render(request, './business/confirm_paypal_cart.html', {'lookup_id':lookup_id})
 @login_required
@@ -720,7 +724,6 @@ def list_reservations_admin(request):
     for reservation in reservations:
         reservation_state = reservation.get_reservation_state_display()
         dict[reservation.id] = reservation_state
-    print(dict)
     return render(request, './business/list_reservations.html', {'reservation_states': dict})
 
 
@@ -738,9 +741,137 @@ def update_reservation_state(request, reservation_id):
         new_state = request.POST.get('reservation_state')
         
         # Cambiar el estado de la reserva
+def confirm_reservation_paypal(request,ship_id,captain):
+    id_usuario = request.GET.get('PayerID')
+    ship = Ship.objects.get(id=ship_id)
+    user = CustomUser()
+    user.username = hash(" ".join([ship.name,id_usuario,str(captain),str(randint(1,100000))]))
+    user.name = "" if not request.user.is_authenticated else request.user.email
+    user.email = id_usuario
+    shopping_basket = Shopping_basket()
+    shopping_basket.rental_start_date = timezone.now()
+    shopping_basket.rental_end_date = timezone.now()
+    shopping_basket.save()
+    client = Client()
+    client.save()
+    user.client = client
+    user.shopping_basket = shopping_basket
+    reservation = Reservation()
+    reservation.rental_start_date = timezone.now()+timedelta(days=1)
+    reservation.rental_end_date = timezone.now()+timedelta(days=1)
+    reservation.reservation_state = 'P'
+    reservation.captain_amount = captain
+    reservation.total_cost = ship.rent_per_day+[0,120][captain] #jiji
+    reservation.port = ship.port
+    reservation.client = client
+    reservation.save()
+    reservation.ships.set([ship])
+    reservation.save()
+    client.save()
+    user.save()         
+
+
+    return render(request,"business/reservation_confirmed.html",{"lookup_id":user.username})
+
+
+def track_reservation(request):
+    reservation_state = None
+    id_seguimiento = None
+    if request.method == 'POST':
+        id_seguimiento = request.POST.get('id_seguimiento')
+
+        try:
+            user = CustomUser.objects.get(username=id_seguimiento)
+            reservations = Reservation.objects.filter(client=user.client)
+            if reservations.exists():
+                reservation = reservations.first()  # Toma la primera reserva encontrada
+            else:
+                reservation = None  # O maneja el caso sin reserva
+            reservation_state = reservation.get_reservation_state_display()
+
+        except Exception as e:
+            reservation_state = f"No se ha encontrado un pedido con esa ID"
+
+    return render(request, './business/track_reservation.html', {
+        'reservation_state': reservation_state,
+        'reservation_id': id_seguimiento,
+    })
+
+
+def my_reservations(request):
+    
+    client_user1 = request.user
+    email = client_user1.email
+    Customusers_set =CustomUser.objects.filter(name=email)
+    client_user = set()
+    for c in Customusers_set:
+        client_user.add(c.client)
+
+    reservations = Reservation.objects.filter(client__in=client_user)
+    return render(request, './business/my_reservations.html', {"reservations": reservations})
+
+def my_reservation_status_view(request, reservation_id):
+    try: 
+        reservation = Reservation.objects.get(id=reservation_id)
+        
+        ''' Comprobacion de que te has metido con el user correcto (mas te vale >:[ o me chivaré)'''
+        belongs_to_this_user = False
+
+        '''Veo con el codigo de antes que entre las reservas de tus phantomuser esta la que pides'''
+        client_user1 = request.user
+        email = client_user1.email
+        Customusers_set =CustomUser.objects.filter(name=email)
+        client_user = set()
+        for c in Customusers_set:
+            client_user.add(c.client)
+
+        for client in client_user:
+            if client == reservation.client:
+                belongs_to_this_user = True
+                break
+
+        if not(belongs_to_this_user):
+            return HttpResponseForbidden("No tienes permiso para venir aquí.")
+        
+        ships = reservation.ships.all()
+
+        dicc = {}
+        reservation_state = reservation.get_reservation_state_display()
+        rental_start_datetime = datetime.combine(reservation.rental_start_date, datetime.min.time())
+        if reservation_state == 'RESERVED' and rental_start_datetime >= datetime.now() + timedelta(weeks=1):
+            dicc[reservation.id] = reservation_state
+    except:
+        reservation = False
+        
+        ships = False
+    
+    
+    return render(request, './business/reservation_info.html', {"reservation": reservation, "ships": ships, 'reservation_states': dicc,'reservation_id':reservation.id}, )
+
+
+def cancel_reservation(request, reservation_id):
+    if request.method == "POST":
+
+        reservation = get_object_or_404(Reservation, id=reservation_id)
+        
+        new_state = request.POST.get('reservation_state')
+        
         if new_state:
             reservation.reservation_state = new_state
             reservation.save()
+        return redirect('/my-reservations')
 
-        # Redirige después de actualizar
-        return redirect('/reservations')  # Cambia a la URL correspondiente
+
+def pay_reservation(request,reservation_id):
+    reservation = Reservation.objects.get(id=reservation_id)
+    paypal_dict = {
+            "business": "sb-iqwdg34506520@business.example.com",
+            "amount": str(reservation.total_cost),
+            "item_name": "Alquiler múltiples barcos" if len(reservation.ships.all())>1 else str(reservation.ships.all()[0].name),
+            "invoice": "",
+            "return": request.build_absolute_uri(reverse_lazy("paypal_cart_confirmation",kwargs={'lookup_id':reservation.id})),
+            "cancel_return": request.build_absolute_uri(reverse('home')),
+    }
+    form = PayPalPaymentsForm(initial=paypal_dict)
+
+    return render(request, './business/paypal_cart.html',{'form':form})

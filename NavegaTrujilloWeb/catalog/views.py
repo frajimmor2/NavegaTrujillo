@@ -126,7 +126,6 @@ def show(request, ship_id):
     form_shopping_basket = shopping_basket_form(request.POST)
     
     if form_shopping_basket.is_valid():
-        print("Se esta ejecutando el codigo del form")
         shopping_basket, create = Shopping_basket.objects.get_or_create(client=request.user.client)
         ship = Ship.objects.get(id=ship_id)
         shopping_basket.ships.add(ship)

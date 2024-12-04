@@ -22,4 +22,9 @@ urlpatterns = [
     path('cart/reserva/paypal/confirmacion/<int:lookup_id>',views.paypal_cart_confirmation,name="paypal_cart_confirmation"),
     path('reservations/', views.list_reservations_admin, name="list_reservations_admin"),
     path('update-reservation/<int:reservation_id>/', views.update_reservation_state, name='update_reservation_state'),
+    path('track-reservation/', views.track_reservation, name='track_reservation'),
+    path('my-reservations/', views.my_reservations, name="my_reservations"),
+    path('my-reservations/<int:reservation_id>', views.my_reservation_status_view, name="reservation_view"),
+    path('cancel-reservation/<int:reservation_id>', views.cancel_reservation, name="cancel_reservation"),
+    path('my-reservations/<int:reservation_id>/pay', views.pay_reservation, name='pay_reservation'),
 ]

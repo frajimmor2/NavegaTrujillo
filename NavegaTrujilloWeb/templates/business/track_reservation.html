@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rastrear Reserva</title>
+</head>
+<body>
+    <h1>Rastrear Reserva</h1>
+
+    <!-- Formulario para ingresar el ID de seguimiento -->
+    <form method="POST">
+        {% csrf_token %}
+        <label for="id_seguimiento">ID de Seguimiento:</label>
+        <input type="text" id="id_seguimiento" name="id_seguimiento" required>
+        <button type="submit">Buscar Estado</button>
+    </form>
+
+    <br>
+
+    <!-- Mostrar el estado de la reserva si está disponible -->
+    {% if reservation_state %}
+        <h2>Estado de la Reserva:</h2>
+        <p>{{ reservation_state }}</p>
+    {% endif %}
+
+</body>
+</html>
