@@ -1,122 +1,173 @@
-.datacolumn {
-	color = cadetblue;
-}
-.body_list {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
+/* Estilos Generales para la Página de Detalles del Barco */
+body.ship-show-page {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
     margin: 0;
     padding: 0;
+    min-height: 100vh;
+    color: #333;
+    padding-top: 100px; /* Espacio para la barra de navegación */
+    padding-bottom: 60px; /* Espacio para la barra inferior */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el contenido horizontalmente */
+    justify-content: center; /* Centra el contenido verticalmente */
+    overflow-y: auto; /* Permitir scroll vertical */
+    padding-bottom: 100px; /* Añadir espacio para la navbar inferior */
 }
 
-.h1_list {
-    color: #000000;
-    text-align: center;
-    margin-bottom: 2rem;
+/* Contenedor Principal */
+.ship-show-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center; /* Alineación al centro */
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px; /* Añade espacio con el pie de página */
 }
 
-.card {
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    background-color: #fff;
-    overflow: hidden;
+/* Título del Barco */
+.ship-show-title {
+    color: #333;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
 }
 
-.card-header {
-    background-color: #007bff;
-    color: white;
-    padding: 1rem;
+/* Tarjeta para los Detalles del Barco */
+.ship-show-card {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 0 auto; /* Centra horizontalmente */
+    width: 100%;
 }
 
-.card-body {
-    padding: 1.5rem;
-}
-
-.btn-primary {
-    background-color: #03bb85 ;
-    border: none;
-    transition: background-color 0.3s;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-/* Estilos de la Tabla */
-.table_catalogo {
-    width: 70%;
-    margin-bottom: 1rem;
-    background-color: transparent;
+/* Tabla de Información del Barco */
+.ship-show-table {
+    width: 100%;
     border-collapse: collapse;
+    margin: 20px 0;
 }
 
-.table th, .table td {
-    padding: 0.75rem;
-    vertical-align: top;
-    border-top: 1px solid #dee2e6;
+.ship-show-table th, .ship-show-table td {
+    border: 1px solid #ddd;
+    padding: 15px;
+    font-size: 16px;
 }
 
-.table thead th {
-    vertical-align: bottom;
-    border-bottom: 2px solid #dee2e6;
+.ship-show-table th {
+    background-color: #66a6ff;
+    color: white;
+    font-weight: 600;
 }
 
-.table tbody tr:hover {
-    background-color: #f1f1f1;
+.ship-show-table td {
+    background-color: #f9f9f9;
 }
 
-/* Links dentro de la tabla */
-.table a {
-    color: #007bff;
-    text-decoration: none;
-    transition: color 0.3s;
+.ship-show-table tbody tr:hover {
+    background-color: #e0f7fa;
 }
 
-.table a:hover {
-    color: #0056b3;
+/* Nota */
+.ship-show-note {
+    font-size: 1.2rem;
+    color: #444;
+    margin: 1.5rem 0;
 }
 
-/* Iconos */
-i[data-feather] {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
+/* Botones de Acción */
+.ship-show-button-action {
+    padding: 10px 25px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s;
-}
-
-i[data-feather]:hover {
-    color: #0056b3;
-}
-
-
-
-/* Mensaje cuando no hay barcos */
-.card-title {
-    font-size: 1.25rem;
-    font-weight: bold;
-}
-
-.card-text {
-    color: #000000;
-}
-
-/* Estilo del enlace "te devuelve al /home" */
-.btn {
-    display: inline-block;
-    padding: 0.5rem 1rem;
+    transition: background-color 0.3s, transform 0.2s;
+    margin: 1rem 0.5rem;
     font-size: 1rem;
-    border-radius: 4px;
-    text-decoration: none;
+    display: inline-block;
+}
+
+.ship-show-button-action:hover {
+    background-color: #357ab7;
+    transform: translateY(-2px);
+}
+
+/* Estilos para el Checkbox y su Etiqueta */
+.ship-show-checkbox {
+    margin-right: 10px;
+}
+
+.ship-show-label {
+    font-size: 1.1rem;
+    color: #444;
+}
+
+/* Imagen del Barco */
+.ship-show-image {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    margin: 2rem auto;
+    display: block;
+    border-radius: 15px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    background-color: #f1f1f1;
+    color: #666;
+    padding: 20px;
+    line-height: 200px;
+}
+
+/* Estilos para los botones "Editar" y "Borrar" */
+.ship-show-button-edit, .ship-show-button-delete {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 1rem 0.5rem;
+    font-size: 1rem;
+    display: inline-block;
 }
 
-.btn-primary {
-    color: #fff;
+/* Estilo para el botón de "Editar" */
+.ship-show-button-edit {
+    background-color: #4CAF50;  /* Verde claro */
+    color: white;
+    text-decoration: none;
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
+.ship-show-button-edit:hover {
+    background-color: #45a049; /* Verde más oscuro en hover */
+    transform: scale(1.05);  /* Efecto de escala al pasar el mouse */
+}
+
+/* Estilo para el botón de "Borrar" */
+.ship-show-button-delete {
+    background-color: #f44336;  /* Rojo */
+    color: white;
+}
+
+.ship-show-button-delete:hover {
+    background-color: #e53935;  /* Rojo oscuro en hover */
+    transform: scale(1.05);  /* Efecto de escala al pasar el mouse */
+}
+
+/* Estilo para el contenedor de las acciones administrativas */
+.admin-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;  /* Espacio entre los botones */
 }

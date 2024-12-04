@@ -1,51 +1,118 @@
 {% extends 'base_template.html' %}
 
-{% block title %} <h1>{{ship.name}}</h1> {% endblock %}
+{% block title %}
+<h1 class="ship-show-title">{{ ship.name }}</h1>
+{% endblock %}
 
 {% block main %}
+
+<script>
+    function addCookieItem(shipId, action){
+
+        if (action == 'add') {
+            if (cart[shipId] == undefined) {
+                cart[shipId] = {'quantity': 1};
+            } else {
+                cart[shipId]['quantity'] = 1;
+            }
+        }
+
+        if (action == 'remove') {
+            cart[shipId]['quantity'] = 0;
+
+            if (cart[shipId]['quantity'] <= 0) {
+                delete cart[shipId];
+            }
+        }
+        document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/";
+        location.reload();
+    }
+</script>
+
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/show.css' %}" type="text/css">
 
+<body class="ship-show-page">
+    <div class="ship-show-container">
+        <!-- Título del Barco -->
 
+        <!-- En caso de que sea admin, devuelve el formulario para cambiar los datos -->
+        {% if request.user.is_staff and form %}
+        <form action="" method="post" class="ship-show-card">
+            {% csrf_token %}
+            {{ ship_form }}
+            <input type="submit" value="Actualizar" class="ship-show-button-action">
+        </form>
+        {% else %}
+        <div class="card">
+            <div class="card-body">
+                <!-- Tabla de detalles del barco -->
+                <table class="ship-show-table">
+                    <thead>
+                        <tr>
+                            <th class="data_column">Disponibilidad</th>
+                            <th class="data_column">Precio por día</th>
+                            <th class="data_column">Capacidad máxima</th>
+                            <th class="data_column">¿Necesitas licencia o capitán?</th>
+                            <th class="data_column">Puerto</th>
+                            <th class="data_column">Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
+                            <td class="data_column">{{ ship.rent_per_day }}</td>
+                            <td class="data_column">{{ ship.capacity }}</td>
+                            <td class="data_column">{% if ship.needs_license %} Sí {% else %} No {% endif %}</td>
+                            <td class="data_column">{{ ship.port.ubication }}</td>
+                            <td class="data_column">{{ ship.description }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% if request.user.is_staff %}
+                <div class="admin-actions">
+                    <a href="{% url 'edit_ship' ship.id %}" class="ship-show-button-edit">Editar</a>
+                    <button onclick="confirmDelete('{{ ship.id }}')" class="ship-show-button-delete">Borrar</button>
+                </div>
+                
+                <script>
+                    function confirmDelete(shipId) {
+                        if (confirm("¿Estás seguro de que deseas eliminar este barco?")) {
+                            window.location.href = "{% url 'delete_ship' ship.id %}";
+                        }
+                    }
+                </script>                
+                {% endif %}
 
-<div class=" col-12">
+                <h3 class="ship-show-note"> Nota: La tarifa de un capitán es de 120 euros/día</h3>
+                <div>
+                    {% if shipInCart %}
+                    <button onclick="addCookieItem('{{ ship.id }}', 'remove')" class="ship-show-button-action">Quitar del carrito</button>
+                    {% else %}
+                    <button onclick="addCookieItem('{{ ship.id }}', 'add')" class="ship-show-button-action">Agregar al carrito</button>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- formulario de reserva, dirige directamente a la plataforma de reserva si se está logueado, a la de datos en caso contrario -->
+            <form action={% if request.user.is_authenticated %} "../../../reserva/{{ship.id}}" {% else %} "reserva" {% endif %} method="post">
+                {% csrf_token %}
+                {{ reservation_form }}
+                <input type="Submit" value="Reservar para mañana" class="ship-show-button-action">
+            </form>
+        </div>
+        <!-- Imagen del Barco -->
+	<div class="ship-show-image">{% if ship.image %} <img src="{{ ship.image.url }}" alt="Barco" style="width: 150px; height: 100px;"> {% else %} No hay imagen del barco {% endif %}</div>
+        {% endif %}
+    </div>
 
-	{% if request.user.is_staff and form %}
-		<form action="" method="post">
+    <!-- Esto es para cambiar lo que pone en el texto mostrado en el formulario de reserva (inglés por defecto de Django) -->
+    <script>
+        window.onload = function() {
+            document.getElementById("id_captain").labels[0].innerHTML = "Capitán";
+        }
+    </script>
 
-			{% csrf_token %}
-			{{ form }}
-			<input type="submit" value="Actualizar">
-	{% else %}
-	<div class="card">
-
-		<div class="card-body">
-			<table class="table">
-				<thead>
-					<tr>
-						<th class= "data_column">Disponibilidad</th>
-						<th class= "data_column">Precio por día</th>
-						<th class= "data_column">Capacidad máxima</th>
-						<th class= "data_column">Necesitas licencia o capitán?</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>	
-						<td class= "data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
-						<td class= "data_column">{{ ship.rent_per_day }}</td>
-						<td class= "data_column">{{ ship.capacity }}</td>
-						<td class= "data_column">{% if ship.needs_license %} Sí {% else %} No {% endif %}<td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-	<div> Placeholder imagen </div>
-	{% endif %}
-			
-</div>
+</body>
 
 {% endblock %}
-
-

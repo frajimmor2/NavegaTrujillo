@@ -10,6 +10,14 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     model = CustomUser
 
-    list_display = ("username","name","surname","email")
+    list_display = ("name","surname","email", "username", "password", "password")
+    
+    fieldsets = (
+        (None, {'fields': ('name', 'surname', 'email', 'username', 'password1', 'password2')}),
+    )
 
+    add_fieldsets = (
+        (None, {'fields': ('name', 'surname', 'email', 'username', 'password1', 'password2')}),
+    )
+    
 admin.site.register(CustomUser, CustomUserAdmin)

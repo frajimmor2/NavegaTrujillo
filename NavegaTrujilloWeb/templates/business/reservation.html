@@ -1,0 +1,23 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{% block main %}
+<link rel="stylesheet" href="{% static 'css/reservation.css' %}" type="text/css">
+<body class="reservation-form">
+    <div class="container-reservation">
+        <div class="reservation-box">
+            <script>
+                window.onload = function() {
+                    document.getElementById("id_start_date").labels[0].innerHTML = "Día de inicio: ";
+                    document.getElementById("id_end_date").labels[0].innerHTML = "Día de fin: ";
+                }
+            </script>
+            <form action="/reserva/{{ship.id}}/confirmacion" method="post">
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit" value="Reservar">
+            </form>
+        </div>
+    </div>
+</body>
+{% endblock %}

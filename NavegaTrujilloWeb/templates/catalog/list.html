@@ -1,66 +1,88 @@
 {% extends "base_template.html" %}
 {% load static %}
-{% block title %}Barcos{% endblock %}
+{% block title %}{% endblock %}
 
 {% block main %}
 
 <link rel="stylesheet" href="{% static 'css/catalog.css' %}" type="text/css">
-<h1 class="h1_list">Barcos</h1>
+<body class="catalog">
+    <h1 class="h1_list">Barcos</h1>
+    
 
 
+    <form method="get" action="/catalog/results/">
+        {{ filter.form.as_p }}
+        {{ form }}
+        <input type="submit" value="Filtrar"/>
+    </form>
 
-{% if ships %}
-
-<div class="body_list">
-	<div class="card">
-
-		<div class="card-body">
-			<table class="table_catalogo">
-				<thead>
-					<tr>
-						<th>Título</th>
-						<th>Descripción</th>
-						<th>Placeholder</th>
-						<th>Placeholder</th>
-						<th>Puerto</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for ship in ships %}
-					<tr>
-						<td>
-							<a href="ship/{{ship.id}}">
-								{{ ship.name }}
-							</a>
-						</td>
-						<td>{{ ship.rent_per_day }}</td>
-						<td>{{ ship.capacity }}</td>
-						<td>{{ ship.need_license }}</td>
-						<td>{{ ship.port.ubication }}</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
-
-	</div>
-
-</div>
-{% else %}
-<div class="body_list">
-	<div class="card">
-		<div class="card-header">
-			<h5 class="card-title">No se han encontrado barcos</h5>
-		</div>
-		<div class="card-body">
-			<p class="card-text">
-			La lista no existe ahora mismo. Por favor, intentelo mas tarde.
-			</p>
-			<a href="{{"../home"}}" class="btn btn-primary">
-				Sweet home Alabama</a>
-		</div>
-	</div>
-</div>
-{% endif %}
+    {% if ships %}
+    <div class="body_list">
+        <div class="card">
+            <div class="card-body">
+                <table class="table_catalogo">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Coste de alquiler por día</th>
+                            <th>Capacidad</th>
+                            <th>Disponibilidad</th>
+                            <th>Puerto</th>
+                            <th>Imagen</th>
+			    <th>Reservar para mañana</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ship in ships %}
+                        <tr>
+                            <td style="display: flex; justify-content: center; align-items: center;">
+                                {% if ship.available%}
+                                <a href="/catalog/ship/{{ship.id}}">
+                                    {{ ship.name }}
+                                </a>
+                                {% else %}
+                                <a>
+                                    {{ ship.name }}
+                                </a>
+                                {% endif %}
+                            </td>
+                            <td>{{ ship.rent_per_day }}</td>
+                            <td>{{ ship.capacity }}</td>
+                            <td class="data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
+                            <td>{{ ship.port.ubication }}</td>
+                            {% if ship.image %}
+                            <td><img src="{{ ship.image.url }}" alt="Barco" style="width: 150px; height: 100px;"></td>
+                            {% else %}
+                            <td>No existe imagen</td>
+                            {% endif %}
+			    <td>{% if ship.available %}<form action={% if request.user.is_authenticated %} "/catalog/ship/{{ship.id}}/reserva" {% else %} "/catalog/ship/{{ship.id}}/reserva" {% endif %} method="post">
+			{% csrf_token %}
+			{% if request.user.is_authenticated and request.user.client.license_validated or not ship.need_license %} {{form_optional_captain}} {% else %} {{form_mandatory_captain}} {% endif %}
+			<input type="Submit" value="Reservar">
+				    </form> {% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="body_list">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">No se han encontrado barcos</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    La lista no existe ahora mismo. Por favor, inténtelo más tarde.
+                </p>
+                <a href="{{"../home"}}" class="btn-primary">
+                    Volver al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
 {% endblock %}

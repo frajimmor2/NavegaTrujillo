@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rastrear Reserva</title>
+</head>
+<body>
+    <h1>Rastrear Reserva</h1>
+
+    <!-- Formulario para ingresar el ID de seguimiento -->
+    <form method="POST">
+        {% csrf_token %}
+        <label for="id_seguimiento">ID de Seguimiento:</label>
+        <input type="text" id="id_seguimiento" name="id_seguimiento" required>
+        <button type="submit">Buscar Estado</button>
+    </form>
+
+    <br>
+
+    <!-- Mostrar el estado de la reserva si está disponible -->
+    {% if reservation_state %}
+        <h2>Estado de la Reserva:</h2>
+        <p>{{ reservation_state }}</p>
+	<table class="table_catalogo">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Coste de alquiler por día</th>
+                            <th>Capacidad</th>
+                            <th>Disponibilidad</th>
+                            <th>Puerto</th>
+                            <th>Imagen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ship in ships %}
+                        <tr>
+                            <td style="display: flex; justify-content: center; align-items: center;">
+                                {% if ship.available%}
+                                <a href="/catalog/ship/{{ship.id}}">
+                                    {{ ship.name }}
+                                </a>
+                                {% else %}
+                                <a>
+                                    {{ ship.name }}
+                                </a>
+                                {% endif %}
+                            </td>
+                            <td>{{ ship.rent_per_day }}</td>
+                            <td>{{ ship.capacity }}</td>
+                            <td class="data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
+                            <td>{{ ship.port.ubication }}</td>
+                            {% if ship.image %}
+                            <td><img src="{{ ship.image.url }}" alt="Barco" style="width: 150px; height: 100px;"></td>
+                            {% else %}
+                            <td>No existe imagen</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+	    {% endif %}
+
+</body>
+</html>

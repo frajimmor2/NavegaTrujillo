@@ -1,0 +1,47 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{% block main %}
+<link rel="stylesheet" href="{% static 'css/add_ship.css' %}">
+
+<div class="container-add-ship">
+    <div class="add-ship-box">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <label for="name">Nombre del barco:</label>
+            <input type="text" id="name" name="name" value="{{ ship.name }}" required>
+
+            <label for="capacity">Capacidad:</label>
+            <input type="number" id="capacity" name="capacity" value="{{ ship.capacity }}" min="2" required>
+
+            <label for="rent_per_day">Precio por día:</label>
+            <input type="number" id="rent_per_day" name="rent_per_day" value="{{ ship.rent_per_day }}" min="0" required>
+
+            <label for="available">Disponible:</label>
+            <input type="checkbox" id="available" name="available" {% if ship.available %}checked{% endif %}>
+
+            <label for="need_license">Requiere licencia:</label>
+            <input type="checkbox" id="need_license" name="need_license" {% if ship.needs_license %}checked{% endif %}>
+
+            <label for="description">Descripción:</label>
+            <textarea id="description" name="description" maxlength="350" required>{{ ship.description }}</textarea>
+
+            <label for="port">Puerto:</label>
+            <select id="port" name="port" required>
+                <option value="">Selecciona un puerto</option>
+                {% for port in ports %}
+                    <option value="{{ port.id }}" {% if port.id == ship.port.id %}selected{% endif %}>{{ port.ubication }}</option>
+                {% endfor %}
+            </select>            
+
+            <button type="submit">Guardar cambios</button>
+        </form>
+
+        {% if error %}
+            <p>{{ error }}</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

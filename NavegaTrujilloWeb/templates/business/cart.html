@@ -1,0 +1,120 @@
+{% extends 'base_template.html' %}
+{% load static %}
+
+{% block main %}
+
+<script>
+function addCookieItem(shipId,license, action){
+
+	if (action == 'add'){
+		if (cart[shipId] == undefined){
+		cart[shipId] = {'quantity':1}
+
+		}else{
+			cart[shipId]['quantity'] += 1
+		}
+	}
+
+	if (action == 'remove'){
+		cart[shipId]['quantity'] -= 1
+
+		if (cart[shipId]['quantity'] <= 0){
+			delete cart[shipId];
+		}
+	}
+	document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+	location.reload()
+}
+
+function updateCaptainAmount(action){
+    let captainAmount = parseInt(document.getElementById("captain-amount").innerText);
+    
+    if (action == 'increase'){
+        captainAmount += 1;
+    } else if (action == 'decrease' && captainAmount > 0){
+        captainAmount -= 1;
+    }
+    
+    // Update the cookie with the new captain amount
+    cart['captain_amount'] = captainAmount;
+    document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+    document.getElementById("captain-amount").innerText = captainAmount;
+    location.reload();
+}
+
+function redirect_reservation(){
+	window.location.href="reserva";
+	
+}
+</script>
+
+<link rel="stylesheet" href="{% static 'css/carrito.css' %}">
+<body class="cart-page">
+    <div class="cart-page">
+        <div class="cart-container">
+            <h1 class="cart-title">Tu carrito</h1>
+    
+            {% if cartItems > 0 %}
+                <div class="captain-info">
+                    <p>Capitanes: <span id="captain-amount">{{ order.captain_amount }}</span></p>
+                </div>
+                <div class="quantity-adjust">
+                    <button class="quantity-button" onclick="updateCaptainAmount('increase')">Añadir capitán</button>
+                    <button class="quantity-button" onclick="updateCaptainAmount('decrease')">Quitar capitán</button>
+                </div>
+                <div class="captain-info">
+                    <p>Coste de capitanes por día: ${{ order.captain_cost }}</p>
+                </div>
+    
+                <p>Tienes {{ cartItems }} artículo(s) en tu carrito.</p>
+    
+                <div class="cart-info">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre del Barco</th>
+                                <th>Puerto</th>
+                                <th>Capacidad</th>
+                                <th>Precio por Día</th>
+                                <th>Cantidad</th>
+                                <th>Total por día</th>
+                                <th>Ajustar cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+				{% for item in items %}
+				{% if item.quantity > 0 %}
+				<tr>
+				    <td>{{ item.ship.name }}</td>
+				    <td>{{ item.ship.port.ubication }}</td>
+				    <td>{{ item.ship.capacity }}</td>
+				    <td>${{ item.ship.rent_per_day }}</td>
+				    <td>{{ item.quantity }}</td>
+				    <td>${{ item.get_total }}</td>
+				    <td> 
+					{% if item.quantity >= item.ship.quantity %}
+					<button onclick="addCookieItem('{{ item.ship.id }}','{{ item.ship.need_license }}', 'remove')">-</button>
+					    Cantidad máxima de barcos alcanzada
+					{% elif item.quantity > 0 %}
+					    <button onclick="addCookieItem('{{ item.ship.id }}','{{ item.ship.need_license }}', 'add')">+</button>
+					    <button onclick="addCookieItem('{{ item.ship.id }}','{{ item.ship.need_license }}', 'remove')">-</button>
+					{% endif %}
+				    </td>
+
+				</tr>
+				{% endif %}
+				{% endfor %}                        
+			</tbody>
+                    </table>
+    
+                    <p class="cart-total">Total del carrito (incluyendo capitanes): ${{ order.total_with_captain }}</p>
+                    <button class="cart-button" onclick="redirect_reservation()">Reservar</button>
+                </div>
+            {% else %}
+                <div class="cart-info">
+                    <p>No tienes barcos en tu carrito.</p>
+                </div>
+            {% endif %}
+        </div>
+{% endblock %}
