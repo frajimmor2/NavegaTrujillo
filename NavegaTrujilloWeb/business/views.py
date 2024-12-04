@@ -785,6 +785,7 @@ def confirm_reservation_paypal(request,ship_id,captain):
 def track_reservation(request):
     reservation_state = None
     id_seguimiento = None
+    ships = None
     if request.method == 'POST':
         id_seguimiento = request.POST.get('id_seguimiento')
 
@@ -795,14 +796,16 @@ def track_reservation(request):
                 reservation = reservations.first()  # Toma la primera reserva encontrada
             else:
                 reservation = None  # O maneja el caso sin reserva
+            ships = reservation.ships.all()
             reservation_state = reservation.get_reservation_state_display()
-
+            
         except Exception as e:
             reservation_state = f"No se ha encontrado un pedido con esa ID"
 
     return render(request, './business/track_reservation.html', {
         'reservation_state': reservation_state,
         'reservation_id': id_seguimiento,
+        'ships':ships,
     })
 
 

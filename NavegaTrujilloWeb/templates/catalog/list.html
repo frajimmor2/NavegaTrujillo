@@ -55,7 +55,7 @@
                             {% else %}
                             <td>No existe imagen</td>
                             {% endif %}
-			    <td>{% if ship.available %}<form action={% if request.user.is_authenticated %} "../../../reserva/{{ship.id}}" {% else %} "ship/{{ship.id}}/reserva" {% endif %} method="post">
+			    <td>{% if ship.available %}<form action={% if request.user.is_authenticated %} "/catalog/ship/{{ship.id}}/reserva" {% else %} "/catalog/ship/{{ship.id}}/reserva" {% endif %} method="post">
 			{% csrf_token %}
 			{% if request.user.is_authenticated and request.user.client.license_validated or not ship.need_license %} {{form_optional_captain}} {% else %} {{form_mandatory_captain}} {% endif %}
 			<input type="Submit" value="Reservar">
