@@ -70,6 +70,21 @@
                         </tr>
                     </tbody>
                 </table>
+                {% if request.user.is_staff %}
+                <div class="admin-actions">
+                    <a href="{% url 'edit_ship' ship.id %}" class="ship-show-button-edit">Editar</a>
+                    <button onclick="confirmDelete('{{ ship.id }}')" class="ship-show-button-delete">Borrar</button>
+                </div>
+                
+                <script>
+                    function confirmDelete(shipId) {
+                        if (confirm("¿Estás seguro de que deseas eliminar este barco?")) {
+                            window.location.href = "{% url 'delete_ship' ship.id %}";
+                        }
+                    }
+                </script>                
+                {% endif %}
+
                 <h3 class="ship-show-note"> Nota: La tarifa de un capitán es de 120 euros/día</h3>
                 <div>
                     {% if shipInCart %}

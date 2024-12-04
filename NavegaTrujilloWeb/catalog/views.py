@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.template import Template, Context
 from django.http import HttpResponse
 from django.template import RequestContext
@@ -181,3 +181,24 @@ def reservation(request, ship_id):
 
     return render(request,"./catalog/reservation.html",{"ship_id":ship_id,"ship_name":ship.name,"form":form,"form_paypal":form_paypal,"form2":form2})
 
+
+def edit_ship(request, ship_id):
+    ship = get_object_or_404(Ship, id=ship_id)
+    ports = Port.objects.all()
+
+    if request.method == 'POST':
+        form = ShipForm(request.POST, request.FILES, instance=ship)
+        if form.is_valid():
+            form.save()
+            return redirect('show', ship_id=ship.id)
+        else:
+            return render(request, 'catalog/edit_ship.html', {'form': form, 'ship': ship, 'error': 'Por favor, corrige los errores.'})
+    else:
+        form = ShipForm(instance=ship)
+
+    return render(request, 'catalog/edit_ship.html', {'form': form, 'ship': ship, 'ports': ports})
+
+def delete_ship(request, ship_id):
+    ship = get_object_or_404(Ship, id=ship_id)
+    ship.delete()
+    return redirect('/home')

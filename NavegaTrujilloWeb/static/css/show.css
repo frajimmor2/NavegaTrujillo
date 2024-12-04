@@ -128,3 +128,46 @@ body.ship-show-page {
     padding: 20px;
     line-height: 200px;
 }
+
+/* Estilos para los botones "Editar" y "Borrar" */
+.ship-show-button-edit, .ship-show-button-delete {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 1rem 0.5rem;
+    font-size: 1rem;
+    display: inline-block;
+}
+
+/* Estilo para el botón de "Editar" */
+.ship-show-button-edit {
+    background-color: #4CAF50;  /* Verde claro */
+    color: white;
+    text-decoration: none;
+}
+
+.ship-show-button-edit:hover {
+    background-color: #45a049; /* Verde más oscuro en hover */
+    transform: scale(1.05);  /* Efecto de escala al pasar el mouse */
+}
+
+/* Estilo para el botón de "Borrar" */
+.ship-show-button-delete {
+    background-color: #f44336;  /* Rojo */
+    color: white;
+}
+
+.ship-show-button-delete:hover {
+    background-color: #e53935;  /* Rojo oscuro en hover */
+    transform: scale(1.05);  /* Efecto de escala al pasar el mouse */
+}
+
+/* Estilo para el contenedor de las acciones administrativas */
+.admin-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;  /* Espacio entre los botones */
+}

@@ -1,15 +1,14 @@
 from django import forms
 from datetime import date
 from django.core.exceptions import ValidationError
+from business.models import Ship
 
-class ShipForm(forms.Form):
+class ShipForm(forms.ModelForm):
     ''' Formulario de cambio de datos de barcos '''
 
-    available = forms.BooleanField(required = False)
-    rent_per_day = forms.FloatField(required = True)
-    capacity = forms.IntegerField(required = True)
-    needs_license = forms.BooleanField(required = False)
-    description = forms.CharField(required = True)
+    class Meta:
+        model = Ship
+        fields = ['available', 'rent_per_day', 'capacity', 'need_license', 'description']
 
 
 class ReservationForm(forms.Form):
