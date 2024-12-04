@@ -697,7 +697,7 @@ def paypal_cart(request):
         user.save()
         paypal_dict = {
             "business": "sb-iqwdg34506520@business.example.com",
-            "amount": str(reservation.total_cost),
+            "amount": str(reservation.total_cost+20) if reservation.total_cost<1000 else str(reservation.total_cost),
             "item_name": "Alquiler múltiples barcos" if len(ships)>1 else str(ship.name),
             "invoice": "",
             "return": request.build_absolute_uri(reverse_lazy("paypal_cart_confirmation",kwargs={'lookup_id':reservation.id})),
@@ -714,6 +714,8 @@ def paypal_cart_confirmation(request,lookup_id):
     reservation.save()
     lookup_id = reservation.client.customuser.username
     return render(request, './business/confirm_paypal_cart.html', {'lookup_id':lookup_id})
+
+
 @login_required
 def list_reservations_admin(request):
     dict = {}
@@ -741,6 +743,12 @@ def update_reservation_state(request, reservation_id):
         new_state = request.POST.get('reservation_state')
         
         # Cambiar el estado de la reserva
+        if new_state:
+            reservation.reservation_state = new_state
+            reservation.save()
+
+        return redirect('/reservations')
+
 def confirm_reservation_paypal(request,ship_id,captain):
     id_usuario = request.GET.get('PayerID')
     ship = Ship.objects.get(id=ship_id)
@@ -866,7 +874,7 @@ def pay_reservation(request,reservation_id):
     reservation = Reservation.objects.get(id=reservation_id)
     paypal_dict = {
             "business": "sb-iqwdg34506520@business.example.com",
-            "amount": str(reservation.total_cost),
+            "amount": str(reservation.total_cost+20) if reservation.total_cost<1000 else str(reservation.total_cost),
             "item_name": "Alquiler múltiples barcos" if len(reservation.ships.all())>1 else str(reservation.ships.all()[0].name),
             "invoice": "",
             "return": request.build_absolute_uri(reverse_lazy("paypal_cart_confirmation",kwargs={'lookup_id':reservation.id})),

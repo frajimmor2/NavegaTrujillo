@@ -170,7 +170,7 @@ def reservation(request, ship_id):
     
     paypal_dict = {
             "business": "sb-iqwdg34506520@business.example.com",
-            "amount": str(ship.rent_per_day+[0,120][captain]),
+            "amount": str(ship.rent_per_day+[0,120][captain]+20) if ship.rent_per_day+[0,120][captain]<1000 else str(ship.rent_per_day+[0,120][captain]),
             "item_name": str(ship.name),
             "invoice": "",
             #"notify_url": request.build_absolute_uri(reverse('paypal-ipn')),#request.build_absolute_uri(reverse("paypal_congrats")), # TODO create reservation registerer
