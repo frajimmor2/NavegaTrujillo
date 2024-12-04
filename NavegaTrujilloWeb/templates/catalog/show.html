@@ -87,7 +87,7 @@
             </form>
         </div>
         <!-- Imagen del Barco -->
-        <div class="ship-show-image"><img src="{{ ship.image.url }}" alt="Barco" style="width: 150px; height: 100px;"></div>
+	<div class="ship-show-image">{% if ship.image %} <img src="{{ ship.image.url }}" alt="Barco" style="width: 150px; height: 100px;"> {% else %} No hay imagen del barco {% endif %}</div>
         {% endif %}
     </div>
 
