@@ -17,7 +17,6 @@ function addCookieItem(shipId,license, action){
 	}
 
 	if (action == 'remove'){
-		if (license) { min_cap-=1;};
 		cart[shipId]['quantity'] -= 1
 
 		if (cart[shipId]['quantity'] <= 0){
