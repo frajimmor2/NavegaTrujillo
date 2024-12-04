@@ -20,4 +20,6 @@ urlpatterns = [
     path('accounts/', views.user_management, name="user_management"),
     path('cart/reserva/paypal',views.paypal_cart, name="paypal_cart"),
     path('cart/reserva/paypal/confirmacion/<int:lookup_id>',views.paypal_cart_confirmation,name="paypal_cart_confirmation"),
+    path('reservations/', views.list_reservations_admin, name="list_reservations_admin"),
+    path('update-reservation/<int:reservation_id>/', views.update_reservation_state, name='update_reservation_state'),
 ]
