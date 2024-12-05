@@ -27,6 +27,9 @@
             <label for="description">Descripción:</label>
             <textarea id="description" name="description" maxlength="350" required>{{ ship.description }}</textarea>
 
+            <label for="quantity">Cantidad:</label>
+            <input type="number" id="quantity" name="quantity" value="{{ ship.quantity }}" min="0" required>
+
             <label for="port">Puerto:</label>
             <select id="port" name="port" required>
                 <option value="">Selecciona un puerto</option>
