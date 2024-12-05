@@ -18,6 +18,8 @@ body.list-reservations {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-y: auto; /* Permite el desplazamiento vertical */
+    padding-bottom: 100px; /* Añadir un padding para que la parte inferior del contenido no sea cubierta */
 }
 
 /* título principal */
@@ -39,6 +41,7 @@ body.list-reservations {
     border-radius: 8px;
     overflow: hidden;
     table-layout: fixed;
+    margin-bottom: 80px;
 }
 
 /*celdas de la tabla */

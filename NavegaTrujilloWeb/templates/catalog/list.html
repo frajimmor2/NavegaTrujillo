@@ -11,6 +11,12 @@
     <form method="get" action="/catalog/results/">
         {{ filter.form.as_p }}
         {{ form }}
+        <label for="puerto_id">Selecciona un puerto:</label>
+                <select name="puerto_id" id="puerto_id" required>
+                    {% for puerto in puertos %}
+                        <option value="{{ puerto.id }}">{{ puerto.ubication }}</option>
+                    {% endfor %}
+                </select>
         <input type="submit" value="Filtrar"/>
     </form>
 
@@ -36,6 +42,10 @@
                             <td style="display: flex; justify-content: center; align-items: center;">
                                 {% if ship.available %}
                                 <a href="/catalog/ship/{{ ship.id }}">
+                                    {{ ship.name }}
+                                </a>
+                                {% elif request.user.is_staff %}
+                                <a href="/catalog/ship/{{ship.id}}">
                                     {{ ship.name }}
                                 </a>
                                 {% else %}
