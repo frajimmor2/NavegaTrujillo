@@ -21,7 +21,8 @@ def list(request):
     form = dates_form()
     form_obligatory_captain = ReservationFormNotLogged()
     form_optional_captain = ReservationForm()
-    return render(request,"./catalog/list.html",{"ships":ships, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
+    puertos = Port.objects.all()  
+    return render(request,"./catalog/list.html",{"ships":ships, "puertos": puertos, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
 
 def filtered_list(request):
     ships = Ship.objects.all().order_by('capacity')
@@ -41,6 +42,8 @@ def filtered_list(request):
     if form.is_valid():
         start = datetime.strptime(request.GET.get('rent_start_day'), "%Y-%m-%d").date() if request.GET.get('rent_start_day') else date(1900, 12, 25)
         end = datetime.strptime(request.GET.get('rent_end_day'), "%Y-%m-%d").date() if request.GET.get('rent_end_day') else date(1900, 12, 25)
+        name_f = request.GET.get('name_form')
+        puerto_id = request.GET.get("puerto_id")
 
         rent_days = set()
         delta_rent_days = end-start
@@ -70,19 +73,26 @@ def filtered_list(request):
                 for day in rent_days:
                     if day in taken_days:
                         ship.available = False
+        
+        
+        if name_f:
+            ships = ships.filter(name = name_f)
 
-        ships_f = Ship.objects.all().order_by('capacity')
+        if puerto_id:
+            try:
+                puerto = Port.objects.get(id=puerto_id)
+                ships = ships.filter(port = puerto)
+            except Port.DoesNotExist:
+                pass
 
-        for ship in ships_f:
-            if not(ship in ships):
-                ship.available= False    
-                
+           
+    puertos = Port.objects.all()           
     form_obligatory_captain = ReservationFormNotLogged()
     form_optional_captain = ReservationForm()
         
 
 
-    return render(request,"./catalog/list.html" ,{"ships":ships_f, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
+    return render(request,"./catalog/list.html" ,{"ships":ships, "puertos":puertos, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
 
 def show(request, ship_id):
 
