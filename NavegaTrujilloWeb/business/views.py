@@ -417,25 +417,31 @@ def confirm_reservation(request,ship_id):
     return render(request, './business/reservation_confirmed.html', {'lookup_id':user.username})
 
 def cart(request):
-    '''
-    if request.user.is_authenticated:      
-        shopping_basket, created = Shopping_basket.objects.get_or_create(customuser=request.user)
-        has_ships = shopping_basket.ships.exists()
-
-        return render(request, './business/cart.html', {
-        'shopping_basket': shopping_basket,
-        'has_ships': has_ships
-    })
-    
-    else:
-    '''
+ 
     cookieData = cookieCart(request)
     cartItems = cookieData['cartItems']
     order = cookieData['order']
     items = cookieData['items']
-    return render(request, './business/cart.html', {
-    'cartItems':cartItems ,'order':order, 'items':items  #, 'shopping_basket': shopping_basket, 'has_ships': has_ships
-    })
+
+    lista = []
+    res = 0
+    needed_captains = 0
+    for item in items:
+        needed_captains = 0
+        for key, value in item.items(): 
+            if key == 'ship' and value.need_license:
+                needed_captains += 1
+                needed_captains = needed_captains * item['quantity']
+                lista.append(needed_captains)
+    for i in lista:
+        res += i
+    
+    needed_captains = res
+    if request.user.is_authenticated:
+        if request.user.client.license_validated == True:
+            needed_captains = res - 1
+    
+    return render(request, './business/cart.html', {'cartItems':cartItems ,'order':order, 'items':items, "needed_captains":needed_captains})
 
 
 

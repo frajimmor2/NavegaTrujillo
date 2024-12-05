@@ -9,6 +9,8 @@ from catalog.filters import ship_filter
 from datetime import timedelta, date, datetime
 from django.urls import reverse,reverse_lazy
 from paypal.standard.forms import PayPalPaymentsForm
+import json
+
 
 # Create your views here.
 
@@ -89,6 +91,26 @@ def show(request, ship_id):
     ''' En caso de ser un get, toma el barco (si no existe redirige a home), añade los formularios pertinentes (reserva y cambio de datos)
         y lo manda al frontend; Recibe el POST de cambio de datos también, el cuál aplica al barco (siempre vendrá de un administrador)'''
 
+    shipInCart = False
+    cart = json.loads(request.COOKIES['cart'])
+    if str(ship_id) in cart.keys():
+        shipInCart = True
+
+    cartItems = 0
+    items = []
+    for i in cart:
+    
+        try:
+            cartItems += cart[i]["quantity"]
+            ship = Ship.objects.get(id=i)            
+            items.append({'ship': ship, 'quantity':cart[i]["quantity"]})
+
+        except:
+            pass
+
+    current_ship = Ship.objects.get(id=ship_id)
+    item = next((item for item in items if item['ship'] == current_ship), None)
+
     if request.method=="GET":
         try: 
             ship = Ship.objects.get(id=ship_id)
@@ -103,7 +125,7 @@ def show(request, ship_id):
         else:
             reservation_form = ReservationFormNotLogged()
 
-        return render(request,"./catalog/show.html", {"ship":ship,"ship_form":form,"reservation_form":reservation_form})
+        return render(request,"./catalog/show.html", {"ship":ship,"ship_form":form,"reservation_form":reservation_form, "shipInCart":shipInCart, "item":item})
 
     form = ShipForm(request.POST)
     if form.is_valid():
@@ -136,7 +158,7 @@ def show(request, ship_id):
     reservation_form = ReservationFormNotLogged()
     form_shopping_basket = form_shopping_basket()
 
-    return render(request,"./catalog/show.html",{"ship":ship,"form_shopping_basket":form_shopping_basket,"reservation_form":reservation_form,"form":form})
+    return render(request,"./catalog/show.html",{"ship":ship,"form_shopping_basket":form_shopping_basket,"reservation_form":reservation_form,"form":form, "shipInCart":shipInCart, "item":item})
 
 
 def reservation(request, ship_id):
