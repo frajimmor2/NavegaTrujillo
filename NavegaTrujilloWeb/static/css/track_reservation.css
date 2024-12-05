@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap');
 
-
 body.track-reservation {
     margin: 0;
     padding: 0;
@@ -24,8 +23,7 @@ body.track-reservation {
     width: 100%;
     margin: 20px;
     text-align: center;
-    margin: 40px 20px 200px 20px; /* margen superior, derecho, inferior, izquierdo */
-
+    margin: 40px 20px 200px 20px;
 }
 
 /* título principal */
@@ -70,14 +68,14 @@ body.track-reservation {
     transform: scale(1.05);
 }
 
-/*  estado de la reserva */
+/* estado de la reserva */
 .reservation-status {
     margin: 20px 0;
     font-size: 1.2em;
     color: #333;
 }
 
-/* tabla  */
+/* tabla */
 .table-catalogo {
     width: 100%;
     border-collapse: collapse;
@@ -86,13 +84,14 @@ body.track-reservation {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
-    table-layout: fixed;
+    table-layout: auto; /* Cambiado de fixed a auto */
 }
 
 .table-catalogo th, .table-catalogo td {
     padding: 15px;
     text-align: center;
     border-bottom: 1px solid #ddd;
+    word-wrap: break-word; /* Permite que el texto se ajuste dentro de las celdas */
 }
 
 .table-catalogo th {
@@ -106,7 +105,8 @@ body.track-reservation {
 }
 
 .table-catalogo img {
-    width: 150px;
-    height: 100px;
-    object-fit: cover;
+    width: 100%;
+    height: auto;
+    max-width: 150px;
+    object-fit: contain; /* Ajustado para mantener la imagen dentro del contenedor */
 }
