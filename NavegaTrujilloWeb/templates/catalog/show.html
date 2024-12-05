@@ -13,12 +13,12 @@
             if (cart[shipId] == undefined) {
                 cart[shipId] = {'quantity': 1};
             } else {
-                cart[shipId]['quantity'] = 1;
+                cart[shipId]['quantity'] += 1;
             }
         }
 
         if (action == 'remove') {
-            cart[shipId]['quantity'] = 0;
+            cart[shipId]['quantity'] -= 1;
 
             if (cart[shipId]['quantity'] <= 0) {
                 delete cart[shipId];
@@ -87,11 +87,21 @@
 
                 <h3 class="ship-show-note"> Nota: La tarifa de un capitán es de 120 euros/día</h3>
                 <div>
-                    {% if shipInCart %}
-                    <button onclick="addCookieItem('{{ ship.id }}', 'remove')" class="ship-show-button-action">Quitar del carrito</button>
+                    {% if item %}
+                        {% if item.ship == ship %}
+                            {% if ship.quantity > item.quantity and shipInCart %}
+                                <button onclick="addCookieItem('{{ ship.id }}', 'add')" class="ship-show-button-action">Agregar al carrito</button>
+                                <button onclick="addCookieItem('{{ ship.id }}', 'remove')" class="ship-show-button-action">Quitar del carrito</button>
+                            {% elif shipInCart%}
+                                <button onclick="addCookieItem('{{ ship.id }}', 'remove')" class="ship-show-button-action">Quitar del carrito</button>
+                            {% elif shipInCart == False %}
+                                <button onclick="addCookieItem('{{ ship.id }}', 'add')" class="ship-show-button-action">Agregar al carrito</button>
+                            {% endif %}
+                        {% endif %}
                     {% else %}
-                    <button onclick="addCookieItem('{{ ship.id }}', 'add')" class="ship-show-button-action">Agregar al carrito</button>
+                        <button onclick="addCookieItem('{{ ship.id }}', 'add')" class="ship-show-button-action">Agregar al carrito</button>
                     {% endif %}
+                    
                 </div>
             </div>
             <!-- formulario de reserva, dirige directamente a la plataforma de reserva si se está logueado, a la de datos en caso contrario -->

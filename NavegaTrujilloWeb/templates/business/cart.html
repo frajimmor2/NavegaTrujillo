@@ -106,15 +106,23 @@ function redirect_reservation(){
 				{% endif %}
 				{% endfor %}                        
 			</tbody>
-                    </table>
-    
-                    <p class="cart-total">Total del carrito (incluyendo capitanes): ${{ order.total_with_captain }}</p>
-                    <button class="cart-button" onclick="redirect_reservation()">Reservar</button>
+                    {% if needed_captains > order.captain_amount %}
+                        </table>
+                        <p class="cart-total">
+                            Debes añadir mas capitanes para las embarcaciones con licencia necesaria para poder reservar
+                        </p>
+                    {% else %}
+                        </table>
+                        <p class="cart-total">Total del carrito (incluyendo capitanes): ${{ order.total_with_captain }}</p>
+                        <button class="cart-button" onclick="redirect_reservation()">Reservar</button>
+                    {% endif %}
                 </div>
+                
             {% else %}
                 <div class="cart-info">
                     <p>No tienes barcos en tu carrito.</p>
                 </div>
             {% endif %}
         </div>
+        
 {% endblock %}
