@@ -26,25 +26,25 @@
                     <form method="POST" action="{% url 'update_reservation_state' reservation_id=reservation_id %}" style="display: inline-block; margin-right: 10px;">
                         {% csrf_token %}
                         <input type="hidden" name="reservation_state" value="R">
-                        <button type="submit">RESERVED</button>
+                        <button type="submit">RESERVADO</button>
                     </form>
                     
                     <form method="POST" action="{% url 'update_reservation_state' reservation_id=reservation_id %}" style="display: inline-block; margin-right: 10px;">
                         {% csrf_token %}
                         <input type="hidden" name="reservation_state" value="P">
-                        <button type="submit">RESERVED_AND_PAID</button>
+                        <button type="submit">RESERVADO_Y_PAGADO</button>
                     </form>
                     
                     <form method="POST" action="{% url 'update_reservation_state' reservation_id=reservation_id %}" style="display: inline-block; margin-right: 10px;">
                         {% csrf_token %}
                         <input type="hidden" name="reservation_state" value="C">
-                        <button type="submit">CANCELLED</button>
+                        <button type="submit">CANCELADO</button>
                     </form>
                     
                     <form method="POST" action="{% url 'update_reservation_state' reservation_id=reservation_id %}" style="display: inline-block;">
                         {% csrf_token %}
                         <input type="hidden" name="reservation_state" value="A">
-                        <button type="submit">ALREADY_RENTED</button>
+                        <button type="submit">YA_ALQUILADO</button>
                     </form>
                 </td>
             </tr>
