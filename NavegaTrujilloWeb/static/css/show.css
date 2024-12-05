@@ -116,17 +116,16 @@ body.ship-show-page {
 /* Imagen del Barco */
 .ship-show-image {
     width: 100%;
-    max-width: 600px;
+    max-width: 400px;  /* Reducir el tamaño máximo */
     height: auto;
-    margin: 2rem auto;
+    margin: 1rem auto; /* Reducir el margen superior e inferior */
     display: block;
-    border-radius: 15px;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px; /* Reducir un poco el borde redondeado */
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1); /* Reducir la sombra para que no sea tan intensa */
     text-align: center;
-    background-color: #f1f1f1;
-    color: #666;
-    padding: 20px;
-    line-height: 200px;
+    background-color: #ffffff; /* Cambiar el fondo a blanco para eliminar el gris */
+    padding: 10px; /* Reducir el padding */
+    line-height: normal; /* Quitar el line-height que estaba estirando el contenedor */
 }
 
 /* Estilos para los botones "Editar" y "Borrar" */

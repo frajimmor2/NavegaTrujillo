@@ -7,8 +7,6 @@
 <link rel="stylesheet" href="{% static 'css/catalog.css' %}" type="text/css">
 <body class="catalog">
     <h1 class="h1_list">Barcos</h1>
-    
-
 
     <form method="get" action="/catalog/results/">
         {{ filter.form.as_p }}
@@ -35,15 +33,15 @@
                             <th>Disponibilidad</th>
                             <th>Puerto</th>
                             <th>Imagen</th>
-			    <th>Reservar para mañana</th>
+                            <th>Reservar para mañana</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for ship in ships %}
                         <tr>
                             <td style="display: flex; justify-content: center; align-items: center;">
-                                {% if ship.available%}
-                                <a href="/catalog/ship/{{ship.id}}">
+                                {% if ship.available %}
+                                <a href="/catalog/ship/{{ ship.id }}">
                                     {{ ship.name }}
                                 </a>
                                 {% elif request.user.is_staff %}
@@ -60,16 +58,26 @@
                             <td>{{ ship.capacity }}</td>
                             <td class="data_column">{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
                             <td>{{ ship.port.ubication }}</td>
-                            {% if ship.image %}
-                            <td><img src="{{ ship.image.url }}" alt="Barco" style="width: 150px; height: 100px;"></td>
-                            {% else %}
-                            <td>No existe imagen</td>
-                            {% endif %}
-			    <td>{% if ship.available %}<form action={% if request.user.is_authenticated %} "/catalog/ship/{{ship.id}}/reserva" {% else %} "/catalog/ship/{{ship.id}}/reserva" {% endif %} method="post">
-			{% csrf_token %}
-			{% if request.user.is_authenticated and request.user.client.license_validated or not ship.need_license %} {{form_optional_captain}} {% else %} {{form_mandatory_captain}} {% endif %}
-			<input type="Submit" value="Reservar">
-				    </form> {% endif %}</td>
+                            <td>
+                                {% if ship.image %}
+                                <img src="{{ ship.image.url }}" alt="Barco" class="img_catalog">
+                                {% else %}
+                                <span>No existe imagen</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ship.available %}
+                                <form action={% if request.user.is_authenticated %} "/catalog/ship/{{ ship.id }}/reserva" {% else %} "/catalog/ship/{{ ship.id }}/reserva" {% endif %} method="post">
+                                    {% csrf_token %}
+                                    {% if request.user.is_authenticated and request.user.client.license_validated or not ship.need_license %}
+                                    {{ form_optional_captain }}
+                                    {% else %}
+                                    {{ form_mandatory_captain }}
+                                    {% endif %}
+                                    <input type="submit" value="Reservar">
+                                </form>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
