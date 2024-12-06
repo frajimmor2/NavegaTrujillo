@@ -56,26 +56,39 @@ def filtered_list(request):
             rent_days.add(start+timedelta(days=i))
         
 
-        for ship in ships:
-            taken_days = set()
-            for reservation in ship.reservation_set.all():
+        taken_days = set()
+        known_days = dict()
+        taken_days_dicc = dict()
+        for ship in set(ships):
+            if not ship.id in known_days.keys():
+                known_days[ship.id] = set()
+                taken_days_dicc[ship.id]=dict()
+            for reservation2 in ship.reservation_ships_set.all():
+                reservation = reservation2.reservation
+                if reservation.reservation_state=='C':
+                    continue
                 start_date = reservation.rental_start_date
                 end_date = reservation.rental_end_date
-                
-                if start_date in taken_days and end_date in taken_days:
-                    break
                 delta = end_date-start_date
-                delta = delta.days
-                
-                taken_days.add(start_date)
+                delta = delta.days+1
                 for i in range(delta):
-                    taken_days.add(start_date+timedelta(days=i))
+                    if start_date+timedelta(days=i) in known_days[ship.id]:
+                        taken_days_dicc[ship.id][start_date+timedelta(days=i)]+=1
+                    else:
+                        taken_days_dicc[ship.id][start_date+timedelta(days=i)]=1
+        for ship in set(ships):
+            for date,quantity in taken_days_dicc[ship.id].items():
+                if date in taken_days:
+                    continue
+                if ship.quantity<=quantity:
+                    taken_days.add(date)
+
+               
                 
-                
-                for day in rent_days:
-                    if day in taken_days:
-                        ship.available = False
-        
+        for day in rent_days:
+            if day in taken_days:
+                ship.available = False
+
         
         if name_f:
             ships = ships.filter(name = name_f)

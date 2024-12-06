@@ -105,7 +105,7 @@
                 </div>
             </div>
             <!-- formulario de reserva, dirige directamente a la plataforma de reserva si se está logueado, a la de datos en caso contrario -->
-            <form action={% if request.user.is_authenticated %} "../../../reserva/{{ship.id}}" {% else %} "reserva" {% endif %} method="post">
+            <form action={% if request.user.is_authenticated %} "reserva" {% else %} "reserva" {% endif %} method="post">
                 {% csrf_token %}
                 {{ reservation_form }}
                 <input type="Submit" value="Reservar para mañana" class="ship-show-button-action">

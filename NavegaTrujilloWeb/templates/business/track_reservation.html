@@ -18,49 +18,66 @@
     </form>
 
     <!-- Mostrar el estado de la reserva si está disponible -->
-    {% if reservation_state %}
+    {% if reservation_state and reservation %}
         <div class="reservation-status">
             <h2>Estado de la Reserva:</h2>
             <p>{{ reservation_state }}</p>
         </div>
-
-        <table class="table-catalogo">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Coste de alquiler por día</th>
-                    <th>Capacidad</th>
-                    <th>Disponibilidad</th>
-                    <th>Puerto</th>
-                    <th>Imagen</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ship in ships %}
-                <tr>
-                    <td>
-                        {% if ship.available %}
-                        <a href="/catalog/ship/{{ ship.id }}">
-                            {{ ship.name }}
-                        </a>
-                        {% else %}
-                        {{ ship.name }}
-                        {% endif %}
-                    </td>
-                    <td>{{ ship.rent_per_day }}</td>
-                    <td>{{ ship.capacity }}</td>
-                    <td>{% if ship.available %} Disponible {% else %} No disponible {% endif %}</td>
-                    <td>{{ ship.port.ubication }}</td>
-                    {% if ship.image %}
-                    <td><img src="{{ ship.image.url }}" alt="Barco"></td>
-                    {% else %}
-                    <td>No existe imagen</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
-</div>
-</body>
+    <div class="body_list">
+        <div class="card">
+            <div class="card-body">
+                <table class="table_catalogo">
+                    <thead>
+                        <tr>
+                            <th>Coste Total</th>
+                            <th>Día de incio</th>
+                            <th>Día de finalización</th>
+                            <th>Estado</th>
+                            <th>Puerto</th>
+                            <th>Barcos</th>
+                            <th>Cancelar reserva</th>
+			    <th>Pagar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ reservation.total_cost }}</td>
+                            <td>{{ reservation.rental_start_date }}</td>
+                            <td>{{ reservation.rental_end_date }}</td>
+                            
+                            {% if reservation.reservation_state == "R" %}
+                                <td>Reservada</td>
+                            {% elif reservation.reservation_state == "P" %}
+                                <td>Reservada y pagada</td>
+                            {% elif reservation.reservation_state == "C" %}
+                                <td>Cancelada</td>
+                            {% else %}
+                                <td>Ya alquilado</td>
+                            {% endif %}
+                            <td>{{ reservation.port.ubication }}</td>
+                            <td>
+                                {% for ship in ships %}
+                                <a>{{ ship.name }}</a>
+                                {% endfor %}
+                            </td>
+			    <td> {% if cancellable %}
+                                <form method="POST" action="{% url 'cancel_reservation_lookup' reservation_id=reservation_id %}" style="display: inline-block; margin-right: 10px;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="reservation_state" value="C">
+                                        <button type="submit">Cancelar</button>
+				</form> {% else %} No puedes cancelar {% endif %}
+                            </td>
+                            {% if reservation.reservation_state == "R" %}
+			    <td><a href='/my-reservations/{{reservation_id}}/pay'>Pagar</a></td>
+			    {% elif reservation.reservation_state == "P" %}
+			    <td> Ya pagado </td>
+			    {% elif reservation.reservation_state == "C" %}
+			    <td> Cancelado </td>
+			    {% else %}
+			    <td> Ya alquilado </td>
+			    {% endif %}
+                        </tr>
+                    </tbody>
+        </table></body>
+	{% endif %}
 {% endblock %}

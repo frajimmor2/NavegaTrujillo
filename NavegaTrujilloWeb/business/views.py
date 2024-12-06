@@ -4,7 +4,7 @@ from django.http import HttpResponse,HttpResponseForbidden, JsonResponse
 from django.urls import reverse_lazy,reverse
 from paypal.standard.forms import PayPalPaymentsForm
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Shopping_basket, Client, Ship, Reservation, Port
+from .models import Shopping_basket, Client, Ship, Reservation, Port, Reservation_ships
 from accounts.models import CustomUser
 from django.utils import timezone
 from .forms import ReservationTimeForm,ReservationTimeUnloggedForm, EditProfileForm
@@ -17,7 +17,7 @@ from catalog.forms import dates_form
 from catalog.filters import ship_filter
 from django.dispatch import receiver
 from django.contrib.auth.decorators import user_passes_test
-
+from django.db.models import Q
 
 def home(request):
 
@@ -229,27 +229,33 @@ def cart_reservation(request):
             form = ReservationTimeUnloggedForm()
             form.initial['user'] = user.username
             form.initial['captain'] = False
-            taken_days = []
-            ships = []
-            for i in items:
-                ship = i['ship']
-                ship = Ship.objects.get(id = ship.id)
-                for o in range(i['quantity']):
-                    ships.append(ship)
-            if not ships:
-                return HttpResponse("Algo ha ido mal",status = 500)
 
             taken_days = set()
-            for ship in ships:
-                for reservation in ship.reservation_set.all():
+            known_days = dict()
+            taken_days_dicc = dict()
+            for ship in set(ships):
+                if not ship.id in known_days.keys():
+                    known_days[ship.id] = set()
+                    taken_days_dicc[ship.id]=dict()
+                for reservation2 in ship.reservation_ships_set.all():
+                    reservation = reservation2.reservation
+                    if reservation.reservation_state=='C':
+                        continue
                     start_date = reservation.rental_start_date
                     end_date = reservation.rental_end_date
-                    if start_date in taken_days and end_date in taken_days:
-                        continue
                     delta = end_date-start_date
-                    delta = delta.days
-                    for i in range(delta+1):
-                        taken_days.add(start_date+timedelta(days=i))            
+                    delta = delta.days+1
+                    for i in range(delta):
+                        if start_date+timedelta(days=i) in known_days[ship.id]:
+                            taken_days_dicc[ship.id][start_date+timedelta(days=i)]+=1
+                        else:
+                            taken_days_dicc[ship.id][start_date+timedelta(days=i)]=1
+            for ship in set(ships):
+                for date,quantity in taken_days_dicc[ship.id].items():
+                    if date in taken_days:
+                        continue
+                    if (ship.quantity-quantity)<ships.count(ship):
+                        taken_days.add(date)
 
             return render(request,'./business/reservation_cart.html', {'form':form,'taken_days':json.dumps([str(i) for i in taken_days])})
 
@@ -294,16 +300,31 @@ def cart_reservation(request):
             return HttpResponse("Algo ha ido mal",status = 500)
 
         taken_days = set()
-        for ship in ships:
-            for reservation in ship.reservation_set.all():
+        known_days = dict()
+        taken_days_dicc = dict()
+        for ship in set(ships):
+            if not ship.id in known_days.keys():
+                known_days[ship.id] = set()
+                taken_days_dicc[ship.id]=dict()
+            for reservation2 in ship.reservation_ships_set.all():
+                reservation = reservation2.reservation
+                if reservation.reservation_state=='C':
+                    continue
                 start_date = reservation.rental_start_date
                 end_date = reservation.rental_end_date
-                if start_date in taken_days and end_date in taken_days:
-                    break
                 delta = end_date-start_date
                 delta = delta.days+1
                 for i in range(delta):
-                    taken_days.add(start_date+timedelta(days=i))
+                    if start_date+timedelta(days=i) in known_days[ship.id]:
+                        taken_days_dicc[ship.id][start_date+timedelta(days=i)]+=1
+                    else:
+                        taken_days_dicc[ship.id][start_date+timedelta(days=i)]=1
+        for ship in set(ships):
+            for date,quantity in taken_days_dicc[ship.id].items():
+                if date in taken_days:
+                    continue
+                if (ship.quantity-quantity)<ships.count(ship):
+                    taken_days.add(date)
 
         return render(request,'./business/reservation_cart.html', {'form':form,'form2':form2,'taken_days':json.dumps([str(i) for i in taken_days])})
 
@@ -317,7 +338,6 @@ def confirm_reservation_cart(request):
     cartItems = cookieData['cartItems']
     order = cookieData['order']
     items = cookieData['items']
-
     form = ReservationTimeUnloggedForm(request.POST)
     if form.is_valid():
         start_date = form.cleaned_data['start_date']
@@ -343,7 +363,11 @@ def confirm_reservation_cart(request):
         reservation.port = ships[0].port
         reservation.client = user.client
         reservation.save()
-        reservation.ships.set(ships)
+
+        for ship in ships:
+            aux = Reservation_ships(ship=ship,reservation=reservation)
+            aux.save()
+            reservation.reservation_ships_set.add(aux)
         reservation.save()
         user.client.reservation = reservation
         user.save()
@@ -410,7 +434,8 @@ def confirm_reservation(request,ship_id):
     reservation.client = user.client
     reservation.port = ship.port
     reservation.save()
-    reservation.ships.set([ship])
+    aux = Reservation_ships(ship=ship,reservation=reservation)
+    aux.save()
     reservation.save()
     user.save()         
 
@@ -599,6 +624,9 @@ def edit_profile(request):
                     exists = False
                 if exists:
                     return HttpResponse("Ese email está en uso",status=401)
+            for phantom_user in CustomUser.objects.filter(name=user.email):
+                phantom_user.name = form.cleaned_data['email']
+                phantom_user.save()
             # Actualizar los datos del usuario
             user.name = form.cleaned_data['name']
             user.surname = form.cleaned_data['surname']
@@ -642,7 +670,8 @@ def confirm_reservation_paypal(request,ship_id,captain):
     reservation.port = ship.port
     reservation.client = client
     reservation.save()
-    reservation.ships.set([ship])
+    aux = Reservation_ships(ship=ship,reservation=reservation)
+    aux.save()
     reservation.save()
     client.save()
     user.save()         
@@ -659,8 +688,9 @@ def user_management(request):
         username = request.POST.get('username')
         if username:
             return redirect('manage_license', username=username)
-
-    return render(request, './business/user_management.html')
+    user = CustomUser.objects.get(username='admin')
+    users = CustomUser.objects.filter(~Q(password=''))
+    return render(request, './business/user_management.html',{'users':users})
 
 
 def paypal_cart(request):
@@ -697,8 +727,9 @@ def paypal_cart(request):
         reservation.port = ships[0].port
         reservation.client = user.client
         reservation.save()
-        reservation.ships.set(ships)
-        reservation.save()
+        for ship in ships:
+            aux = Reservation_ships(ship=ship,reservation=reservation)
+            aux.save()
         user.client.reservation = reservation
         user.save()
         paypal_dict = {
@@ -725,13 +756,14 @@ def paypal_cart_confirmation(request,lookup_id):
 @login_required
 def list_reservations_admin(request):
     dict = {}
+    aux = {'RESERVED':'RESERVADO','RESERVED_AND_PAID':'RESERVADO Y PAGADO','ALREADY_RENTED':'YA ALQUILADO','CANCELED':'CANCELADO'}
     if not request.user.is_staff:
         return HttpResponseForbidden("No tienes permiso para realizar esta acción.")
 
     reservations = Reservation.objects.all()
     for reservation in reservations:
         reservation_state = reservation.get_reservation_state_display()
-        dict[reservation.id] = reservation_state
+        dict[reservation.id] = (aux[reservation_state],reservation.client.customuser.username)
     return render(request, './business/list_reservations.html', {'reservation_states': dict})
 
 
@@ -779,7 +811,8 @@ def confirm_reservation_paypal(request,ship_id,captain):
     reservation.port = ship.port
     reservation.client = client
     reservation.save()
-    reservation.ships.set([ship])
+    aux = Reservation_ships(ship=ship,reservation=reservation)
+    aux.save()
     reservation.save()
     client.save()
     user.save()         
@@ -792,6 +825,8 @@ def track_reservation(request):
     reservation_state = None
     id_seguimiento = None
     ships = None
+    reservation = None
+    cancellable = False
     if request.method == 'POST':
         id_seguimiento = request.POST.get('id_seguimiento')
 
@@ -802,15 +837,21 @@ def track_reservation(request):
                 reservation = reservations.first()  # Toma la primera reserva encontrada
             else:
                 reservation = None  # O maneja el caso sin reserva
-            ships = reservation.ships.all()
+            aux = reservation.reservation_ships_set.all()
+            ships = []
+            for i in aux:
+                ships.append(i.ship)
             reservation_state = reservation.get_reservation_state_display()
-            
+            if reservation_state == 'RESERVED' and reservation.rental_start_date >= datetime.date((timezone.now() + timedelta(weeks=1))):
+                cancellable = True
         except Exception as e:
             reservation_state = f"No se ha encontrado un pedido con esa ID"
 
     return render(request, './business/track_reservation.html', {
         'reservation_state': reservation_state,
         'reservation_id': id_seguimiento,
+        'reservation':reservation,
+        'cancellable':cancellable,
         'ships':ships,
     })
 
@@ -849,8 +890,10 @@ def my_reservation_status_view(request, reservation_id):
 
         if not(belongs_to_this_user):
             return HttpResponseForbidden("No tienes permiso para venir aquí.")
-        
-        ships = reservation.ships.all()
+        aux = reservation.reservation_ships_set.all() 
+        ships = []
+        for i in aux:
+            ships.append(i.ship)
 
         dicc = {}
         reservation_state = reservation.get_reservation_state_display()
@@ -878,13 +921,32 @@ def cancel_reservation(request, reservation_id):
             reservation.save()
         return redirect('/my-reservations')
 
+def cancel_reservation_lookup(request, reservation_id):
+    if request.method == "POST":
+
+        user = get_object_or_404(CustomUser, username=reservation_id)
+        reservation = user.client.reservations.all()[0]
+        new_state = request.POST.get('reservation_state')
+        
+        if new_state:
+            reservation.reservation_state = new_state
+            reservation.save()
+        return redirect('/my-reservations')
+
+
 
 def pay_reservation(request,reservation_id):
-    reservation = Reservation.objects.get(id=reservation_id)
+    reservation = None
+    try:
+        reservation = Reservation.objects.get(id=reservation_id)
+    except:
+        aux = CustomUser.objects.get(username=reservation_id)
+        reservation = aux.client.reservations.all()[0]
+
     paypal_dict = {
             "business": "sb-iqwdg34506520@business.example.com",
             "amount": str(reservation.total_cost+20) if reservation.total_cost<1000 else str(reservation.total_cost),
-            "item_name": "Alquiler múltiples barcos" if len(reservation.ships.all())>1 else str(reservation.ships.all()[0].name),
+            "item_name": "Alquiler múltiples barcos" if len(reservation.reservation_ships_set.all())>1 else str(reservation.reservation_ships_set.all()[0].ship.name),
             "invoice": "",
             "return": request.build_absolute_uri(reverse_lazy("paypal_cart_confirmation",kwargs={'lookup_id':reservation.id})),
             "cancel_return": request.build_absolute_uri(reverse('home')),
