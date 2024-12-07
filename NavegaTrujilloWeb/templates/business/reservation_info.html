@@ -59,7 +59,15 @@
                                     No disponible
                                 {% endif %}
                             </td>
-			    <td><a href='/my-reservations/{{reservation_id}}/pay'>Pagar</a>
+                            {% if reservation.reservation_state == "R" %}
+			    	<td><a href='/my-reservations/{{reservation_id}}/pay'>Pagar</a>
+                            {% elif reservation.reservation_state == "P" %}
+                                <td>Ya pagada</td>
+                            {% elif reservation.reservation_state == "C" %}
+                                <td>Cancelada</td>
+                            {% else %}
+                                <td>Ya alquilado</td>
+                            {% endif %}
                         </tr>
                     </tbody>
                 </table>

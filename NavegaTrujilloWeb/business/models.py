@@ -44,7 +44,7 @@ class Shopping_basket(models.Model):
 
     def _str_(self):
         return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount}"
-    
+
 class Client(models.Model):
     #user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
     #shopping_basket = models.OneToOneField(Shopping_basket, on_delete=models.CASCADE)
@@ -54,10 +54,9 @@ class Client(models.Model):
 
     def _str_(self):
         return f"{self.license_number} {self.license_validated}"
-    
+
 class Reservation(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="reservations")
-    ships = models.ManyToManyField(Ship)
     port = models.ForeignKey(Port, on_delete=models.CASCADE)
 
     rental_start_date = models.DateField(validators=[MinValueValidator(timezone.now().date())])
@@ -72,3 +71,9 @@ class Reservation(models.Model):
 
     def _str_(self):
         return f"{self.rental_start_date} {self.rental_end_date} {self.captain_amount} {self.total_cost} {self.reservation_state}"
+
+class Reservation_ships(models.Model):
+    ship = models.ForeignKey(Ship, on_delete=models.CASCADE)
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    def _str_(self):
+        return f"{self.ship} {self.reservation}"   

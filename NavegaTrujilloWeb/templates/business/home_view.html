@@ -10,6 +10,12 @@
         <form method="get" action="/catalog/results/">
             {{ filter.form.as_p }}
             {{ form }}
+            <label for="puerto_id">Selecciona un puerto:</label>
+                <select name="puerto_id" id="puerto_id" required>
+                    {% for puerto in ports %}
+                        <option value="{{ puerto.id }}">{{ puerto.ubication }}</option>
+                    {% endfor %}
+                </select>
             <input type="submit" value="Filtrar"/>
         </form>
     </div>

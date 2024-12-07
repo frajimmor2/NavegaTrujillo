@@ -1,7 +1,7 @@
 from django import forms
 from datetime import date
 from django.core.exceptions import ValidationError
-from business.models import Ship
+from business.models import Ship, Port
 
 class ShipForm(forms.ModelForm):
     ''' Formulario de cambio de datos de barcos '''
@@ -44,6 +44,8 @@ class shopping_basket_form(forms.Form):
 class dates_form(forms.Form):
     rent_start_day = forms.DateField(label="Fecha de inicio de la reserva", widget=forms.DateInput(attrs={'type': 'date', 'min': date.today().strftime('%Y-%m-%d')}), required= False)
     rent_end_day = forms.DateField(label="Fecha de fin de la reserva", widget=forms.DateInput(attrs={'type': 'date', 'min': date.today().strftime('%Y-%m-%d')}), required=False)
+    name_form = forms.CharField(label="Nombre del barco", widget=forms.TextInput, required=False)
+
 
     def clean(self):
         cleaned_data = super().clean()
