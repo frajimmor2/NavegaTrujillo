@@ -8,7 +8,7 @@ class ShipForm(forms.ModelForm):
 
     class Meta:
         model = Ship
-        fields = ['available', 'rent_per_day', 'capacity', 'need_license', 'description']
+        fields = ['name','available', 'rent_per_day', 'capacity', 'need_license', 'description', 'quantity', 'port']
 
 
 class ReservationForm(forms.Form):
