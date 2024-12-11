@@ -42,8 +42,8 @@ def filtered_list(request):
     en las fechas dadas y si no lo está le cambio el disp a no disp sin guardarlo en la bd'''
     form = dates_form(request.GET)
     if form.is_valid():
-        start = datetime.strptime(request.GET.get('rent_start_day'), "%Y-%m-%d").date() if request.GET.get('rent_start_day') else date(1900, 12, 25)
-        end = datetime.strptime(request.GET.get('rent_end_day'), "%Y-%m-%d").date() if request.GET.get('rent_end_day') else date(1900, 12, 25)
+        start = datetime.strptime(request.GET.get('rent_start_day'), "%Y-%m-%d").date() if request.GET.get('rent_start_day') else datetime.today().date()
+        end = datetime.strptime(request.GET.get('rent_end_day'), "%Y-%m-%d").date() if request.GET.get('rent_end_day') else datetime.today().date()
         name_f = request.GET.get('name_form')
         puerto_id = request.GET.get("puerto_id")
 

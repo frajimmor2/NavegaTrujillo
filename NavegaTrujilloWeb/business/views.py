@@ -688,7 +688,7 @@ def user_management(request):
         username = request.POST.get('username')
         if username:
             return redirect('manage_license', username=username)
-    user = CustomUser.objects.get(username='admin')
+    user = CustomUser.objects.all()
     users = CustomUser.objects.filter(~Q(password=''))
     return render(request, './business/user_management.html',{'users':users})
 
