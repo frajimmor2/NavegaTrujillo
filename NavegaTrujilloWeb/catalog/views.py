@@ -9,6 +9,8 @@ from catalog.filters import ship_filter
 from datetime import timedelta, date, datetime
 from django.urls import reverse,reverse_lazy
 from paypal.standard.forms import PayPalPaymentsForm
+import json
+
 
 # Create your views here.
 
@@ -21,7 +23,8 @@ def list(request):
     form = dates_form()
     form_obligatory_captain = ReservationFormNotLogged()
     form_optional_captain = ReservationForm()
-    return render(request,"./catalog/list.html",{"ships":ships, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
+    puertos = Port.objects.all()  
+    return render(request,"./catalog/list.html",{"ships":ships, "puertos": puertos, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
 
 def filtered_list(request):
     ships = Ship.objects.all().order_by('capacity')
@@ -39,8 +42,10 @@ def filtered_list(request):
     en las fechas dadas y si no lo está le cambio el disp a no disp sin guardarlo en la bd'''
     form = dates_form(request.GET)
     if form.is_valid():
-        start = datetime.strptime(request.GET.get('rent_start_day'), "%Y-%m-%d").date() if request.GET.get('rent_start_day') else date(1900, 12, 25)
-        end = datetime.strptime(request.GET.get('rent_end_day'), "%Y-%m-%d").date() if request.GET.get('rent_end_day') else date(1900, 12, 25)
+        start = datetime.strptime(request.GET.get('rent_start_day'), "%Y-%m-%d").date() if request.GET.get('rent_start_day') else datetime.today().date()
+        end = datetime.strptime(request.GET.get('rent_end_day'), "%Y-%m-%d").date() if request.GET.get('rent_end_day') else datetime.today().date()
+        name_f = request.GET.get('name_form')
+        puerto_id = request.GET.get("puerto_id")
 
         rent_days = set()
         delta_rent_days = end-start
@@ -51,43 +56,83 @@ def filtered_list(request):
             rent_days.add(start+timedelta(days=i))
         
 
-        for ship in ships:
-            taken_days = set()
-            for reservation in ship.reservation_set.all():
+        taken_days = set()
+        known_days = dict()
+        taken_days_dicc = dict()
+        for ship in set(ships):
+            if not ship.id in known_days.keys():
+                known_days[ship.id] = set()
+                taken_days_dicc[ship.id]=dict()
+            for reservation2 in ship.reservation_ships_set.all():
+                reservation = reservation2.reservation
+                if reservation.reservation_state=='C':
+                    continue
                 start_date = reservation.rental_start_date
                 end_date = reservation.rental_end_date
-                
-                if start_date in taken_days and end_date in taken_days:
-                    break
                 delta = end_date-start_date
-                delta = delta.days
-                
-                taken_days.add(start_date)
+                delta = delta.days+1
                 for i in range(delta):
-                    taken_days.add(start_date+timedelta(days=i))
-                
-                
-                for day in rent_days:
-                    if day in taken_days:
-                        ship.available = False
+                    if start_date+timedelta(days=i) in known_days[ship.id]:
+                        taken_days_dicc[ship.id][start_date+timedelta(days=i)]+=1
+                    else:
+                        taken_days_dicc[ship.id][start_date+timedelta(days=i)]=1
+        for ship in set(ships):
+            for date,quantity in taken_days_dicc[ship.id].items():
+                if date in taken_days:
+                    continue
+                if ship.quantity<=quantity:
+                    taken_days.add(date)
 
-        ships_f = Ship.objects.all().order_by('capacity')
-
-        for ship in ships_f:
-            if not(ship in ships):
-                ship.available= False    
+               
                 
+        for day in rent_days:
+            if day in taken_days:
+                ship.available = False
+
+        
+        if name_f:
+            ships = ships.filter(name = name_f)
+
+        if puerto_id:
+            try:
+                puerto = Port.objects.get(id=puerto_id)
+                ships = ships.filter(port = puerto)
+            except Port.DoesNotExist:
+                pass
+
+           
+    puertos = Port.objects.all()           
     form_obligatory_captain = ReservationFormNotLogged()
     form_optional_captain = ReservationForm()
         
 
 
-    return render(request,"./catalog/list.html" ,{"ships":ships_f, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
+    return render(request,"./catalog/list.html" ,{"ships":ships, "puertos":puertos, "filter": f, "form": form,"form_obligatory_captain":form_obligatory_captain,"form_optional_captain":form_optional_captain})
 
 def show(request, ship_id):
 
     ''' En caso de ser un get, toma el barco (si no existe redirige a home), añade los formularios pertinentes (reserva y cambio de datos)
         y lo manda al frontend; Recibe el POST de cambio de datos también, el cuál aplica al barco (siempre vendrá de un administrador)'''
+
+    shipInCart = False
+    cart = json.loads(request.COOKIES['cart'])
+    if str(ship_id) in cart.keys():
+        shipInCart = True
+
+    cartItems = 0
+    items = []
+    for i in cart:
+    
+        try:
+            cartItems += cart[i]["quantity"]
+            ship = Ship.objects.get(id=i)            
+            items.append({'ship': ship, 'quantity':cart[i]["quantity"]})
+
+        except:
+            pass
+
+    current_ship = Ship.objects.get(id=ship_id)
+    item = next((item for item in items if item['ship'] == current_ship), None)
 
     if request.method=="GET":
         try: 
@@ -103,7 +148,7 @@ def show(request, ship_id):
         else:
             reservation_form = ReservationFormNotLogged()
 
-        return render(request,"./catalog/show.html", {"ship":ship,"ship_form":form,"reservation_form":reservation_form})
+        return render(request,"./catalog/show.html", {"ship":ship,"ship_form":form,"reservation_form":reservation_form, "shipInCart":shipInCart, "item":item})
 
     form = ShipForm(request.POST)
     if form.is_valid():
@@ -136,7 +181,7 @@ def show(request, ship_id):
     reservation_form = ReservationFormNotLogged()
     form_shopping_basket = form_shopping_basket()
 
-    return render(request,"./catalog/show.html",{"ship":ship,"form_shopping_basket":form_shopping_basket,"reservation_form":reservation_form,"form":form})
+    return render(request,"./catalog/show.html",{"ship":ship,"form_shopping_basket":form_shopping_basket,"reservation_form":reservation_form,"form":form, "shipInCart":shipInCart, "item":item})
 
 
 def reservation(request, ship_id):

@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&display=swap');
+
+body.track-reservation {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+/* contenedor principal */
+.container-track-reservation {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    max-width: 800px;
+    width: 100%;
+    margin: 20px;
+    text-align: center;
+    margin: 40px 20px 200px 20px;
+}
+
+/* título principal */
+.container-track-reservation h1 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* formulario */
+.track-reservation-form {
+    margin-bottom: 30px;
+}
+
+.track-reservation-form label {
+    font-weight: bold;
+    color: #333;
+}
+
+.track-reservation-form input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.track-reservation-form button {
+    background-color: #4a90e2;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.track-reservation-form button:hover {
+    background-color: #ff7675;
+    transform: scale(1.05);
+}
+
+/* estado de la reserva */
+.reservation-status {
+    margin: 20px 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+/* tabla */
+.table-catalogo {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    table-layout: auto; /* Cambiado de fixed a auto */
+}
+
+.table-catalogo th, .table-catalogo td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    word-wrap: break-word; /* Permite que el texto se ajuste dentro de las celdas */
+}
+
+.table-catalogo th {
+    background-color: #4a90e2;
+    color: white;
+    font-weight: bold;
+}
+
+.table-catalogo tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table-catalogo img {
+    width: 100%;
+    height: auto;
+    max-width: 150px;
+    object-fit: contain; /* Ajustado para mantener la imagen dentro del contenedor */
+}

@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-21b-bxa@#)20u5pi#oz+()brb91&kbj4dt4!$5m)2idxbkdi!q
 DEBUG = True
 PAYPAL_TEST = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'https://proyectonavegatrujillo.pythonanywhere.com', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'proyectonavegatrujillo.pythonanywhere.com', 'localhost']
 
 
 # Application definition
